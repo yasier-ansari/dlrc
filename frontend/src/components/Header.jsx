@@ -9,8 +9,8 @@ import {
 } from "react-icons/lu";
 import { GrUserAdmin } from 'react-icons/gr'
 import { toast } from "react-toastify";
-import { Link } from 'react-router-dom'
-import { PiQuotesBold } from 'react-icons/pi'
+import { Link, redirect } from 'react-router-dom'
+import { AuthContext } from "../context/AuthContext";
 const Header = () => {
     // const { login, session, logout } = useSession();
     // const {
@@ -24,9 +24,11 @@ const Header = () => {
     const [mediaDropdownOpen, setMediaDropdownOpen] = useState(false);
     const [menuBar, setMenuBar] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [loading, setLoading] = useState(true);
     const dropdownRef = useRef(null);
     const mediaDropdownRef = useRef(null);
     const mobileRef = useRef(null);
+    const { token, user, setUser, setRefreshToken, setToken, setUserType } = useContext(AuthContext);
 
     const handleDropdownToggle = () => {
         setDropdownOpen(!dropdownOpen);
@@ -41,29 +43,21 @@ const Header = () => {
             setOpen(false);
         }
     };
+    const logoutHandler = async () => {
+        const response = await fetch("http://localhost:8000/api/v1/student/logout", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Authorization": `Bearer ${token}` },
+        });
+        setUser(null);
+        setToken(null);
+        setRefreshToken(null);
+        setUserType(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        redirect('/');
 
-    const handleLogout = () => {
-        setDropdownOpen(false);
-        logout();
-        toast("Logged Out", {
-            hideProgressBar: true,
-            autoClose: 2000,
-            type: "success",
-        });
-        router.push("/");
-        // Perform logout logic here
-    };
-    const handleLogoutMobile = () => {
-        setDropdownOpen(false);
-        setMenuBar(false);
-        logout();
-        toast("Logged Out", {
-            hideProgressBar: true,
-            autoClose: 2000,
-            type: "success",
-        });
-        router.push("/");
-    };
+    }
 
     useEffect(() => {
         const handleClickOutsideDropdown = (event) => {
@@ -88,6 +82,10 @@ const Header = () => {
             document.removeEventListener("mousedown", handleClickOutsideMobile);
         };
     }, []);
+    useEffect(() => {
+        const getToken = localStorage.getItem('token');
+        setLoading(false);
+    }, []);
 
 
     const loginHandler = async () => {
@@ -98,6 +96,16 @@ const Header = () => {
             type: "success",
         });
     };
+    const reduceName = (text) => {
+        const words = text.split(/\s+/);
+        const firstWord = words[0] || '';
+        if (firstWord.length > 10) {
+            const result = firstWord.slice(0, 8) + '...';
+            return result;
+        } else {
+            return firstWord;
+        }
+    }
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 100) {
@@ -117,7 +125,7 @@ const Header = () => {
                 <a href="/" className="text-xl  lg:text-2xl font-bold ">
                     <span className="text-[#52b788]">DLRC</span>
                 </a>
-                <div className="flex flex-col font-sat -space-y-8 sm:hidden">
+                <div className="flex flex-col font-sat h-full -space-y-8 sm:hidden">
                     <button
                         className="transition-all z-50 duration-150 ease-in"
                         onClick={() => setMenuBar(!menuBar)}
@@ -154,14 +162,6 @@ const Header = () => {
                                         Rules
                                     </a>
                                     <a
-                                        href={"/#faq"}
-                                        onClick={() => setMenuBar(false)}
-                                        className="flex items-center text-lg  "
-                                    >
-                                        <PiQuotesBold className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
-                                        FAQ
-                                    </a>
-                                    <a
                                         href={"admin/login"}
                                         onClick={() => setMenuBar(false)}
                                         className="flex items-center text-lg  "
@@ -171,22 +171,22 @@ const Header = () => {
                                     </a>
                                 </div>
                                 <div className="flex flex-col space-y-6 items-center justify-between">
-                                    {true ? (
-                                        true ? (
+                                    {!loading ? (
+                                        user ? (
                                             <div className="relative" >
                                                 <button
                                                     onClick={handleDropdownToggle}
-                                                    className="flex items-center "
+                                                    className="flex items-center py-2 px-4 sm:px-3 md:p-2 md:px-6 space-x-3 bg-gradient-to-tr border-2 border-green-800 to-[#52b788] font-bold  from-[#74c69d] rounded-xl "
                                                 >
-
-                                                    <LuAtom className="w-8 h-8 p-1 " />
+                                                    {/* <LuAtom className="w-8 h-8 p-1 " /> */}
+                                                    <p className="font-bold text-black " >{reduceName(user?.fullname)}</p>
                                                     <LuChevronDown
-                                                        className={` w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
+                                                        className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
                                                             } `}
                                                     />
                                                 </button>
                                                 {dropdownOpen ? (
-                                                    <div className="absolute left-[50%] top-10 mt-2 w-48 bg-white rounded-md shadow-lg">
+                                                    <div className="absolute top-12 mt-2 w-48 bg-white rounded-md shadow-lg">
                                                         <ul className="p-2 text-start">
                                                             <Link
                                                                 to="/user/profile"
@@ -217,7 +217,7 @@ const Header = () => {
                                                                 </button>
                                                             </Link>
                                                             <button
-                                                                onClick={handleLogoutMobile}
+                                                                onClick={loginHandler}
                                                                 className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"
                                                             >
                                                                 <span className="flex w-full px-4 py-2 text-sm text-red-600">
@@ -232,21 +232,15 @@ const Header = () => {
                                             <div className="flex flex-col space-y-8 text-base font-semibold px-3 py-[4px] lg:px-4 ">
                                                 <Link
                                                     to="/user/login"
-                                                    className=" bg-purple-100 flex justify-center items-center text-gray-800 shadow-lg border-2 border-purple-400 shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 "
+                                                    className=" bg-[#95d5b2] flex justify-center items-center text-gray-800 shadow-lg border-2 border-[#40916c] shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 "
                                                 >
                                                     Log In
-                                                </Link>
-                                                <Link
-                                                    to={"/user/register"}
-                                                    className=" bg-gradient-to-r from-purple-400  to-violet-600 text-white shadow-lg border-[0.005rem] border-purple-300 shadow-stone-300 text-base rounded-xl px-3 py-2 md:py-3 lg:px-4 "
-                                                >
-                                                    Register
                                                 </Link>
                                             </div>
                                         )
                                     ) : (
                                         <div className="flex items-center justify-center bg-white h-10 w-16 rounded-lg space-x-3 text-base  border-gray-700">
-                                            <div className="animate-spin  rounded-full h-4 w-4 sm:h-5 sm:w-5  border-[2.2px] border-r-none border-r-white border-violet-500">
+                                            <div className="animate-spin  rounded-full h-4 w-4 sm:h-5 sm:w-5  border-[2.2px] border-r-none border-r-white border-[#40916c]">
                                                 {" "}
                                                 ‎{" "}
                                             </div>
@@ -267,13 +261,6 @@ const Header = () => {
                         Rules
                     </Link>
                     <a
-                        href={"/#faq"}
-                        className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg  "
-                    >
-                        <PiQuotesBold className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
-                        FAQ
-                    </a>
-                    <a
                         href={"/admin/login"}
                         className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg  "
                     >
@@ -286,12 +273,12 @@ const Header = () => {
                     </button> */}
                 </div>
                 <div className="hidden sm:flex items-center  justify-between">
-                    {true ? (
-                        true ? (
+                    {!loading ? (
+                        user ? (
                             <div className="relative">
                                 <button
                                     onClick={handleDropdownToggle}
-                                    className="flex items-center "
+                                    className="flex items-center p-1 md:p-2 md:px-6 space-x-3 bg-gradient-to-tr border-2 border-green-800 to-[#52b788] font-bold  from-[#74c69d] rounded-xl "
                                 >
                                     {/* <Image
                                         src={userInfo?.photoURL || Imag}
@@ -300,9 +287,10 @@ const Header = () => {
                                         alt="user image"
                                         className="rounded-full"
                                     /> */}
-                                    <LuAtom className="w-8 h-8 p-1 " />
+                                    {/* <LuAtom className="w-8 h-8 p-1 " /> */}
+                                    <p className="font-bold text-black " >{reduceName(user?.fullname)}</p>
                                     <LuChevronDown
-                                        className={` w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
+                                        className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
                                             } `}
                                     />
                                 </button>
@@ -341,7 +329,7 @@ const Header = () => {
                                                 </button>
                                             </Link>
                                             <button
-                                                onClick={handleLogout}
+                                                onClick={logoutHandler}
                                                 className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"
                                             >
                                                 <span className="flex w-full px-4 py-2 text-sm md:text-base text-red-600 font-bold">
@@ -355,17 +343,12 @@ const Header = () => {
                         ) : (
                             <div className="flex  space-x-5 md:space-x-6 text-base font-semibold  ">
                                 <Link
-                                    href="/login"
-                                    className=" bg-purple-100 flex items-center justify-center text-gray-800 shadow-md border-2 border-purple-400 shadow-stone-400 text-base  rounded-xl px-3 py-1 md:py-2 lg:px-4 "
+                                    to="/user/login"
+                                    className=" bg-[#95d5b2] flex justify-center items-center text-gray-800 border-2 border-[#40916c] text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 "
                                 >
                                     Log In
                                 </Link>
-                                <Link
-                                    href={"/register"}
-                                    className=" bg-gradient-to-r from-purple-400  to-violet-600 text-white shadow-md border-[0.005rem] border-purple-300 shadow-stone-400 text-base  rounded-xl px-3 py-1 md:py-2 lg:px-4 "
-                                >
-                                    Register
-                                </Link>
+
                             </div>
                         )
                     ) : (

@@ -244,8 +244,6 @@ const UserRegister = () => {
                                         required={true}
                                         placeholder="Full Name"
                                         value={form.fullname}
-                                        pattern="[0-9]{20}"
-                                        maxLength={20}
                                         onChange={(e) => setForm({ ...form, fullname: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />

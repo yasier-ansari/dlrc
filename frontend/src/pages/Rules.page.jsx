@@ -5,7 +5,7 @@ import Hero from '../../public/hero-image.png'
 import { FaRegHandPointDown } from "react-icons/fa"
 const Rules = () => {
     return (
-        <div className="flex flex-col w-full min-h-screen bg-white">
+        <div className="flex flex-col w-full min-h-screen bg-white scroll-mt-2 ">
             <Header />
             <main className="flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24 flex-col justify-center mx-auto items-center max-w-7xl w-full h-full " >
                 <div className="flex flex-col items-center justfiy-center max-w-4xl w-full h-full">

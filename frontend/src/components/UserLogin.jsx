@@ -61,8 +61,6 @@ const UserLogin = ({ authWork }) => {
                 },
                 body: JSON.stringify({ domain_id: email, prn, password }),
             });
-
-            // Check if the response status is in the range 200-299 (success)
             if (response.ok) {
                 const data = await response.json();
                 setToken(data?.data?.accessToken);
@@ -71,17 +69,13 @@ const UserLogin = ({ authWork }) => {
                 localStorage.setItem("refreshToken", data?.data?.refreshToken)
                 console.log(data)
                 return data;
-                // Handle the successful response data here
             } else {
-                // If the response status is not in the success range, handle the error
                 const errorData = await response.json();
                 console.error('Login failed:', errorData);
                 return errorData;
-                // Handle the error data here
             }
         } catch (error) {
             console.error('Error during login request:', error);
-            // Handle other errors here
             return error;
         }
     }

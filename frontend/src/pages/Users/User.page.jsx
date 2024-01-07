@@ -8,6 +8,7 @@ import { AuthContext } from "../../context/AuthContext"
 
 const User = () => {
     const { token, userType } = useContext(AuthContext);
+    console.log(token);
     return (
         <Routes>
             <Route
@@ -23,7 +24,7 @@ const User = () => {
                         <Apply />
                     ) : (
                         // Redirect the user to the login page if not logged in
-                        <Navigate to="/login" />
+                        <Navigate to="/user/login" />
                     )
                 }
             />
@@ -31,14 +32,14 @@ const User = () => {
                 path="/register"
                 element={
                     token ?
-                        <Register /> : <Navigate to='/apply' />
+                        <Navigate to="/user/profile" replace={true} /> : <Register />
                 }
             />
             <Route
                 path="/login"
                 element={
                     token ?
-                        <Login /> : <Navigate to='/apply' />
+                        <Navigate to='/user/profile' replace={true} /> : <Login />
                 }
             />
         </Routes>
