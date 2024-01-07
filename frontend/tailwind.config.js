@@ -9,6 +9,8 @@ export default {
       fontFamily: {
         outfit: ["Outfit", "sans-serif"],
         victor: ["Victor Mono", "sans-serif"],
+        barlow: ["Barlow", "sans-serif"],
+
       },
     },
   },

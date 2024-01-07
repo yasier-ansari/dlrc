@@ -11,6 +11,30 @@
   font-family: 'Outift', sans-serif;
 }
 
+*::selection {
+  @apply bg-[#b7e4c7];
+}
+
+::-webkit-scrollbar {
+  /* height: 10px; */
+  /* border-radius: 1px solid #d5d5d5; */
+  @apply h-2 w-[8px] rounded-sm border-gray-100/20;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-transparent w-20;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-gradient-to-t via-[#52b788] from-[#40916c] to-[#2d6a4f] rounded-[4px];
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-purple-400;
+}
 
 
 /* 

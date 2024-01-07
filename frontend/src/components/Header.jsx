@@ -100,7 +100,7 @@ const Header = () => {
     };
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 150) {
+            if (window.scrollY > 100) {
                 setIsScrolled(true);
             } else {
                 setIsScrolled(false);
@@ -112,12 +112,11 @@ const Header = () => {
         };
     }, []);
     return (
-        <div className={` sticky top-0 z-40 font-medium  min-h-20 h-full text-gray-800 w-full ${isScrolled ? ' bg-[#100220] text-white shadow-lg -top-2 ' : ' '} `}>
+        <div className={` sticky top-0 z-40 font-medium  min-h-20 h-full text-gray-800 w-full ${isScrolled ? ' bg-[#081c15] text-white shadow-lg -top-2 ' : ' '} `}>
             <div className="flex justify-between items-center py-4 mx-auto px-4 sm:px-6 md:px-8 lg:px-16 max-w-7xl md:py-6  w-full ">
-                <Link href="/" className="text-xl  lg:text-2xl font-bold ">
-                    <span className="text-[#52b788]">re;</span>
-                    po
-                </Link>
+                <a href="/" className="text-xl  lg:text-2xl font-bold ">
+                    <span className="text-[#52b788]">DLRC</span>
+                </a>
                 <div className="flex flex-col font-sat -space-y-8 sm:hidden">
                     <button
                         className="transition-all z-50 duration-150 ease-in"
@@ -146,30 +145,30 @@ const Header = () => {
                                         <LuBadgeInfo className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
                                         About
                                     </Link>
-                                    <Link
-                                        href={"/about"}
+                                    <a
+                                        href={"/rules"}
                                         onClick={() => setMenuBar(false)}
                                         className="flex items-center text-lg  "
                                     >
                                         <LuInfo className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
                                         Rules
-                                    </Link>
-                                    <Link
-                                        href={"/"}
+                                    </a>
+                                    <a
+                                        href={"/#faq"}
                                         onClick={() => setMenuBar(false)}
                                         className="flex items-center text-lg  "
                                     >
                                         <PiQuotesBold className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
                                         FAQ
-                                    </Link>
-                                    <Link
-                                        href={"/guide"}
+                                    </a>
+                                    <a
+                                        href={"admin/login"}
                                         onClick={() => setMenuBar(false)}
                                         className="flex items-center text-lg  "
                                     >
                                         <GrUserAdmin className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
                                         Admin
-                                    </Link>
+                                    </a>
                                 </div>
                                 <div className="flex flex-col space-y-6 items-center justify-between">
                                     {true ? (
@@ -179,17 +178,7 @@ const Header = () => {
                                                     onClick={handleDropdownToggle}
                                                     className="flex items-center "
                                                 >
-                                                    {/* <Image
-                                                        src={
-                                                            userInfo?.photoURL
-                                                                ? userInfo?.photoURL
-                                                                : Imag
-                                                        }
-                                                        width="40"
-                                                        height="40"
-                                                        alt="user image"
-                                                        className="rounded-full"
-                                                    /> */}
+
                                                     <LuAtom className="w-8 h-8 p-1 " />
                                                     <LuChevronDown
                                                         className={` w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
@@ -200,7 +189,7 @@ const Header = () => {
                                                     <div className="absolute left-[50%] top-10 mt-2 w-48 bg-white rounded-md shadow-lg">
                                                         <ul className="p-2 text-start">
                                                             <Link
-                                                                href="/user/profile"
+                                                                to="/user/profile"
                                                                 className="hover:bg-gray-800 cursor-pointer"
                                                             >
                                                                 <button
@@ -214,7 +203,7 @@ const Header = () => {
                                                                 </button>
                                                             </Link>
                                                             <Link
-                                                                href="/user/add-resource"
+                                                                to="/user/apply"
                                                                 className="hover:bg-gray-800 cursor-pointer"
                                                             >
                                                                 <button
@@ -224,14 +213,14 @@ const Header = () => {
                                                                     }}
                                                                     className="flex px-4 py-2 text-sm hover:bg-gray-200 w-full rounded-lg text-gray-700"
                                                                 >
-                                                                    add resource
+                                                                    apply
                                                                 </button>
                                                             </Link>
                                                             <button
                                                                 onClick={handleLogoutMobile}
                                                                 className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"
                                                             >
-                                                                <span className="flex w-full px-4 py-2 text-sm text-orange-500">
+                                                                <span className="flex w-full px-4 py-2 text-sm text-red-600">
                                                                     logout
                                                                 </span>
                                                             </button>
@@ -242,13 +231,13 @@ const Header = () => {
                                         ) : (
                                             <div className="flex flex-col space-y-8 text-base font-semibold px-3 py-[4px] lg:px-4 ">
                                                 <Link
-                                                    href="/login"
+                                                    to="/user/login"
                                                     className=" bg-purple-100 flex justify-center items-center text-gray-800 shadow-lg border-2 border-purple-400 shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 "
                                                 >
                                                     Log In
                                                 </Link>
                                                 <Link
-                                                    href={"/register"}
+                                                    to={"/user/register"}
                                                     className=" bg-gradient-to-r from-purple-400  to-violet-600 text-white shadow-lg border-[0.005rem] border-purple-300 shadow-stone-300 text-base rounded-xl px-3 py-2 md:py-3 lg:px-4 "
                                                 >
                                                     Register
@@ -271,26 +260,26 @@ const Header = () => {
 
                 <div className=" hidden sm:flex space-x-12 items-center justify-center text-base ">
                     <Link
-                        href={"/about"}
+                        to={"/rules"}
                         className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg  "
                     >
                         <LuInfo className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
                         Rules
                     </Link>
-                    <Link
-                        href={"/guide"}
+                    <a
+                        href={"/#faq"}
                         className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg  "
                     >
                         <PiQuotesBold className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
                         FAQ
-                    </Link>
-                    <Link
-                        href={"/guide"}
+                    </a>
+                    <a
+                        href={"/admin/login"}
                         className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg  "
                     >
                         <GrUserAdmin className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
                         Admin
-                    </Link>
+                    </a>
                     {/* <button onClick={() => setIsModalVisible(!isModalVisible)} className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg " >
                         <LuGitPullRequest className="mr-2 w-4 h-4 md:w-5 md:h-5  " />
                         Search
@@ -324,7 +313,7 @@ const Header = () => {
                                         <ul ref={dropdownRef}
                                             className="p-2 text-start border border-gray-300 rounded-xl ">
                                             <Link
-                                                href="/user/profile"
+                                                to="/user/profile"
                                                 className="hover:bg-gray-800 w-full cursor-pointer"
                                             >
                                                 <button
@@ -338,7 +327,7 @@ const Header = () => {
                                                 </button>
                                             </Link>
                                             <Link
-                                                href="/user/add-resource"
+                                                to="/user/apply"
                                                 className="hover:bg-gray-800 cursor-pointer"
                                             >
                                                 <button
@@ -348,14 +337,14 @@ const Header = () => {
                                                     }}
                                                     className="flex px-4 py-2 text-sm md:text-base hover:bg-gray-200 w-full rounded-lg text-gray-700"
                                                 >
-                                                    add resource
+                                                    apply
                                                 </button>
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
                                                 className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"
                                             >
-                                                <span className="flex w-full px-4 py-2 text-sm md:text-base text-orange-500">
+                                                <span className="flex w-full px-4 py-2 text-sm md:text-base text-red-600 font-bold">
                                                     logout
                                                 </span>
                                             </button>

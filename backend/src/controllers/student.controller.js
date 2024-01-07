@@ -1,18 +1,18 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js"
-import { Student } from "../models/students.models.js"; 
+import { Student } from "../models/students.models.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken"
 import { generateTokens } from "../utils/generateToken.js";
 
-const registerUser = asyncHandler( async (req, res)=>{
-    const {fullname, domain_id, prn, password, department, year, sem, number} = req.body
-    
+const registerUser = asyncHandler(async (req, res) => {
+    const { fullname, domain_id, prn, password, department, year, sem, number } = req.body
+
     if (
         [fullname, domain_id, prn, password, department, year, sem, number].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(400, "All fields are required") 
-    } 
+        throw new ApiError(400, "All fields are required")
+    }
 
     const existingStudent = await Student.findOne({
         $or: [{ domain_id }, { prn }]
@@ -22,19 +22,19 @@ const registerUser = asyncHandler( async (req, res)=>{
     }
 
     const idLocalPath = req.file?.path;
-    if(!idLocalPath){
+    if (!idLocalPath) {
         throw new ApiError(400, "ID card is required")
     }
 
     const student = await Student.create({
-        fullname, 
+        fullname,
         domain_id,
-        prn, 
+        prn,
         password,
         idCard: idLocalPath,
-        department, 
-        year, 
-        sem, 
+        department,
+        year,
+        sem,
         number
     })
 
@@ -53,26 +53,26 @@ const registerUser = asyncHandler( async (req, res)=>{
     )
 })
 
-const loginUser = asyncHandler( async (req, res) => {
-    const  {domain_id, prn, password} = req.body;
+const loginUser = asyncHandler(async (req, res) => {
+    const { domain_id, prn, password } = req.body;
     console.log(req.body);
     if ([domain_id, prn, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required") 
+        throw new ApiError(400, "All fields are required")
     }
     console.log(domain_id, prn, password);
-    
+
     const existingStudent = await Student.findOne({
         $or: [{ domain_id }, { prn }]
     })
-    if(!existingStudent){
+    if (!existingStudent) {
         throw new ApiError(404, "Unregistered DomainID or PRN")
     }
 
     const isPasswordValid = await existingStudent.passwordCheck(password)
-    if(!isPasswordValid) {
+    if (!isPasswordValid) {
         throw new ApiError(401, "Invalid Login Credentials")
     }
-    
+
     const { accessToken, refreshToken } = await generateTokens(Student, existingStudent._id)
 
     const options = {
@@ -81,21 +81,22 @@ const loginUser = asyncHandler( async (req, res) => {
     }
 
     return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                accessToken, refreshToken
-            },
-            "Student logged in successfully"
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    accessToken, refreshToken,
+                    userType: "user"
+                },
+                "Student logged in successfully"
+            )
         )
-    )
 })
 
-const logoutUser = asyncHandler( async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
     await Student.findByIdAndUpdate(
         req.student._id,
         {
@@ -114,13 +115,13 @@ const logoutUser = asyncHandler( async (req, res) => {
     }
 
     return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "Student logged Out"))
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "Student logged Out"))
 })
 
-const newRefreshToken = asyncHandler( async (req, res) => {
+const newRefreshToken = asyncHandler(async (req, res) => {
     // get current
     // decrypt
     // Authenticate with the one in DB
@@ -129,80 +130,80 @@ const newRefreshToken = asyncHandler( async (req, res) => {
     // send res
 
     const existingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken
-    if(!existingRefreshToken){
+    if (!existingRefreshToken) {
         throw new ApiError(401, "No Refresh Token")
-    }    
+    }
 
     try {
         const token = jwt.verify(
             existingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
         )
-    
+
         console.log(token);
-    
+
         const student = await Student.findById(token.domain_id)
         console.log(student);
-    
-        if(!student){
+
+        if (!student) {
             throw new ApiError(404, "Student not found")
         }
-        if(token !== student?.refreshToken){
+        if (token !== student?.refreshToken) {
             throw new ApiError(401, "Refresh Token Not Matching")
         }
-    
+
         const { accessToken, newRefreshToken } = await generateTokens(Student, student._id)
         const options = {
             httpOnly: true,
             secure: true
         }
-    
+
         return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-            new ApiResponse(
-                200,
-                {
-                    accessToken, 
-                    refreshToken: newRefreshToken
-                },
-                "Access Token Refreshed in successfully"
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        accessToken,
+                        refreshToken: newRefreshToken,
+                    },
+                    "Access Token Refreshed in successfully"
+                )
             )
-        )
     } catch (error) {
         throw new ApiError(401, error.message)
     }
-    
+
 })
 
-const updateProfile = asyncHandler( async (req, res) => {
+const updateProfile = asyncHandler(async (req, res) => {
     const student = req.student
-    
+
     const updateStudent = await Student.findById(student._id)
-    if(!updateStudent){
+    if (!updateStudent) {
         throw new ApiError(404, "User not found")
     }
 
-    const {fullname, domain_id, prn, department, year, sem, number} = req.body
-    
+    const { fullname, domain_id, prn, department, year, sem, number } = req.body
+
     if (
         [fullname, domain_id, prn, department, year, sem, number].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(400, "All fields are required") 
-    } 
+        throw new ApiError(400, "All fields are required")
+    }
 
     const updatedStudent = await Student.findByIdAndUpdate(
-        student._id, 
+        student._id,
         {
             $set: {
-                fullname, 
-                domain_id, 
-                prn, 
-                department, 
-                year, 
-                sem, 
+                fullname,
+                domain_id,
+                prn,
+                department,
+                year,
+                sem,
                 number
             }
         },
@@ -211,33 +212,33 @@ const updateProfile = asyncHandler( async (req, res) => {
         }
     ).select("-password -idCard -refreshToken")
 
-    if(!updatedStudent){
+    if (!updatedStudent) {
         throw new ApiError(500, "Error While Updating Information")
     }
 
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, updatedStudent, "Profile Changes Successful")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, updatedStudent, "Profile Changes Successful")
+        )
 
 
 
 })
 
-const viewProfile = asyncHandler( async (req, res) => {
+const viewProfile = asyncHandler(async (req, res) => {
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, req.student, "User Data")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, req.student, "User Data")
+        )
 })
-export{ 
+export {
     registerUser,
     loginUser,
     logoutUser,
-    newRefreshToken ,
+    newRefreshToken,
     updateProfile,
     viewProfile
 }

@@ -10,13 +10,13 @@ const newRequest = asyncHandler( async (req, res) => {
     const { purpose, duration, ews, family_status } = req.body
 
     if (
-        [purpose, duration, ews, family_status].some((field) => field?.trim() === "")
+        [purpose, duration, ews, family_status].some((field) => field.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
 
     const existingReq = await Request.find({ // C O U L D   B E   B E T T E R
-        student_id: student._id    
+        student_id: student.prn    
     }).sort("createdAt desc")
 
     if (existingReq !== null && (existingReq.status !== "Fulfiled" && existingReq.status !== "Rejected")) {
@@ -37,7 +37,7 @@ const newRequest = asyncHandler( async (req, res) => {
         duration, 
         ews, 
         family_status,
-        student_id: student._id,
+        student_id: student.fullname,
         parents_Dec: parents_DecLocalPath,
         students_Dec: students_DecLocalPath,
         faculty_Rec: faculty_RecLocalPath,

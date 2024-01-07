@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import AdminLogin from './AdminLogin.page'
 import AdminRegister from './AdminRegister.page'
 import AdminUser from "./AdminUser.page"
+import AdminUserApproval from "./AdminUserApproval.page"
 
 const Admin = () => {
     return (
@@ -9,15 +10,15 @@ const Admin = () => {
             <Route
                 path="/user/:id"
                 element={
-                    <AdminUser />
+                    <AdminUserApproval />
                 }
             />
-            <Route
+            {/* <Route
                 path="/"
                 element={
                     <Admin />
                 }
-            />
+            /> */}
             <Route
                 path="/login"
                 element={

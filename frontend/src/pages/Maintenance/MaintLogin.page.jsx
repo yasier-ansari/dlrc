@@ -1,14 +1,15 @@
-import AdminRegisterComp from "../../components/AdminRegister"
+import React from 'react'
 import AuthHeader from "../../components/AuthHeader"
+import MaintLoginComp from "../../components/MaintLogin"
 
-const AdminRegister = () => {
+const MaintLogin = () => {
     return (
         <div className="flex flex-col w-full min-h-screen bg-white">
             <AuthHeader />
             <main className="flex grow w-[100%]  " >
-                <AdminRegisterComp />
+                <MaintLoginComp />
             </main>
         </div>)
 }
 
-export default AdminRegister
+export default MaintLogin
