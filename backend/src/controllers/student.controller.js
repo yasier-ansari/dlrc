@@ -59,14 +59,22 @@ const loginUser = asyncHandler(async (req, res) => {
     if ([domain_id, prn, password].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "All fields are required")
     }
-    console.log(domain_id, prn, password);
-
-    const existingStudent = await Student.findOne({
-        $or: [{ domain_id }, { prn }]
-    })
+    const existingStudent = await Student.findOne({ domain_id });
     if (!existingStudent) {
-        throw new ApiError(404, "Unregistered DomainID or PRN")
+        throw new ApiError(404, "Unregistered Email")
     }
+    const existingStudent2 = await Student.findOne({ domain_id });
+    if (!existingStudent2) {
+        throw new ApiError(403, "Unregistered PRN")
+    }
+
+
+    // const existingStudent = await Student.findOne({
+    //     $or: [{ domain_id }, { prn }]
+    // })
+    // if (!existingStudent) {
+    //     throw new ApiError(404, "Unregistered DomainID or PRN")
+    // }
 
     const isPasswordValid = await existingStudent.passwordCheck(password)
     if (!isPasswordValid) {
@@ -89,7 +97,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 200,
                 {
                     accessToken, refreshToken,
-                    userType: "user"
+                    userType: "student"
                 },
                 "Student logged in successfully"
             )

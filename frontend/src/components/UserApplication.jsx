@@ -19,61 +19,54 @@ const UserApplicationComp = () => {
     const validateForm = () => {
         let valid = true;
         const newErrors = { ...errors };
-        if (form?.parents_Dec) {
-            const fileSize = form?.parents_Dec.size / 1024; // Size in KB
-            const allowedSize = 1024; // 1MB
-
-            if (fileSize > allowedSize) {
-                newErrors.parents_Dec = 'Image size must be under 1MB';
-                valid = false;
-            } else if (!form?.parents_Dec.type !== "image/jpeg") {
-                newErrors.parents_Dec = 'Image must be in JPEG/JPG format';
-                valid = false;
-            } else {
-                newErrors.parents_Dec = '';
-            }
+        const fileSize = form?.parents_Dec.size / 1024; // Size in KB
+        const allowedSize = 1024; // 1MB
+        if (!form?.parents_Dec) {
+            newErrors.parents_Dec = 'Parent Decleration is required';
+            valid = false;
         }
-        if (form?.students_Dec) {
-            const fileSize = form?.students_Dec.size / 1024; // Size in KB
-            const allowedSize = 1024; // 1MB
-
-            if (fileSize > allowedSize) {
-                newErrors.students_Dec = 'Image size must be under 1MB';
-                valid = false;
-            } else if (!form?.students_Dec.type !== "image/jpeg") {
-                newErrors.students_Dec = 'Image must be in JPEG/JPG format';
-                valid = false;
-            } else {
-                newErrors.students_Dec = '';
-            }
+        else if (fileSize > allowedSize) {
+            newErrors.parents_Dec = 'Image size must be under 1MB';
+            valid = false;
+        } else if (!form?.parents_Dec.type !== "image/jpeg") {
+            newErrors.parents_Dec = 'Image must be in JPEG/JPG format';
+            valid = false;
         }
-        if (form?.faculty_Rec) {
-            const fileSize = form?.faculty_Rec.size / 1024; // Size in KB
-            const allowedSize = 1024; // 1MB
 
-            if (fileSize > allowedSize) {
-                newErrors.faculty_Rec = 'Image size must be under 1MB';
-                valid = false;
-            } else if (!form?.faculty_Rec.type !== "image/jpeg") {
-                newErrors.faculty_Rec = 'Image must be in JPEG/JPG format';
-                valid = false;
-            } else {
-                newErrors.faculty_Rec = '';
-            }
+        if (!form?.students_Dec) {
+            newErrors.students_Dec = 'Self Decleration is required';
+            valid = false;
         }
-        if (form?.pdc) {
-            const fileSize = form?.pdc.size / 1024; // Size in KB
-            const allowedSize = 1024; // 1MB
+        else if (fileSize > allowedSize) {
+            newErrors.students_Dec = 'Image size must be under 1MB';
+            valid = false;
+        } else if (!form?.students_Dec.type !== "image/jpeg") {
+            newErrors.students_Dec = 'Image must be in JPEG/JPG format';
+            valid = false;
+        }
 
-            if (fileSize > allowedSize) {
-                newErrors.pdc = 'Image size must be under 1MB';
-                valid = false;
-            } else if (!form?.pdc.type !== "image/jpeg") {
-                newErrors.pdc = 'Image must be in JPEG/JPG format';
-                valid = false;
-            } else {
-                newErrors.pdc = '';
-            }
+        if (!form?.faculty_Rec) {
+            newErrors.faculty_Rec = 'Faculty Recommendation is required';
+            valid = false;
+        }
+        else if (fileSize > allowedSize) {
+            newErrors.faculty_Rec = 'Image size must be under 1MB';
+            valid = false;
+        } else if (!form?.faculty_Rec.type !== "image/jpeg") {
+            newErrors.faculty_Rec = 'Image must be in JPEG/JPG format';
+            valid = false;
+        }
+
+        if (!form?.pdc) {
+            newErrors.pdc = 'Post Dated Cheque is required';
+            valid = false;
+        }
+        else if (fileSize > allowedSize) {
+            newErrors.pdc = 'Image size must be under 1MB';
+            valid = false;
+        } else if (!form?.pdc.type !== "image/jpeg") {
+            newErrors.pdc = 'Image must be in JPEG/JPG format';
+            valid = false;
         }
 
         setErrors(newErrors);
@@ -138,50 +131,50 @@ const UserApplicationComp = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 " >
             <div className="flex flex-col items-center justfiy-center max-w-4xl w-full h-full mx-auto">
-                <div div className="flex items-center space-x-6 text-6xl justify-center w-full h-full mt-12 mb-8 text-center mx-auto" >
+                <div div className="flex items-center space-x-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-12 mb-8 text-center mx-auto" >
                     <FiFileText className=" text-[#40916c] " />
                     <h1 className="font-bold  italic" >Apply</h1>
                 </div>
                 <div className="mb-16" >
-                    <p>
-                        To borrow a laptop, you are required to fill the given application. Take heed that we will fetch your details from your profile and the form below to issue your laptop. If you wish, you can update your profile <a href="/user/profile" className="" >here.</a> You can the status of your application in your <a href="">profile</a>
+                    <p className="text-[0.8rem] sm:text-base md:text-lg" >
+                        To borrow a laptop, you are required to fill the given application. Take heed that we will fetch your details from your profile and the form below to issue your laptop. If you wish, you can update your profile <a href="/user/profile" className="" >here.</a> You can  see the status of your application in your <a href="">profile</a>
                     </p>
                 </div>
             </div>
-            <form className="flex items-center w-full justify-center mx-auto flex-col space-y-12 max-w-6xl  pb-20" >
+            <form className="flex items-center w-full justify-center mx-auto flex-col space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-12 max-w-6xl  pb-20" >
                 {/* <p>
                         To borrow a laptop, you're required to agree to the University&apos;s policies relating to Security, Acceptable Use and IT Asset Management.Students who do not agree to these policies will not be issued with a device.
                         Please note the given rules and regulations
                     </p> */}
-                <div className="w-full flex items-center justify-between space-x-6 cursor-not-allowed select-none text-[0.6rem]  " >
+                <div className="w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem]  " >
                     <div className="flex flex-col items-start justify-center space-y-2 basis-[60%] w-full " >
-                        <p className="bg-[#40916c95] rounded-lg px-2 py-1 md:px-3 md:py-[5px]  font-bold text-white" >Name</p>
+                        <p className="bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black" >Name</p>
                         <p className="font-bold text-xs md:text-sm  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300  "  >Yasier Zahir Ansari</p>
                     </div>
                     <div className="flex items-start justify-center space-y-2 flex-col  basis-[40%] w-full " >
-                        <p className="bg-[#40916c95] rounded-lg px-2 py-1 md:px-3 md:py-[5px]  font-bold text-white" >Email</p>
+                        <p className="bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black" >Email</p>
                         <p className="font-bold text-xs md:text-sm  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   "  >yasier.412007.cs@mhssce.ac.in</p>
                     </div>
                 </div>
-                <div className="w-full flex items-center justify-between space-x-6 cursor-not-allowed select-none text-[0.6rem]  " >
-                    <div className="flex basis-[30%] items-start justify-center space-y-2 flex-col " >
-                        <p className="bg-[#40916c95] rounded-lg px-2 py-1 md:px-3 md:py-[5px]  font-bold text-white" >Prn</p>
+                <div className="w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem]  " >
+                    <div className="flex w-full sm:basis-[50%] md:basis-[30%] items-start justify-center space-y-2 flex-col " >
+                        <p className="bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black" >Prn</p>
                         <p className="  text-xs md:text-sm font-bold  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   "  >412007</p>
                     </div>
-                    <div className="flex basis-[30%] items-start justify-center space-y-2 flex-col " >
-                        <p className="bg-[#40916c95] rounded-lg px-2 py-1 md:px-3 md:py-[5px]  font-bold text-white" >Dept</p>
+                    <div className="flex w-full sm:basis-[50%] md:basis-[30%] items-start justify-center space-y-2 flex-col " >
+                        <p className="bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black" >Dept</p>
                         <p className=" font-bold text-xs md:text-sm  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   "  >CSE </p>
                     </div>
-                    <div className="flex basis-[20%] items-start justify-center space-y-2 flex-col " >
-                        <p className="bg-[#40916c95] rounded-lg px-2 py-1 md:px-3 md:py-[5px]  font-bold text-white" >Year</p>
+                    <div className="flex w-full sm:basis-[50%] md:basis-[20%] items-start justify-center space-y-2 flex-col " >
+                        <p className="bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black" >Year</p>
                         <p className="  text-xs md:text-sm font-bold pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   "  >TE </p>
                     </div>
-                    <div className="flex basis-[20%]  items-start justify-center space-y-2 flex-col " >
-                        <p className="bg-[#40916c95] rounded-lg px-2 py-1 md:px-3 md:py-[5px]  font-bold text-white" >Sem</p>
+                    <div className="flex w-full sm:basis-[50%] md:basis-[20%]  items-start justify-center space-y-2 flex-col " >
+                        <p className="bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black" >Sem</p>
                         <p className=" font-bold text-xs md:text-sm  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   "  >VII </p>
                     </div>
                 </div>
-                <div className="w-full flex items-center justify-between space-x-6  " >
+                <div className="w-full flex flex-col md:flex-row items-center justify-between space-y-4 sm:space-y-6 md:space-y-0 md:space-x-6 mt-4 md:mt-0 " >
                     <div className="flex flex-col items-start justify-center space-y-2 w-full " >
                         <div className="flex items-start justify-start w-full h-full flex-col space-y-3 ">
                             <p className="bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white" >Parent Decleration</p>
@@ -190,11 +183,11 @@ const UserApplicationComp = () => {
                                     <img
                                         src={selectedImage1 ? selectedImage1 : ("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images")}
                                         alt="Selected Image"
-                                        className="w-full h-full rounded-2xl object-cover aspect-video "
+                                        className="w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video "
                                         width={100}
                                         height={100}
                                     />
-                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-2xl p-1 sm:p-2 md:p-3 ">
+                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 ">
                                         <LuFolderEdit className="w-6 h-6 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                                     </div>
                                 </label>
@@ -220,11 +213,11 @@ const UserApplicationComp = () => {
                                     <img
                                         src={selectedImage2 ? selectedImage2 : ("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images")}
                                         alt="Selected Image"
-                                        className="w-full h-full rounded-2xl object-cover aspect-video "
+                                        className="w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video "
                                         width={100}
                                         height={100}
                                     />
-                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-2xl p-1 sm:p-2 md:p-3 ">
+                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 ">
                                         <LuFolderEdit className="w-6 h-6 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                                     </div>
                                 </label>
@@ -242,7 +235,7 @@ const UserApplicationComp = () => {
 
                     </div>
                 </div >
-                <div className="w-full flex items-center justify-between space-x-6  " >
+                <div className="w-full flex flex-col md:flex-row items-center justify-between space-y-4 sm:space-y-6 md:space-y-0 md:space-x-6  " >
                     <div className="flex flex-col items-start justify-center space-y-2 w-full " >
                         <div className="flex items-start justify-start w-full h-full flex-col space-y-3 ">
                             <p className="bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white" >Faculty Recommendation</p>
@@ -251,11 +244,11 @@ const UserApplicationComp = () => {
                                     <img
                                         src={selectedImage3 ? selectedImage3 : ("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images")}
                                         alt="Selected Image"
-                                        className="w-full h-full rounded-2xl object-cover aspect-video "
+                                        className="w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video "
                                         width={100}
                                         height={100}
                                     />
-                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-2xl p-1 sm:p-2 md:p-3 ">
+                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 ">
                                         <LuFolderEdit className="w-6 h-6 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                                     </div>
                                 </label>
@@ -281,11 +274,11 @@ const UserApplicationComp = () => {
                                     <img
                                         src={selectedImage4 ? selectedImage4 : ("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images")}
                                         alt="Selected Image"
-                                        className="w-full h-full rounded-2xl object-cover aspect-video "
+                                        className="w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video "
                                         width={100}
                                         height={100}
                                     />
-                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-2xl p-1 sm:p-2 md:p-3 ">
+                                    <div className="absolute top-0 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 ">
                                         <LuFolderEdit className="w-6 h-6 sm:h-8 sm:w-8 md:h-10 md:w-10" />
                                     </div>
                                 </label>
@@ -304,7 +297,7 @@ const UserApplicationComp = () => {
                 </div >
                 <div className="w-full flex items-center text-white justify-between space-x-12 mx-auto max-w-lg  " >
                     <button onClick={handleSubmit} className="flex flex-col items-start justify-center space-y-2  w-full " >
-                        <p className="font-bold text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-110 transition-all duration-300 ease-linear to-[#40916c]  "  >Apply</p>
+                        <p className="font-bold text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-105 md:hover:scale-110 transition-all duration-300 ease-linear to-[#40916c]  "  >Apply</p>
                     </button>
                 </div>
             </form >

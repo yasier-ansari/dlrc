@@ -15,172 +15,128 @@ import Login from "./pages/Users/Login.page"
 import AdminLogin from "./pages/Admins/AdminLogin.page"
 import MaintLogin from "./pages/Maintenance/MaintLogin.page"
 import ScrollToTop from "./helpers/scrollToTop"
-
+import Access from "./pages/Access.page"
+import { Toaster } from 'react-hot-toast'
 function App() {
   const [loading, setLoading] = useState(false);
-  const { user, setUser, setToken, token, setUserType, userType, refreshToken, setRefreshToken } = useContext(AuthContext);
-  // const verifyUser = useCallback(() => {
-  //   if (refreshToken) {
-  //     fetch("http://localhost:8000/api/v1/student/refresh-token", {
-  //       method: "POST",
-  //       credentials: "include",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ refreshToken }),
-  //     }).then(async response => {
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setToken(data.data?.accessToken);
-  //         localStorage.setItem('token', data?.data?.accessToken);
-  //         setRefreshToken(data.data?.refreshToken);
-  //         localStorage.setItem('refreshToken', data?.data?.refreshToken);
-  //       } else {
-  //         setUser(null)
-  //       }
-  //       setTimeout(verifyUser, 5 * 60 * 60 * 1000);
-  //     })
-  //   }
-  // }, [setToken])
-
-  // useEffect(() => {
-  //   verifyUser()
-  // }, [verifyUser]);
-  const fetchUserProfile = useCallback(async (accessToken) => {
-    try {
-      const response = await fetch("http://localhost:8000/api/v1/student/profile", {
-        method: "GET",
-        credentials: "include",
-        headers: { "Authorization": `Bearer ${accessToken}` },
-      });
-
-      if (response.ok) {
-        const userProfile = await response.json();
-        console.log(userProfile);
-        setUser(userProfile?.data);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      setUser(null);
-    }
-  }, [setUser]);
-
-  const verifyUser = useCallback(async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (refreshToken) {
-      try {
-        const response = await fetch("http://localhost:8000/api/v1/student/refresh-token", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setToken(data.data?.accessToken);
-          localStorage.setItem('token', data?.data?.accessToken);
-          setRefreshToken(data.data?.refreshToken);
-          localStorage.setItem('refreshToken', data?.data?.refreshToken);
-          await fetchUserProfile(data.data?.accessToken);
-          setTimeout(verifyUser, 20 * 60 * 60 * 1000);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Error refreshing token:", error);
-        setUser(null);
-      }
-    }
-  }, [setToken, setUser, setRefreshToken, fetchUserProfile]);
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem('token');
-    if (accessToken) {
-      // Fetch user profile at the start of mounting
-      fetchUserProfile(accessToken);
-    }
-    // Start the token verification process
-    verifyUser();
-  }, [fetchUserProfile, verifyUser]);
-  // console.log(token, refreshToken);
+  const { user, setUser, setToken, token, setUserType, mainLoading, setMainLoading, userType, } = useContext(AuthContext);
   return (
-    <BrowserRouter>
-      {!loading && (
-        <div className=" transform-cpu lg:transform-gpu scroll-smooth" >
-          <ScrollToTop />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <About />
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <About />
-              }
-            />
-            <Route
-              path="/rules"
-              element={
-                <Rules />
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <Error />
-              }
-            />
-            <Route
-              path="/user"
-              element={
-                token ?
-                  <Profile /> : <Login />
-              }
-            />
-            <Route
-              path="/user/*"
-              element={
-                token ?
-                  <User /> : <Login />
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                userType === "admin" ?
-                  <AdminUser /> : <AdminLogin />
-              }
-            />
-            <Route
-              path="/admin/*"
-              element={
-                userType === "admin" ?
-                  <Admin /> : <AdminLogin />
-              }
-            />
-            <Route
-              path="/maintenance"
-              element={
-                userType === "maintenance" ?
-                  <MaintUser /> : <MaintLogin />
-              }
-            />
-            <Route
-              path="/maintenance/*"
-              element={
-                userType === "maintenance" ?
-                  <Maint /> : <MaintLogin />
-              }
-            />
-          </Routes>
-        </div>
-      )}
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        {!loading && (
+          <div className=" transform-cpu lg:transform-gpu scroll-smooth" >
+            <ScrollToTop />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <About />
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <About />
+                }
+              />
+              <Route
+                path="/access"
+                element={
+                  <Access />
+                }
+              />
+              <Route
+                path="/rules"
+                element={
+                  <Rules />
+                }
+              />
+              <Route
+                path="/user"
+                element={
+                  // userType === "student" ?
+                  //   <Profile /> : <Login />
+                  userType === "student" ? (
+                    <Profile />
+                  ) : userType === "admin" || userType === "maintenance" ? (
+                    <Access error={`Uh oh! 😥 It seems like you are trying to reach a student page. This is off-limits for ${userType === 'admin' ? 'admins' : 'Maintenance Team'}`} />
+                  ) : (
+                    <Login />
+                  )
+                }
+              />
+              <Route
+                path="/user/*"
+                element={
+                  userType === "student" ? (
+                    <User />
+                  ) : userType === "admin" || userType === "maintenance" ? (
+                    <Access error={`Uh oh! 😥 It seems like you are trying to reach a student page. This is off-limits for ${userType === 'admin' ? 'admins' : 'Maintenance Team'}`} />
+                  ) : (
+                    <Login />
+                  )
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  userType === "admin" ? (
+                    <AdminUser />
+                  ) : userType === "student" || userType === "maintenance" ? (
+                    <Access error={`Uh oh! 😥 It seems like you are trying to reach an admin page. This is off-limits for ${userType === 'student' ? 'students' : 'Maintenance Team'} `} />
+                  ) : (
+                    <AdminLogin />
+                  )
+                }
+              />
+              <Route
+                path="/admin/*"
+                element={
+                  userType === "admin" ? (
+                    <Admin />
+                  ) : userType === "student" || userType === "maintenance" ? (
+                    <Access error={`Uh oh! 😥 It seems like you are trying to reach an admin page. This is off-limits for ${userType === 'student' ? 'students' : 'Maintenance Team'} `} />
+                  ) : (
+                    <AdminLogin />
+                  )
+                }
+              />
+              <Route
+                path="/maintenance"
+                element={
+                  userType === "maintenance" ? (
+                    <MaintUser />
+                  ) : userType === "student" || userType === "admin" ? (
+                    <Access error={`Uh oh! 😥 It seems like you are trying to reach an maintenance page. This is off-limits for ${userType} `} />
+                  ) : (
+                    <MaintLogin />
+                  )
+                }
+              />
+              <Route
+                path="/maintenance/*"
+                element={
+                  userType === "maintenance" ? (
+                    <Maint />
+                  ) : userType === "student" || userType === "admin" ? (
+                    <Access error={`Uh oh! 😥 It seems like you are trying to reach an maintenance page. This is off-limits for ${userType} `} />
+                  ) : (
+                    <MaintLogin />
+                  )
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <Error />
+                }
+              />
+            </Routes>
+          </div>
+        )}
+      </BrowserRouter>
+      <Toaster />
+    </>
 
   )
 }

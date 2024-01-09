@@ -28,7 +28,7 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-t via-[#52b788] from-[#40916c] to-[#2d6a4f] rounded-[4px];
+  @apply bg-gradient-to-t via-[#52b788] from-[#40916c] to-[#49a87d] rounded-[4px];
 }
 
 /* Handle on hover */

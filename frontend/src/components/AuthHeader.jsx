@@ -1,14 +1,50 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     LuAtom,
     LuChevronDown
 } from 'react-icons/lu';
 import { Link } from 'react-router-dom'
+import { AuthContext } from "../context/AuthContext";
 const AuthHeader = (props) => {
+    const { mainLoading, user, userType, logout } = useContext(AuthContext);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const handleDropdownToggle = () => {
         setDropdownOpen(!dropdownOpen);
     };
+    const handleClickOutside = (event, ref, setOpen) => {
+        if (ref.current && !ref.current.contains(event.target)) {
+            setOpen(false);
+        }
+    };
+    const logoutHandler = async () => {
+        if (userType === 'maintenance') {
+            const response = await fetch("http://localhost:8000/api/v1/maintenance/logout", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+        } else if (userType === 'admin') {
+            const response = await fetch("http://localhost:8000/api/v1/admin/logout", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+        }
+        logout()
+        redirect('/');
+    }
+    useEffect(() => {
+        const handleClickOutsideDropdown = (event) => {
+            handleClickOutside(event, dropdownRef, setDropdownOpen);
+        };
+
+        document.addEventListener("mousedown", handleClickOutsideDropdown);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutsideDropdown);
+        };
+    }, []);
     const handleLogout = () => {
         setDropdownOpen(false);
         logout();
@@ -18,8 +54,17 @@ const AuthHeader = (props) => {
             type: "success",
         });
         router.push("/");
-        // Perform logout logic here
     };
+    const reduceName = (text) => {
+        const words = text.split(/\s+/);
+        const firstWord = words[0] || '';
+        if (firstWord.length > 10) {
+            const result = firstWord.slice(0, 8) + '...';
+            return result;
+        } else {
+            return firstWord;
+        }
+    }
     return (
         <div className={`flex items-center ${props.val ? 'justify-between' : 'justify-start'} w-full max-w-7xl px-12 py-6 z-40  mx-auto`} >
             <a href="/" className="font-bold text-2xl text-green-700 " >
@@ -28,62 +73,23 @@ const AuthHeader = (props) => {
             {
                 props.val && (
                     <div className="flex items-center  justify-between">
-                        {true ? (
-                            true ? (
-                                <div className="relative">
+                        {!mainLoading ? (
+                            user ? (
+                                <div className="relative" ref={dropdownRef}>
                                     <button
                                         onClick={handleDropdownToggle}
-                                        className="flex items-center "
+                                        className="flex items-center py-2 px-6 space-x-3 bg-gradient-to-tr border-2 border-green-800 to-[#52b788] font-bold  from-[#74c69d] rounded-xl  "
                                     >
-                                        {/* <Image
-                                        src={userInfo?.photoURL || Imag}
-                                        width="40"
-                                        height="40"
-                                        alt="user image"
-                                        className="rounded-full"
-                                    /> */}
-                                        <LuAtom className="w-8 h-8 p-1 " />
-                                        <LuChevronDown
-                                            className={` w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
-                                                } `}
-                                        />
+                                        <p className="font-bold text-black " >{reduceName(user?.fullname)}</p>
                                     </button>
                                     {dropdownOpen ? (
                                         <div
-                                            className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg"
+                                            className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg"
                                         >
                                             <ul
                                                 className="p-2 text-start border border-gray-300 rounded-xl ">
-                                                <Link
-                                                    href="/user/profile"
-                                                    className="hover:bg-gray-800 w-full cursor-pointer"
-                                                >
-                                                    <button
-                                                        onClick={() => {
-                                                            setDropdownOpen(false);
-                                                            setDropdownOpen(false);
-                                                        }}
-                                                        className="flex w-full md:text-base px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700"
-                                                    >
-                                                        profile
-                                                    </button>
-                                                </Link>
-                                                <Link
-                                                    href="/user/add-resource"
-                                                    className="hover:bg-gray-800 cursor-pointer"
-                                                >
-                                                    <button
-                                                        onClick={() => {
-                                                            setDropdownOpen(false);
-                                                            setDropdownOpen(false);
-                                                        }}
-                                                        className="flex px-4 py-2 text-sm md:text-base hover:bg-gray-200 w-full rounded-lg text-gray-700"
-                                                    >
-                                                        add resource
-                                                    </button>
-                                                </Link>
                                                 <button
-                                                    onClick={handleLogout}
+                                                    onClick={logoutHandler}
                                                     className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"
                                                 >
                                                     <span className="flex w-full px-4 py-2 text-sm md:text-base text-red-600 font-bold">
@@ -92,21 +98,16 @@ const AuthHeader = (props) => {
                                                 </button>
                                             </ul>
                                         </div>
-                                    ) : null}
+                                    ) : null
+                                    }
                                 </div>
                             ) : (
                                 <div className="flex  space-x-5 md:space-x-6 text-base font-semibold  ">
                                     <Link
-                                        href="/login"
-                                        className=" bg-purple-100 flex items-center justify-center text-gray-800 shadow-md border-2 border-purple-400 shadow-stone-400 text-base  rounded-xl px-3 py-1 md:py-2 lg:px-4 "
+                                        to={`${userType === 'admin' ? '/admin/login' : 'maintenance/login'}`}
+                                        className=" bg-[#95d5b2] flex justify-center items-center text-gray-800 shadow-lg border-2 border-[#40916c] shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 "
                                     >
                                         Log In
-                                    </Link>
-                                    <Link
-                                        href={"/register"}
-                                        className=" bg-gradient-to-r from-purple-400  to-violet-600 text-white shadow-md border-[0.005rem] border-purple-300 shadow-stone-400 text-base  rounded-xl px-3 py-1 md:py-2 lg:px-4 "
-                                    >
-                                        Register
                                     </Link>
                                 </div>
                             )

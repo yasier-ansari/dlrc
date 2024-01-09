@@ -19,7 +19,6 @@ const registerAdmin = asyncHandler(async (req, res) => {
     if (exisitngAdmin) {
         throw new ApiError(404, "Admin already exists")
     }
-
     if (key !== process.env.ADMIN_SECRET_KEY) {
         throw new ApiError(401, "Unauthorized -- please enter valid email ID")
     }
@@ -55,7 +54,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
     const isPasswordValid = await existingAdmin.passwordCheck(password)
     if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid Login Credentials")
+        throw new ApiError(401, JSON.stringify("Invalid Login Credentials"))
     }
 
     const { accessToken, refreshToken } = await generateTokens(Admin, existingAdmin._id)
@@ -190,7 +189,7 @@ const getOneRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, "request id is missing")
     }
     // get all the data, images, texts from a given particular request based on params (id or req_no)
-    const showRequest = await Request.findById(request)
+    const showRequest = await Request.findOne({ student_id: request }).populate('student_id')
     if (!showRequest) {
         throw new ApiError(404, "Request Not Found")
     }
@@ -204,6 +203,15 @@ const getOneRequest = asyncHandler(async (req, res) => {
 
 const updateRequest = asyncHandler(async (req, res) => {
     // update the status from the button of a given request with a message
+})
+
+
+const viewProfile = asyncHandler(async (req, res) => {
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, req.admin, "User Data")
+        )
 })
 
 
@@ -236,6 +244,7 @@ export {
     getRequests,
     getOneRequest,
     getApproved,
-    getRequestsFromDepartment
+    getRequestsFromDepartment,
+    viewProfile
 }
 

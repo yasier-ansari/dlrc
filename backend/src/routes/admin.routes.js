@@ -1,6 +1,6 @@
 import Router from "express";
-import { loginAdmin, logoutAdmin, registerAdmin, getRequests, getOneRequest, getApproved, getRequestsFromDepartment } from "../controllers/admin.controllers.js";
-import { adminJWT } from "../middlewares/auth.middleware.js";
+import { loginAdmin, logoutAdmin, registerAdmin, getRequests, getOneRequest, getApproved, getRequestsFromDepartment, viewProfile } from "../controllers/admin.controllers.js";
+import { adminJWT, verifyJWT } from "../middlewares/auth.middleware.js";
 import { newIssue } from "../controllers/issue.controllers.js";
 
 const adminRouter = Router()
@@ -13,6 +13,8 @@ adminRouter.route("/logout").post(adminJWT, logoutAdmin)
 adminRouter.route("/allRequest").get(adminJWT, getRequests)
 adminRouter.route("/deptRequests").get(adminJWT, getRequestsFromDepartment)
 adminRouter.route("/request/:request").get(adminJWT, getOneRequest)
+adminRouter.route("/profile").get(adminJWT, viewProfile)
+
 
 
 // M A I N T A I N A N C E

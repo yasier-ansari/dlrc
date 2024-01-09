@@ -3,32 +3,39 @@ import AdminLogin from './AdminLogin.page'
 import AdminRegister from './AdminRegister.page'
 import AdminUser from "./AdminUser.page"
 import AdminUserApproval from "./AdminUserApproval.page"
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
 
 const Admin = () => {
+    const { userType, user } = useContext(AuthContext)
     return (
         <Routes>
             <Route
                 path="/user/:id"
                 element={
-                    <AdminUserApproval />
+                    user ?
+                        <AdminUserApproval /> : <AdminLogin />
                 }
             />
-            {/* <Route
-                path="/"
+            <Route
+                path="/user"
                 element={
-                    <Admin />
+                    user ?
+                        <AdminUser /> : <AdminLogin />
                 }
-            /> */}
+            />
             <Route
                 path="/login"
                 element={
-                    <AdminLogin />
+                    user ?
+                        <AdminUser /> : <AdminLogin />
                 }
             />
             <Route
                 path="/register"
                 element={
-                    <AdminRegister />
+                    user ?
+                        <AdminUser /> : <AdminRegister />
                 }
             />
 

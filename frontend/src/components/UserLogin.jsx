@@ -9,7 +9,7 @@ import { AuthContext } from "../context/AuthContext";
 
 const UserLogin = ({ authWork }) => {
     const [authType, setAuthType] = useState("login");
-    const { user, setUser, setToken, setRefreshToken } = useContext(AuthContext);
+    const { user, setUser, setLoginData, mainLoading } = useContext(AuthContext);
     // const { createUserWithEmail, loginUserWithEmail, createUserWithGithub, createUserWithGoogle, loginUserWithGithub, loginUserWithGoogle } = useSession()
     // const { authReady, userInfo } = useContext(AuthContext);
     const [form, setForm] = useState({
@@ -52,32 +52,33 @@ const UserLogin = ({ authWork }) => {
     };
 
     const loginHelper = async (email, prn, password) => {
-        try {
-            const response = await fetch('http://localhost:8000/api/v1/student/login', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ domain_id: email, prn, password }),
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setToken(data?.data?.accessToken);
-                setRefreshToken(data?.data?.refreshToken);
-                localStorage.setItem("token", data?.data?.accessToken)
-                localStorage.setItem("refreshToken", data?.data?.refreshToken)
-                console.log(data)
-                return data;
-            } else {
-                const errorData = await response.json();
-                console.error('Login failed:', errorData);
-                return errorData;
-            }
-        } catch (error) {
-            console.error('Error during login request:', error);
-            return error;
+        const response = await fetch('http://localhost:8000/api/v1/student/login', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ domain_id: email, prn, password }),
+        });
+        if (response.status === 200) {
+            const res = await response.json();
+            setLoginData(res?.data);
+            toast.success('Login Successful')
+            navigate('/profile')
+        } else if (response?.status === 401) {
+            setErrors({ prn: '', email: '', password: "Input the correct password" })
         }
+        else if (response?.status === 404) {
+            setErrors({ prn: '', password: '', email: "Email not registered yet" })
+        } else if (response?.status === 403) {
+            setErrors({ email: '', password: '', prn: "PRN not registered yet" })
+        }
+        else {
+            toast.error(`Login fail - "Some Error Ocurred"`, {
+                position: "top-center"
+            });
+        }
+
     }
 
 
@@ -85,35 +86,24 @@ const UserLogin = ({ authWork }) => {
         e.preventDefault();
         if (validateForm()) {
             console.log("doing");
-            const res = await loginHelper(form?.email, form?.prn, form?.password);
+            await loginHelper(form?.email, form?.prn, form?.password);
         }
     };
-
-    // useEffect(() => {
-    //     if (authReady) {
-    //         if (!userInfo) {
-    //             console.log("persist")
-    //         } else {
-    //             redirect('/')
-    //         }
-    //     }
-    // }, [authReady]);
-    // const [authReady, setAuthReady] = useState(true);
     return (
-        <div className="w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 " >
+        <div className="w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 " >
             {
-                true ?
+                !mainLoading ?
                     <>
-                        <div className="flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-4 md:space-y-8 xl:space-y-10 ">
+                        <div className="flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-6 md:space-y-8 xl:space-y-10 ">
                             <div className="flex w-full flex-col ">
-                                <h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-center" >Log In</h2>
-                                <h6 className="text-sm mt-4 text-center" >
+                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center" >Log In</h2>
+                                <h6 className="text-[0.8rem] sm:text-sm md:text-base mt-4 text-center" >
                                     continue your application or track your DLRC application status
                                 </h6>
                             </div>
-                            <div className="bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl" ></div>
+                            <div className="bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl  " ></div>
                             <form className="flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center">
-                                <div className="text-base md:text-lg w-full">
+                                <div className=" text-[0.8rem] sm:text-base md:text-lg w-full">
                                     <input
                                         type="text"
                                         name="prn"
@@ -126,7 +116,7 @@ const UserLogin = ({ authWork }) => {
                                     />
                                     {errors.prn && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.prn}</p>}
                                 </div>
-                                <div className="text-base md:text-lg w-full">
+                                <div className=" text-[0.8rem] sm:text-base md:text-lg w-full">
                                     <input
                                         type="email"
                                         name="email"
@@ -138,10 +128,11 @@ const UserLogin = ({ authWork }) => {
                                     />
                                     {errors.email && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.email}</p>}
                                 </div>
-                                <div className="text-base md:text-lg w-full">
+                                <div className=" text-[0.8rem] sm:text-base md:text-lg w-full">
                                     <input
                                         type="password"
                                         name="password"
+                                        autoComplete="true"
                                         required
                                         placeholder="Password"
                                         value={form.password}
@@ -150,7 +141,7 @@ const UserLogin = ({ authWork }) => {
                                     />
                                     {errors.password && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.password}</p>}
                                 </div>
-                                <div className="text-base md:text-lg p-2 font-normal w-full">
+                                <div className=" text-[0.8rem] sm:text-base md:text-lg md:p-2 pt-6 sm:pt-8 md:pt-10 font-normal w-full">
                                     <button
                                         type="submit"
                                         onClick={loginUserHandler}

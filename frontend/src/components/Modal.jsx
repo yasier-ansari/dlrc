@@ -8,9 +8,10 @@ const Modal = () => {
     const { modalPopped, setModalPopped } = useContext(AuthContext);
     const closePopUp = () => {
         setModalPopped(false);
+        document.body.style.overflow = modalPopped ? 'auto' : 'hidden';
     };
     return (
-        <div className={`fixed inset-0  z-40 flex items-center justify-center mx-auto ${modalPopped ? " opacity-100 " : "opacity-0"} w-[85%] sm:w-[80%] `}>
+        <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-screen h-screen ${modalPopped ? " opacity-100 " : "opacity-0"}  `}>
             <div className="bg-white shadow-xl shadow-zyv-prim1/20 border-gray-300 border-4 relative rounded-2xl overflow-hidden max-w-5xl w-full   ">
                 {/* <div
                     className=" absolute top-4 right-4 flex items-center justify-center bg-gray-500 p-2 rounded-lg text-white cursor-pointer"

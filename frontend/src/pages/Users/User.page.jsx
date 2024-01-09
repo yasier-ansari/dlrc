@@ -20,26 +20,25 @@ const User = () => {
             <Route
                 path="/apply"
                 element={
-                    token ? (
-                        <Apply />
-                    ) : (
-                        // Redirect the user to the login page if not logged in
-                        <Navigate to="/user/login" />
-                    )
+                    // token ? (
+                    <Apply />
+                    // ) : (
+                    //     <Navigate to="/user/login" />
+                    // )
                 }
             />
             <Route
                 path="/register"
                 element={
                     token ?
-                        <Navigate to="/user/profile" replace={true} /> : <Register />
+                        <Navigate to="/user/profile" /> : <Register />
                 }
             />
             <Route
                 path="/login"
                 element={
                     token ?
-                        <Navigate to='/user/profile' replace={true} /> : <Login />
+                        <Navigate to='/user/profile' /> : <Login />
                 }
             />
         </Routes>

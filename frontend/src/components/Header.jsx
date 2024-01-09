@@ -5,21 +5,12 @@ import {
     LuBadgeInfo,
     LuMenu,
     LuX,
-    LuAtom,
 } from "react-icons/lu";
 import { GrUserAdmin } from 'react-icons/gr'
 import { toast } from "react-toastify";
 import { Link, redirect } from 'react-router-dom'
 import { AuthContext } from "../context/AuthContext";
 const Header = () => {
-    // const { login, session, logout } = useSession();
-    // const {
-    //     loading,
-    //     userInfo,
-    //     setIsModalVisible,
-    //     isModalVisible,
-    //     authReady,
-    // } = useContext(AuthContext);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mediaDropdownOpen, setMediaDropdownOpen] = useState(false);
     const [menuBar, setMenuBar] = useState(false);
@@ -28,14 +19,10 @@ const Header = () => {
     const dropdownRef = useRef(null);
     const mediaDropdownRef = useRef(null);
     const mobileRef = useRef(null);
-    const { token, user, setUser, setRefreshToken, setToken, setUserType } = useContext(AuthContext);
+    const { token, user, setUser, setToken, setUserType, userType, logout } = useContext(AuthContext);
 
     const handleDropdownToggle = () => {
         setDropdownOpen(!dropdownOpen);
-    };
-
-    const handleMediaDropdownToggle = () => {
-        setMediaDropdownOpen(!mediaDropdownOpen);
     };
 
     const handleClickOutside = (event, ref, setOpen) => {
@@ -44,19 +31,21 @@ const Header = () => {
         }
     };
     const logoutHandler = async () => {
-        const response = await fetch("http://localhost:8000/api/v1/student/logout", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Authorization": `Bearer ${token}` },
-        });
-        setUser(null);
-        setToken(null);
-        setRefreshToken(null);
-        setUserType(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        if (userType === 'student') {
+            const response = await fetch("http://localhost:8000/api/v1/student/logout", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+        } else if (userType === 'admin') {
+            const response = await fetch("http://localhost:8000/api/v1/admin/logout", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+        }
+        logout()
         redirect('/');
-
     }
 
     useEffect(() => {
@@ -130,15 +119,15 @@ const Header = () => {
                         className="transition-all z-50 duration-150 ease-in"
                         onClick={() => setMenuBar(!menuBar)}
                     >
-                        {!menuBar && <LuMenu className="w-6 h-6 xs:w-7 xs:h-7" />}
+                        {!menuBar && <LuMenu className="w-7 h-7" />}
                     </button>
                     {menuBar && (
-                        <div className="fixed z-40 top-0 -left-0 w-full h-screen bg-white">
+                        <div className="absolute z-40 top-0 -left-0 w-full h-screen bg-white">
                             <button
                                 className=" z-[99] absolute top-12 right-4 transition-all  duration-150 ease-in"
                                 onClick={() => setMenuBar(!menuBar)}
                             >
-                                <LuX className="w-9 h-9 xs:w-10 xs:h-10 stroke-2 fill-gray-700 text-gray-800 border-2 rounded-lg border-slate-500 p-2 " />
+                                <LuX className="h-7 w-7 stro stroke-[#40916c] stroke-[4] fill-gray-700 text-gray-800  rounded-lg  " />
                             </button>
                             <div
                                 ref={mobileRef}
@@ -146,13 +135,25 @@ const Header = () => {
                             >
                                 <div className=" flex flex-col space-y-12 items-center justify-center text-base ">
                                     <Link
-                                        href={"/"}
+                                        to={"/"}
                                         onClick={() => setMenuBar(false)}
                                         className="flex items-center text-lg  "
                                     >
                                         <LuBadgeInfo className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
                                         About
                                     </Link>
+                                    {
+                                        userType === 'student' && (
+                                            <Link
+                                                to={"/user/apply"}
+                                                onClick={() => setMenuBar(false)}
+                                                className="flex items-center text-lg  "
+                                            >
+                                                <LuBadgeInfo className="mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 " />
+                                                Apply
+                                            </Link>
+                                        )
+                                    }
                                     <a
                                         href={"/rules"}
                                         onClick={() => setMenuBar(false)}
@@ -188,42 +189,49 @@ const Header = () => {
                                                 {dropdownOpen ? (
                                                     <div className="absolute top-12 mt-2 w-48 bg-white rounded-md shadow-lg">
                                                         <ul className="p-2 text-start">
-                                                            <Link
-                                                                to="/user/profile"
-                                                                className="hover:bg-gray-800 cursor-pointer"
-                                                            >
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setDropdownOpen(false);
-                                                                        setMenuBar(false);
-                                                                    }}
-                                                                    className="flex w-full px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700"
-                                                                >
-                                                                    profile
-                                                                </button>
-                                                            </Link>
-                                                            <Link
-                                                                to="/user/apply"
-                                                                className="hover:bg-gray-800 cursor-pointer"
-                                                            >
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setDropdownOpen(false);
-                                                                        setMenuBar(false);
-                                                                    }}
-                                                                    className="flex px-4 py-2 text-sm hover:bg-gray-200 w-full rounded-lg text-gray-700"
-                                                                >
-                                                                    apply
-                                                                </button>
-                                                            </Link>
+                                                            {
+                                                                userType === 'student' ? (
+                                                                    <>
+                                                                        <Link
+                                                                            to="/user/profile"
+                                                                            className="hover:bg-gray-800 cursor-pointer"
+                                                                        >
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setDropdownOpen(false);
+                                                                                    setMenuBar(false);
+                                                                                }}
+                                                                                className="flex w-full px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700"
+                                                                            >
+                                                                                profile
+                                                                            </button>
+                                                                        </Link>
+                                                                        <Link
+                                                                            to="/user/apply"
+                                                                            className="hover:bg-gray-800 cursor-pointer"
+                                                                        >
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setDropdownOpen(false);
+                                                                                    setMenuBar(false);
+                                                                                }}
+                                                                                className="flex px-4 py-2 text-sm hover:bg-gray-200 w-full rounded-lg text-gray-700"
+                                                                            >
+                                                                                apply
+                                                                            </button>
+                                                                        </Link>
+                                                                    </>
+                                                                ) : null}
                                                             <button
-                                                                onClick={loginHandler}
+                                                                onClick={logoutHandler}
                                                                 className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"
                                                             >
                                                                 <span className="flex w-full px-4 py-2 text-sm text-red-600">
                                                                     logout
                                                                 </span>
                                                             </button>
+
+
                                                         </ul>
                                                     </div>
                                                 ) : null}
@@ -267,10 +275,27 @@ const Header = () => {
                         <GrUserAdmin className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
                         Admin
                     </a>
-                    {/* <button onClick={() => setIsModalVisible(!isModalVisible)} className="flex items-center text-base hover:text-[#2d6a4f] md:text-lg " >
-                        <LuGitPullRequest className="mr-2 w-4 h-4 md:w-5 md:h-5  " />
-                        Search
-                    </button> */}
+                    {
+                        (token) ?
+                            (userType === 'student' && (
+                                <Link
+                                    to={"/user/apply"}
+                                    onClick={() => setMenuBar(false)}
+                                    className="flex items-center text-lg  "
+                                >
+                                    <LuBadgeInfo className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
+                                    Apply
+                                </Link>
+                            )
+                            ) : <Link
+                                to={"/user/apply"}
+                                onClick={() => setMenuBar(false)}
+                                className="flex items-center text-lg  "
+                            >
+                                <LuBadgeInfo className="mr-2 w-4 h-4 md:w-5 md:h-5 " />
+                                Apply
+                            </Link>
+                    }
                 </div>
                 <div className="hidden sm:flex items-center  justify-between">
                     {!loading ? (
@@ -280,14 +305,6 @@ const Header = () => {
                                     onClick={handleDropdownToggle}
                                     className="flex items-center p-1 md:p-2 md:px-6 space-x-3 bg-gradient-to-tr border-2 border-green-800 to-[#52b788] font-bold  from-[#74c69d] rounded-xl "
                                 >
-                                    {/* <Image
-                                        src={userInfo?.photoURL || Imag}
-                                        width="40"
-                                        height="40"
-                                        alt="user image"
-                                        className="rounded-full"
-                                    /> */}
-                                    {/* <LuAtom className="w-8 h-8 p-1 " /> */}
                                     <p className="font-bold text-black " >{reduceName(user?.fullname)}</p>
                                     <LuChevronDown
                                         className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? "rotate-180" : ""
@@ -300,34 +317,42 @@ const Header = () => {
                                     >
                                         <ul ref={dropdownRef}
                                             className="p-2 text-start border border-gray-300 rounded-xl ">
-                                            <Link
-                                                to="/user/profile"
-                                                className="hover:bg-gray-800 w-full cursor-pointer"
-                                            >
-                                                <button
-                                                    onClick={() => {
-                                                        setDropdownOpen(false);
-                                                        setDropdownOpen(false);
-                                                    }}
-                                                    className="flex w-full md:text-base px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700"
-                                                >
-                                                    profile
-                                                </button>
-                                            </Link>
-                                            <Link
-                                                to="/user/apply"
-                                                className="hover:bg-gray-800 cursor-pointer"
-                                            >
-                                                <button
-                                                    onClick={() => {
-                                                        setDropdownOpen(false);
-                                                        setDropdownOpen(false);
-                                                    }}
-                                                    className="flex px-4 py-2 text-sm md:text-base hover:bg-gray-200 w-full rounded-lg text-gray-700"
-                                                >
-                                                    apply
-                                                </button>
-                                            </Link>
+                                            {
+                                                userType === 'student' ?
+                                                    (
+                                                        <>
+                                                            <Link
+                                                                to="/user/profile"
+                                                                className="hover:bg-gray-800 w-full cursor-pointer"
+                                                            >
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setDropdownOpen(false);
+                                                                        setDropdownOpen(false);
+                                                                    }}
+                                                                    className="flex w-full md:text-base px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700"
+                                                                >
+                                                                    profile
+                                                                </button>
+                                                            </Link>
+                                                            <Link
+                                                                to="/user/apply"
+                                                                className="hover:bg-gray-800 cursor-pointer"
+                                                            >
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setDropdownOpen(false);
+                                                                        setDropdownOpen(false);
+                                                                    }}
+                                                                    className="flex px-4 py-2 text-sm md:text-base hover:bg-gray-200 w-full rounded-lg text-gray-700"
+                                                                >
+                                                                    apply
+                                                                </button>
+                                                            </Link>
+                                                        </>
+                                                    ) : null
+                                            }
+
                                             <button
                                                 onClick={logoutHandler}
                                                 className="flex w-full hover:bg-gray-200 rounded-lg cursor-pointer"

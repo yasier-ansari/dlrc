@@ -5,18 +5,16 @@ import { useContext, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 // import { AuthContext } from "@/hooks/AuthContext"
 import { toast } from 'react-toastify';
+import { AuthContext } from "../context/AuthContext";
 
 const AdminRegisterComp = () => {
-    const authType = 'register';
-    // const { createUserWithEmail, loginUserWithEmail, createUserWithGithub, createUserWithGoogle, loginUserWithGithub, loginUserWithGoogle } = useSession()
-    // const { authReady, userInfo } = useContext(AuthContext);
-    const dept_options = ['CSE (AI - ML)', 'CSE (AI - DS)', 'COMPS', 'IT', 'Electrical', 'Mechanical', 'Civil', 'AutoMobile'];
-    const sem_options = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+    const dept_options = ['CSE (AI - ML)', 'CSE (IOT - BT)', 'COMPS', 'IT', 'Electrical', 'Mechanical', 'Civil', 'AutoMobile'];
+    const { mainLoading, user, setLoginData } = useContext(AuthContext);
     const [form, setForm] = useState({
-        email: '', password: '', fullname: '', key: ''
+        email: '', password: '', fullname: '', key: '', department: ''
     })
     const [errors, setErrors] = useState({
-        email: '', password: '', fullname: '', key: ''
+        email: '', password: '', fullname: '', key: '', department: ''
     });
 
     const validateForm = () => {
@@ -24,16 +22,16 @@ const AdminRegisterComp = () => {
         const newErrors = { ...errors };
 
         if (!form.fullname) {
-            newErrors.name = 'Name is required';
+            newErrors.fullname = 'Name is required';
             valid = false;
         } else {
-            newErrors.name = '';
+            newErrors.fullname = '';
         }
 
         if (!form.email) {
             newErrors.email = 'Email is required';
             valid = false;
-        } else if (!/^[a-zA-Z0-9._%+-]+@mhssce\.ac\.in$/.test(form.domain_idemail)) {
+        } else if (!/^[a-zA-Z0-9._%+-]+@mhssce\.ac\.in$/.test(form?.email)) {
             newErrors.email = 'College Domain Email required';
             valid = false;
         } else {
@@ -48,178 +46,130 @@ const AdminRegisterComp = () => {
                 'Password must be at least 6 characters long and should contain {aA-zZ,0-9}';
             valid = false;
         }
-
+        if (!form.key) {
+            newErrors.key = 'Key is required';
+            valid = false;
+        } if (!form?.department) {
+            newErrors.department = 'Department is required'
+            valid = false;
+        } else if (!dept_options.includes(form?.department)) {
+            newErrors.department = 'Please select a valid department'
+            valid = false;
+        } else {
+            newErrors.department = ''
+        }
         setErrors(newErrors);
         return valid;
     };
-    const submitHandler = async (e) => {
-        if (authType === "Register") {
-            await register(e)
-        } else {
-            await loginWithEmail(e);
+    const loginHelper = async (email, password, key, department, fullname) => {
+        try {
+            const response = await fetch('http://localhost:8000/api/v1/admin/register', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password, key, department, fullname }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setLoginData(data?.data);
+                console.log(data)
+                return data;
+            } else {
+                const errorData = await response.json();
+                console.error('Login failed:', errorData);
+                return errorData;
+            }
+        } catch (error) {
+            console.error('Error during login request:', error);
+            return error;
         }
     }
-    const googleHandler = async (e) => {
-        if (authType === "Register") {
-            await registerGoogle(e);
-            console.log("register google ")
-        } else {
-            await loginGoogle(e);
-            console.log("login google ")
-        }
-    }
-    const githubHandler = async (e) => {
-        if (authType === "Register") {
-            await registerGithub(e)
-            console.log("register google ")
-        } else {
-            await loginGithub(e);
-            console.log("login google ")
-        }
-    }
-
-
-
-    const register = async (e) => {
+    const SubmitHandler = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            try {
-                await createUserWithEmail(form.fullname, form.domain_id, form.password, form.opted);
-                setForm({
-                    email: '',
-                    password: '',
-                    name: '',
-                    opted: true
-                });
-            } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    setErrors({ email: 'Email is already taken' });
-                } else {
-                    toast(`${error.message}`, { hideProgressBar: true, autoClose: 2000, type: 'error', });
-                }
-            }
-        }
-    };
-
-    const loginWithEmail = async (e) => {
-        e.preventDefault()
-        if (validateForm()) {
-            await loginUserWithEmail(form.domain_id, form.password, setErrors)
-            setForm({
-                email: '',
-                password: '',
-                name: '',
-                opted: true
-            })
+            console.log(form)
+            loginHelper(form?.email, form?.password, form?.key, form?.department, form?.fullname)
+        } else {
+            console.log("error")
         }
     }
-    const registerGoogle = async (e) => {
-        e.preventDefault()
-        await createUserWithGoogle()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-    }
-    const loginGoogle = async (e) => {
-        e.preventDefault()
-        await loginUserWithGoogle()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-    }
-    const registerGithub = async (e) => {
-        e.preventDefault()
-        await createUserWithGithub()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-
-    }
-    const loginGithub = async (e) => {
-        e.preventDefault()
-        await loginUserWithGithub()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-    }
-    // useEffect(() => {
-    //     if (authReady) {
-    //         if (!userInfo) {
-    //             console.log("persist")
-    //         } else {
-    //             redirect('/')
-    //         }
-    //     }
-    // }, [authReady]);
-    const [authReady, setAuthReady] = useState(true);
     return (
         <div className="w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 " >
             {
-                authReady ?
+                !mainLoading ?
                     <>
                         <div className="flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-4 md:space-y-8 xl:space-y-10 ">
                             <div className="flex w-full flex-col ">
-                                <h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-center" >Register</h2>
-                                <h6 className="text-sm mt-4 text-center" >
+                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center" >Register</h2>
+                                <h6 className="text-[0.8rem] sm:text-sm md:text-base mt-4 text-center" >
                                     Make sure that you already have a developer defined secret key with you
                                 </h6>
                             </div>
                             <div className="bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl" ></div>
                             <form className="flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center">
-                                <div className="text-base md:text-lg w-full">
+                                <div className="text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full">
                                     <input
                                         type="text"
                                         name="fullname"
                                         required={true}
                                         placeholder="Full Name"
-                                        value={form.fullname}
-                                        pattern="[0-9]{20}"
-                                        maxLength={20}
+                                        value={form?.fullname}
                                         onChange={(e) => setForm({ ...form, fullname: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />
-                                    {errors.fullname && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.fullname}</p>}
+                                    {errors?.fullname && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors?.fullname}</p>}
                                 </div>
-                                <div className="text-base md:text-lg w-full">
+                                <div className="text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full">
                                     <input
                                         type="email"
                                         name="email"
-                                        required
+                                        required={true}
                                         placeholder="Email"
-                                        value={form.domain_id}
+                                        value={form?.domain_id}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />
-                                    {errors.email && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.email}</p>}
+                                    {errors?.email && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors?.email}</p>}
                                 </div>
-                                <div className="text-base md:text-lg w-full">
+                                <div className="text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full">
                                     <input
                                         type="password"
                                         name="password"
-                                        required
+                                        required={true}
+                                        autoComplete="true"
                                         placeholder="Password"
-                                        value={form.password}
+                                        value={form?.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />
-                                    {errors.password && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.password}</p>}
+                                    {errors?.password && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors?.password}</p>}
+                                </div>
+                                <div className=" text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full">
+                                    <select
+                                        name="department"
+                                        required={true}
+                                        placeholder="sem"
+                                        value={form?.department}
+                                        onChange={(e) => setForm({ ...form, department: e.target.value })}
+                                        className="w-full caret-green-600 lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
+                                    >
+                                        <option value="" disabled hidden>
+                                            Select Department
+                                        </option>
+                                        {
+                                            dept_options?.map((el) => (
+                                                <option value={el} key={el} >{el}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    {errors?.department && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors?.department}</p>}
                                 </div>
 
-                                <div className="text-base md:text-lg w-full">
+                                <div className="text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full">
                                     <input
-                                        type="text"
+                                        type="password"
                                         name="key"
                                         required={true}
                                         placeholder="Secret Key"
@@ -227,12 +177,12 @@ const AdminRegisterComp = () => {
                                         onChange={(e) => setForm({ ...form, key: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />
-                                    {errors.key && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.key}</p>}
+                                    {errors?.key && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors?.key}</p>}
                                 </div>
-                                <div className="text-base md:text-lg p-2 font-normal w-full">
+                                <div className="text-[0.8rem] sm:text-base md:text-lg md:p-2 pt-6 sm:pt-8 md:pt-10 font-normal w-full">
                                     <button
                                         type="submit"
-                                        onClick={submitHandler}
+                                        onClick={SubmitHandler}
                                         className="bg-gradient-to-tr from-[#40916c] to-[#74c69d]  px-3 py-2 md:px-6 lg:px-8 rounded-lg text-white shadow-lg font-bold italic w-full"
                                     >
                                         Register
@@ -241,19 +191,19 @@ const AdminRegisterComp = () => {
 
                                 <div className=" text-sm  font-normal w-full -mt-2 flex justify-center space-x-2 items-center">
 
-                                    <span>Already an Admin? </span>
+                                    <span className="text-[0.8rem] sm:text-base md:text-lg" >Already an Admin? </span>
                                     <a href="/user/login" className="hover:font-medium text-green-700 font-bold ">
                                         Login
                                     </a>
                                 </div>
                             </form>
-                            <div className="absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 "></div>
+                            <div className="text-[0.8rem] sm:text-base md:text-lg absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 "></div>
                         </div>
                     </> :
                     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50">
                         <div className="flex items-center space-x-3 bg-white px-3 py-2 rounded-lg">
                             <h2 className="text-lg font-semibold">Loading</h2>
-                            <div className="animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-violet-500"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c"></div>
                         </div>
                     </div >
             }

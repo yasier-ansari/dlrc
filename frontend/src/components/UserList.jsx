@@ -11,7 +11,7 @@ const List = () => {
             <div className="flex flex-col rounded-md items-center justify-center " >
                 {
                     apiData ? (
-                        <table className=" table-auto w-full dark:border border-2 rounded-md border-black/30  " >
+                        <table className=" table-auto w-full dark:border border-2 rounded-md border-black/30 max-w-7xl overflow-auto  " >
                             <thead className="text-base text-center font-medium md:text-lg rounded-md border-black/50 border-b bg-[#f9f9ff] " >
                                 <tr className="rounded-md" >
                                     <th className="py-1 md:py-2 " >Name</th>

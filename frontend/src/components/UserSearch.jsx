@@ -38,7 +38,7 @@ const Search = () => {
     const sem_options = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
     return (
-        <div className="flex flex-col w-[95%] md:w-[90%] mx-auto lg:flex-row p-1 sm:p-2 md:p-3 lg:p-4 justify-between items-center relative">
+        <div className="flex flex-col w-[95%] md:w-[90%] mx-auto lg:flex-row p-1 sm:p-2 md:p-3 lg:p-4 justify-between items-center max-w-6xl relative">
             <SearchInput searchRefresh={searchRefresh} />
             <div className="flex text-xs md:text-base flex-col md:flex-row w-max mt-3 sm:mt-5 lg:mt-0 space-y-3 sm:space-y-5 justify-start items-center md:space-y-0 md:justify-end lg:space-x-12 last:space-x-6 " >
                 <div className="flex items-center justify-center space-x-5  md:space-x-8 lg:space-x-3 text-sm" >

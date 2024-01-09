@@ -7,9 +7,9 @@ import UserApplicationComp from "../../components/UserApplication"
 
 const Apply = () => {
     return (
-        <div className="flex flex-col w-full min-h-screen bg-white">
+        <div className="">
             <Header />
-            <main className="flex grow w-[100%]  " >
+            <main className="flex grow w-[100%] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24 " >
                 <UserApplicationComp />
             </main>
             <Footer />

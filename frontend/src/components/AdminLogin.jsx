@@ -1,15 +1,11 @@
-import { FcGoogle } from 'react-icons/fc'
-import { FaGithub } from "react-icons/fa"
 import { useContext, useEffect, useState } from "react"
-// import { useSession } from "@/hooks/useSession"
-import { Link } from "react-router-dom"
-// import { AuthContext } from "@/hooks/AuthContext"
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom'
 
 const AdminLoginComp = () => {
-    const [authType, setAuthType] = useState("login")
-    // const { createUserWithEmail, loginUserWithEmail, createUserWithGithub, createUserWithGoogle, loginUserWithGithub, loginUserWithGoogle } = useSession()
-    // const { authReady, userInfo } = useContext(AuthContext);
+    const { mainLoding, user, userType, setUserType, setUser, setToken_, setLoginData } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
         password: '',
@@ -25,131 +21,50 @@ const AdminLoginComp = () => {
         if (!form.email) {
             newErrors.email = 'Email is required';
             valid = false;
-        } else if (!/^[a-zA-Z0-9._%+-]+@mhssce\.ac\.in$/.test(form.email)) {
-            newErrors.email = 'College Domain Email required';
+        }
+
+        if (!form.password) {
+            newErrors.password = 'Password is required';
             valid = false;
-        } else {
-            newErrors.email = '';
         }
         setErrors(newErrors);
         return valid;
     };
+    const loginHelper = async (email, password) => {
+        const response = await fetch('http://localhost:8000/api/v1/admin/login', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+        if (response.status === 200) {
+            const res = await response.json();
+            setLoginData(res?.data);
+            toast.success('Login Successfull')
+            // navigate('/admin')
+        } else if (response?.status === 401) {
+            setErrors({ email: '', password: "Input the correct password" })
+        }
+        else if (response?.status === 404) {
+            setErrors({ password: '', email: "Email not registered yet" })
+        } else {
+            toast.error(`Login fail - "Some Error Ocurred"`, {
+                position: "top-center"
+            });
+        }
+    }
     const submitHandler = async (e) => {
-        if (authType === "Register") {
-            await register(e)
-        } else {
-            await loginWithEmail(e);
-        }
-    }
-    const googleHandler = async (e) => {
-        if (authType === "Register") {
-            await registerGoogle(e);
-            console.log("register google ")
-        } else {
-            await loginGoogle(e);
-            console.log("login google ")
-        }
-    }
-    const githubHandler = async (e) => {
-        if (authType === "Register") {
-            await registerGithub(e)
-            console.log("register google ")
-        } else {
-            await loginGithub(e);
-            console.log("login google ")
-        }
-    }
-
-
-
-    const register = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            try {
-                await createUserWithEmail(form.name, form.email, form.password, form.opted);
-                setForm({
-                    email: '',
-                    password: '',
-                    name: '',
-                    opted: true
-                });
-            } catch (error) {
-                if (error.code === 'auth/email-already-in-use') {
-                    setErrors({ email: 'Email is already taken' });
-                } else {
-                    toast(`${error.message}`, { hideProgressBar: true, autoClose: 2000, type: 'error', });
-                }
-            }
-        }
-    };
-
-    const loginWithEmail = async (e) => {
-        e.preventDefault()
-        if (validateForm()) {
-            await loginUserWithEmail(form.email, form.password, setErrors)
-            setForm({
-                email: '',
-                password: '',
-                name: '',
-                opted: true
-            })
+            await loginHelper(form?.email, form?.password);
         }
     }
-    const registerGoogle = async (e) => {
-        e.preventDefault()
-        await createUserWithGoogle()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-    }
-    const loginGoogle = async (e) => {
-        e.preventDefault()
-        await loginUserWithGoogle()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-    }
-    const registerGithub = async (e) => {
-        e.preventDefault()
-        await createUserWithGithub()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-
-    }
-    const loginGithub = async (e) => {
-        e.preventDefault()
-        await loginUserWithGithub()
-        setForm({
-            email: '',
-            password: '',
-            name: '',
-            opted: true
-        })
-    }
-    // useEffect(() => {
-    //     if (authReady) {
-    //         if (!userInfo) {
-    //             console.log("persist")
-    //         } else {
-    //             redirect('/')
-    //         }
-    //     }
-    // }, [authReady]);
-    const [authReady, setAuthReady] = useState(true);
     return (
         <div className="w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 " >
             {
-                authReady ?
+                !mainLoding ?
                     <>
                         <div className="flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-4 md:space-y-8 xl:space-y-10 ">
                             <div className="flex w-full flex-col ">
@@ -159,15 +74,15 @@ const AdminLoginComp = () => {
                             <form className="flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center">
                                 <div className="text-base md:text-lg w-full">
                                     <input
-                                        type="email"
+                                        type="test"
                                         name="email"
                                         required
                                         placeholder="Email"
-                                        value={form.email}
+                                        value={form?.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />
-                                    {errors.email && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.email}</p>}
+                                    {errors?.email && <p className="text-[#db3100] text-start text-[0.7rem] sm:text-xs md:text-sm ml-2 font-light ">{errors?.email}</p>}
                                 </div>
                                 <div className="text-base md:text-lg w-full">
                                     <input
@@ -175,11 +90,20 @@ const AdminLoginComp = () => {
                                         name="password"
                                         required
                                         placeholder="Password"
-                                        value={form.password}
+                                        value={form?.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                                         className="w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-100 border border-gray-400 outline-none focus:border-black placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3"
                                     />
-                                    {errors.password && <p className="text-[#db3100] text-start text-sm ml-2 font-light ">{errors.password}</p>}
+                                    {errors?.password && <p className="text-[#db3100] text-start text-[0.7rem] sm:text-xs md:text-sm ml-2 font-light ">{errors?.password}</p>}
+                                </div>
+                                <div className="text-base md:text-lg md:p-2 pt-6 sm:pt-8 font-normal w-full">
+                                    <button
+                                        type="submit"
+                                        onClick={submitHandler}
+                                        className="bg-gradient-to-tr from-[#40916c] to-[#74c69d]  px-3 py-2 md:px-6 lg:px-8 rounded-lg text-white shadow-lg font-bold italic w-full"
+                                    >
+                                        Log In
+                                    </button>
                                 </div>
 
                                 <div className=" text-sm  font-normal w-full -mt-2 flex justify-center space-x-2 items-center">

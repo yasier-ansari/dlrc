@@ -9,25 +9,29 @@ const Maint = () => {
             <Route
                 path="/login"
                 element={
-                    <MaintLogin />
+                    user ?
+                        <MaintUser /> : <MaintLogin />
                 }
             />
             <Route
                 path="/register"
                 element={
-                    <MaintRegister />
+                    user ?
+                        <MaintUser /> : <MaintRegister />
                 }
             />
             <Route
                 path="/user/:id"
                 element={
-                    <MaintUser />
+                    user ?
+                        <MaintUser /> : <MaintLogin />
                 }
             />
             <Route
                 path="/"
                 element={
-                    <MaintUser />
+                    user ?
+                        <MaintUser /> : <MaintLogin />
                 }
             />
         </Routes>
