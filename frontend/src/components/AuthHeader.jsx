@@ -3,11 +3,12 @@ import {
     LuAtom,
     LuChevronDown
 } from 'react-icons/lu';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from "../context/AuthContext";
 const AuthHeader = (props) => {
-    const { mainLoading, user, userType, logout } = useContext(AuthContext);
+    const { mainLoading, user, userType, logout, token } = useContext(AuthContext);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const navigate = useNavigate()
     const dropdownRef = useRef(null);
     const handleDropdownToggle = () => {
         setDropdownOpen(!dropdownOpen);
@@ -32,7 +33,7 @@ const AuthHeader = (props) => {
             });
         }
         logout()
-        redirect('/');
+        navigate('/');
     }
     useEffect(() => {
         const handleClickOutsideDropdown = (event) => {
@@ -45,16 +46,6 @@ const AuthHeader = (props) => {
             document.removeEventListener("mousedown", handleClickOutsideDropdown);
         };
     }, []);
-    const handleLogout = () => {
-        setDropdownOpen(false);
-        logout();
-        toast("Logged Out", {
-            hideProgressBar: true,
-            autoClose: 2000,
-            type: "success",
-        });
-        router.push("/");
-    };
     const reduceName = (text) => {
         const words = text.split(/\s+/);
         const firstWord = words[0] || '';

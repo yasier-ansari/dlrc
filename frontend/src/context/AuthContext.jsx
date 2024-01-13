@@ -78,7 +78,6 @@ function AuthProvider({ children }) {
             setUser(null);
         }
     }
-    console.log(userType)
     useEffect(() => {
         setMainLoading(true);
         const token = localStorage.getItem('token');
@@ -94,7 +93,6 @@ function AuthProvider({ children }) {
             setMainLoading(false);
         }
     }, [token, setToken]);
-    // console.log(user, userType);
 
     const value = {
         token,

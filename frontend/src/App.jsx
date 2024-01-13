@@ -17,6 +17,9 @@ import MaintLogin from "./pages/Maintenance/MaintLogin.page"
 import ScrollToTop from "./helpers/scrollToTop"
 import Access from "./pages/Access.page"
 import { Toaster } from 'react-hot-toast'
+import MaintUserApproval from "./pages/Maintenance/MaintUserApproval.page"
+import MaintUserReturn from "./pages/Maintenance/MaintUserReturn.page"
+// import UserLogin from "./components/UserLogin"
 function App() {
   const [loading, setLoading] = useState(false);
   const { user, setUser, setToken, token, setUserType, mainLoading, setMainLoading, userType, } = useContext(AuthContext);
@@ -39,12 +42,12 @@ function App() {
                   <About />
                 }
               />
-              <Route
+              {/* <Route
                 path="/access"
                 element={
                   <Access />
                 }
-              />
+              /> */}
               <Route
                 path="/rules"
                 element={
@@ -58,7 +61,7 @@ function App() {
                   //   <Profile /> : <Login />
                   userType === "student" ? (
                     <Profile />
-                  ) : userType === "admin" || userType === "maintenance" ? (
+                  ) : (userType === "admin" || userType === "maintenance") ? (
                     <Access error={`Uh oh! 😥 It seems like you are trying to reach a student page. This is off-limits for ${userType === 'admin' ? 'admins' : 'Maintenance Team'}`} />
                   ) : (
                     <Login />
@@ -68,12 +71,13 @@ function App() {
               <Route
                 path="/user/*"
                 element={
-                  userType === "student" ? (
-                    <User />
-                  ) : userType === "admin" || userType === "maintenance" ? (
+                  // (userType === "student" ? (
+                  // ) : 
+
+                  (userType === "admin" || userType === "maintenance") ? (
                     <Access error={`Uh oh! 😥 It seems like you are trying to reach a student page. This is off-limits for ${userType === 'admin' ? 'admins' : 'Maintenance Team'}`} />
                   ) : (
-                    <Login />
+                    <User />
                   )
                 }
               />
@@ -82,7 +86,7 @@ function App() {
                 element={
                   userType === "admin" ? (
                     <AdminUser />
-                  ) : userType === "student" || userType === "maintenance" ? (
+                  ) : (userType === "student" || userType === "maintenance") ? (
                     <Access error={`Uh oh! 😥 It seems like you are trying to reach an admin page. This is off-limits for ${userType === 'student' ? 'students' : 'Maintenance Team'} `} />
                   ) : (
                     <AdminLogin />
@@ -92,37 +96,32 @@ function App() {
               <Route
                 path="/admin/*"
                 element={
-                  userType === "admin" ? (
-                    <Admin />
-                  ) : userType === "student" || userType === "maintenance" ? (
+                  (userType === "student" || userType === "maintenance") ? (
                     <Access error={`Uh oh! 😥 It seems like you are trying to reach an admin page. This is off-limits for ${userType === 'student' ? 'students' : 'Maintenance Team'} `} />
                   ) : (
-                    <AdminLogin />
+                    <Admin />
                   )
                 }
               />
               <Route
                 path="/maintenance"
                 element={
-                  userType === "maintenance" ? (
-                    <MaintUser />
-                  ) : userType === "student" || userType === "admin" ? (
-                    <Access error={`Uh oh! 😥 It seems like you are trying to reach an maintenance page. This is off-limits for ${userType} `} />
-                  ) : (
-                    <MaintLogin />
-                  )
+                  // userType === "maintenance" ? (
+                  <MaintUserReturn />
+                  // ) : userType === "student" || userType === "admin" ? (
+                  //   <Access error={`Uh oh! 😥 It seems like you are trying to reach an maintenance page. This is off-limits for ${userType} `} />
+                  // ) : (
+                  //   <MaintLogin />
+                  // )
                 }
               />
               <Route
                 path="/maintenance/*"
                 element={
-                  userType === "maintenance" ? (
-                    <Maint />
-                  ) : userType === "student" || userType === "admin" ? (
+                  (userType === "student" || userType === "admin") ? (
                     <Access error={`Uh oh! 😥 It seems like you are trying to reach an maintenance page. This is off-limits for ${userType} `} />
-                  ) : (
-                    <MaintLogin />
-                  )
+                  ) :
+                    <Maint />
                 }
               />
               <Route

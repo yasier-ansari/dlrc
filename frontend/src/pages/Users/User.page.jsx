@@ -7,37 +7,38 @@ import { useContext } from "react"
 import { AuthContext } from "../../context/AuthContext"
 
 const User = () => {
-    const { token, userType } = useContext(AuthContext);
+    const { token, userType, user } = useContext(AuthContext);
     console.log(token);
     return (
         <Routes>
             <Route
                 path="/profile"
                 element={
-                    <Profile />
+                    user ?
+                        <Profile /> : <Login />
                 }
             />
             <Route
                 path="/apply"
                 element={
-                    // token ? (
-                    <Apply />
-                    // ) : (
-                    //     <Navigate to="/user/login" />
-                    // )
+                    user ? (
+                        <Apply />
+                    ) : (
+                        <Login />
+                    )
                 }
             />
             <Route
                 path="/register"
                 element={
-                    token ?
+                    user ?
                         <Navigate to="/user/profile" /> : <Register />
                 }
             />
             <Route
                 path="/login"
                 element={
-                    token ?
+                    user ?
                         <Navigate to='/user/profile' /> : <Login />
                 }
             />

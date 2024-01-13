@@ -21,7 +21,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with PRN and Domain-ID already exists")
     }
 
-    const idLocalPath = req.file?.path;
+    const idLocalPath = req.locals.idCard;
     if (!idLocalPath) {
         throw new ApiError(400, "ID card is required")
     }
@@ -63,7 +63,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!existingStudent) {
         throw new ApiError(404, "Unregistered Email")
     }
-    const existingStudent2 = await Student.findOne({ domain_id });
+    const existingStudent2 = await Student.findOne({ prn });
     if (!existingStudent2) {
         throw new ApiError(403, "Unregistered PRN")
     }
