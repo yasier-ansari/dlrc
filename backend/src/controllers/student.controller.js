@@ -4,6 +4,7 @@ import { Student } from "../models/students.models.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken"
 import { generateTokens } from "../utils/generateToken.js";
+import { Request } from "../models/request.models.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { fullname, domain_id, prn, password, department, year, sem, number } = req.body
@@ -245,8 +246,7 @@ const viewProfile = asyncHandler(async (req, res) => {
 
 const getMyRequestHistory = asyncHandler( async (req, res) => {
     const student = req.student
-    const getMyRequests = await Request.aggregate(
-        [
+    const getMyRequests = await Request.aggregate([
             {
               $match: {
                 student_id: student._id
@@ -271,7 +271,7 @@ const getMyRequestHistory = asyncHandler( async (req, res) => {
 
 const getMyIssueHistory = asyncHandler( async (req, res) => {
     const student = req.student
-    const getMyIssue = await Request(
+    const getMyIssue = await Request.aggregate(
         [
             {
               $match: {
@@ -311,7 +311,7 @@ const getMyIssueHistory = asyncHandler( async (req, res) => {
             }
         ]   
     )
-    console.log(getMyIssue);
+    
     if(!getMyIssue){
         throw new ApiError(500, "Error while fetching issue history")
     }
