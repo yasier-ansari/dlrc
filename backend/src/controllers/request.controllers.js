@@ -1,27 +1,48 @@
 import { Request } from "../models/request.models.js";
+import { Student } from "../models/students.models.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const newRequest = asyncHandler(async (req, res) => {
-    const student = req.student
-    console.log(student);
-    const { purpose, duration, ews, family_status } = req.body
+    // const student = req.student
+    // console.log(student);
+    const { purpose, duration, ews, family_status, id } = req.body;
 
     if (
-        [purpose, duration, ews, family_status].some((field) => field.trim() === "")
+        [purpose, duration, ews, family_status].some(
+            (field) => field.trim() === ""
+        )
     ) {
-        throw new ApiError(400, "All fields are required")
+        // throw new ApiError(400, "All fields are required");
+        res.status(400).json(
+            new ApiResponse(
+                400,
+                { message: "Please submit All Files" },
+                "Request Not Read"
+            )
+        );
     }
 
-    const existingReq = await Request.find({ // C O U L D   B E   B E T T E R
-        student_id: student.prn
-    }).sort("createdAt desc")
+    const existingReq = await Request.find({
+        // C O U L D   B E   B E T T E R
+        student_id: id,
+    }).sort("createdAt desc");
 
-    if (existingReq !== null && (existingReq.status !== "Fulfiled" && existingReq.status !== "Rejected")) {
-        throw new ApiError(402, "You have already applied; be patient");
+    if (
+        existingReq &&
+        existingReq.status !== "Fulfiled" &&
+        existingReq.status !== "Rejected"
+    ) {
+        // throw new ApiError(402, "You have already applied; be patient");
+        res.status(402).json(
+            new ApiResponse(
+                402,
+                { message: "You have already applied; be patient" },
+                "Request Not Written"
+            )
+        );
     }
-
 
     // const parents_DecLocalPath = req.files?.parents_Dec[0];
     // const students_DecLocalPath = req.files?.students_Dec[0];
@@ -29,7 +50,17 @@ const newRequest = asyncHandler(async (req, res) => {
     // const pdcLocalPath = req.files?.pdc[0]?.path;
     const { parents_Dec, students_Dec, faculty_Rec, pdc } = res.locals;
     if (!(parents_Dec || students_Dec || faculty_Rec || pdc)) {
-        throw new ApiError(401, "All files are required")
+        // throw new ApiError(401, "All files are required");
+        res.status(401).json(
+            new ApiResponse(
+                401,
+                {
+                    message:
+                        "Your Files couldn't be saved, please try again later",
+                },
+                "File Not Written"
+            )
+        );
     }
 
     const request = await Request.create({
@@ -37,25 +68,35 @@ const newRequest = asyncHandler(async (req, res) => {
         duration,
         ews,
         family_status,
-        student_id: student.fullname,
-        parents_Dec, students_Dec, faculty_Rec, pdc
-    }
-    )
+        student_id: id,
+        parents_Dec,
+        students_Dec,
+        faculty_Rec,
+        pdc,
+    });
 
-    const createdRequest = await Request.findById(request._id)
+    const createdRequest = await Request.findById(request._id);
     if (!createdRequest) {
-        throw new ApiError("Error submitting Request")
+        res.status(408).json(
+            new ApiResponse(
+                408,
+                {
+                    message:
+                        "Your Request couldn't be saved, please try again later",
+                },
+                "Request Not Saved"
+            )
+        );
     }
 
     return res
         .status(200)
-        .json(
-            new ApiResponse(200, createdRequest, "Request Successful")
-        )
+        .json(new ApiResponse(200, createdRequest, "Request Successful"));
 
-})
+    const updateStudent = await Student.updateOne(
+        { _id: id },
+        { applicationStatus: true }
+    );
+});
 
-
-export {
-    newRequest
-}
+export { newRequest };

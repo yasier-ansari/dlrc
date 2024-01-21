@@ -1,29 +1,59 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/apiError.js"
+import { ApiError } from "../utils/apiError.js";
 import { Student } from "../models/students.models.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { generateTokens } from "../utils/generateToken.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import s3Client from "../utils/s3.js";
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { fullname, domain_id, prn, password, department, year, sem, number } = req.body
+    console.log(req.body);
+    const {
+        fullname,
+        domain_id,
+        prn,
+        password,
+        department,
+        year,
+        sem,
+        number,
+    } = req.body;
 
     if (
-        [fullname, domain_id, prn, password, department, year, sem, number].some((field) => field?.trim() === "")
+        [
+            fullname,
+            domain_id,
+            prn,
+            password,
+            department,
+            year,
+            sem,
+            number,
+        ].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "All fields are required");
     }
 
-    const existingStudent = await Student.findOne({
-        $or: [{ domain_id }, { prn }]
-    })
+    // const existingStudent = await Student.findOne({
+    //     $or: [{ domain_id }, { prn }],
+    // });
+    // if (existingStudent) {
+    //     throw new ApiError(409, "User with PRN and Domain-ID already exists");
+    // }
+    const existingStudent = await Student.findOne({ domain_id });
     if (existingStudent) {
-        throw new ApiError(409, "User with PRN and Domain-ID already exists")
+        throw new ApiError(409, "User with entered Domain Id already exists");
+    }
+    const existingStudent2 = await Student.findOne({ prn });
+    if (existingStudent2) {
+        throw new ApiError(403, "User with entered PRN already exists");
     }
 
-    const idLocalPath = req.locals.idCard;
+    const idLocalPath = res.locals.idCard;
     if (!idLocalPath) {
-        throw new ApiError(400, "ID card is required")
+        throw new ApiError(401, "Couldn't save your Id Card Information");
     }
 
     const student = await Student.create({
@@ -35,39 +65,38 @@ const registerUser = asyncHandler(async (req, res) => {
         department,
         year,
         sem,
-        number
-    })
+        number,
+    });
 
-    const newID = "ID" + '-' + prn
+    const newID = "ID" + "-" + prn;
 
     const createdStudent = await Student.findById(student._id).select(
         "-password -refreshtoken"
-    )
+    );
 
     if (!createdStudent) {
-        throw new ApiError(500, "Error Creating Student")
+        throw new ApiError(500, "Error Creating Student");
     }
 
-    return res.status(201).json(
-        new ApiResponse(200, createdStudent, "Student Registered")
-    )
-})
+    return res
+        .status(201)
+        .json(new ApiResponse(200, createdStudent, "Student Registered"));
+});
 
 const loginUser = asyncHandler(async (req, res) => {
     const { domain_id, prn, password } = req.body;
     console.log(req.body);
     if ([domain_id, prn, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "All fields are required");
     }
     const existingStudent = await Student.findOne({ domain_id });
     if (!existingStudent) {
-        throw new ApiError(404, "Unregistered Email")
+        throw new ApiError(404, "Unregistered Email");
     }
     const existingStudent2 = await Student.findOne({ prn });
     if (!existingStudent2) {
-        throw new ApiError(403, "Unregistered PRN")
+        throw new ApiError(403, "Unregistered PRN");
     }
-
 
     // const existingStudent = await Student.findOne({
     //     $or: [{ domain_id }, { prn }]
@@ -76,17 +105,20 @@ const loginUser = asyncHandler(async (req, res) => {
     //     throw new ApiError(404, "Unregistered DomainID or PRN")
     // }
 
-    const isPasswordValid = await existingStudent.passwordCheck(password)
+    const isPasswordValid = await existingStudent.passwordCheck(password);
     if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid Login Credentials")
+        throw new ApiError(401, "Invalid Login Credentials");
     }
 
-    const { accessToken, refreshToken } = await generateTokens(Student, existingStudent._id)
+    const { accessToken, refreshToken } = await generateTokens(
+        Student,
+        existingStudent._id
+    );
 
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: true,
+    };
 
     return res
         .status(200)
@@ -96,38 +128,39 @@ const loginUser = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {
-                    accessToken, refreshToken,
-                    userType: "student"
+                    accessToken,
+                    refreshToken,
+                    userType: "student",
                 },
                 "Student logged in successfully"
             )
-        )
-})
+        );
+});
 
 const logoutUser = asyncHandler(async (req, res) => {
     await Student.findByIdAndUpdate(
         req.student._id,
         {
             $set: {
-                refreshToken: undefined
-            }
+                refreshToken: undefined,
+            },
         },
         {
-            new: true
+            new: true,
         }
-    )
+    );
 
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: true,
+    };
 
     return res
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "Student logged Out"))
-})
+        .json(new ApiResponse(200, {}, "Student logged Out"));
+});
 
 const newRefreshToken = asyncHandler(async (req, res) => {
     // get current
@@ -137,34 +170,38 @@ const newRefreshToken = asyncHandler(async (req, res) => {
     // swap in DB
     // send res
 
-    const existingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken
+    const existingRefreshToken =
+        req.cookies?.refreshToken || req.body.refreshToken;
     if (!existingRefreshToken) {
-        throw new ApiError(401, "No Refresh Token")
+        throw new ApiError(401, "No Refresh Token");
     }
 
     try {
         const token = jwt.verify(
             existingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
-        )
+        );
 
         console.log(token);
 
-        const student = await Student.findById(token.domain_id)
+        const student = await Student.findById(token.domain_id);
         console.log(student);
 
         if (!student) {
-            throw new ApiError(404, "Student not found")
+            throw new ApiError(404, "Student not found");
         }
         if (token !== student?.refreshToken) {
-            throw new ApiError(401, "Refresh Token Not Matching")
+            throw new ApiError(401, "Refresh Token Not Matching");
         }
 
-        const { accessToken, newRefreshToken } = await generateTokens(Student, student._id)
+        const { accessToken, newRefreshToken } = await generateTokens(
+            Student,
+            student._id
+        );
         const options = {
             httpOnly: true,
-            secure: true
-        }
+            secure: true,
+        };
 
         return res
             .status(200)
@@ -179,27 +216,29 @@ const newRefreshToken = asyncHandler(async (req, res) => {
                     },
                     "Access Token Refreshed in successfully"
                 )
-            )
+            );
     } catch (error) {
-        throw new ApiError(401, error.message)
+        throw new ApiError(401, error.message);
     }
-
-})
+});
 
 const updateProfile = asyncHandler(async (req, res) => {
-    const student = req.student
+    const student = req.student;
 
-    const updateStudent = await Student.findById(student._id)
+    const updateStudent = await Student.findById(student._id);
     if (!updateStudent) {
-        throw new ApiError(404, "User not found")
+        throw new ApiError(404, "User not found");
     }
 
-    const { fullname, domain_id, prn, department, year, sem, number } = req.body
+    const { fullname, domain_id, prn, department, year, sem, number } =
+        req.body;
 
     if (
-        [fullname, domain_id, prn, department, year, sem, number].some((field) => field?.trim() === "")
+        [fullname, domain_id, prn, department, year, sem, number].some(
+            (field) => field?.trim() === ""
+        )
     ) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "All fields are required");
     }
 
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -212,41 +251,53 @@ const updateProfile = asyncHandler(async (req, res) => {
                 department,
                 year,
                 sem,
-                number
-            }
+                number,
+            },
         },
         {
-            new: true
+            new: true,
         }
-    ).select("-password -idCard -refreshToken")
+    ).select("-password -idCard -refreshToken");
 
     if (!updatedStudent) {
-        throw new ApiError(500, "Error While Updating Information")
+        throw new ApiError(500, "Error While Updating Information");
     }
-
 
     return res
         .status(200)
         .json(
             new ApiResponse(200, updatedStudent, "Profile Changes Successful")
-        )
-
-
-
-})
+        );
+});
 
 const viewProfile = asyncHandler(async (req, res) => {
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, req.student, "User Data")
-        )
-})
+    console.log(req.student);
+    try {
+        var userProfile = req.student;
+        const params = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: `/id-card/${req.student?.idCard}`,
+        };
+        const command = new GetObjectCommand(params);
+        const url = await getSignedUrl(s3Client, command, {
+            expiresIn: 14400,
+        });
+        if (userProfile) {
+            userProfile.idCard = url;
+        }
+        console.log(userProfile);
+        return res
+            .status(200)
+            .json(new ApiResponse(200, userProfile, "User Data"));
+    } catch (error) {
+        throw new ApiError(401, error.message);
+    }
+});
 export {
     registerUser,
     loginUser,
     logoutUser,
     newRefreshToken,
     updateProfile,
-    viewProfile
-}
+    viewProfile,
+};

@@ -1,53 +1,91 @@
-import { Route, Routes } from 'react-router-dom'
-import MaintLogin from "./MaintLogin.page"
-import MaintRegister from "./MaintRegister.page"
-import MaintUser from "./MaintUser.page"
-import MaintUserApproval from "./MaintUserApproval.page"
-import MaintUserReturn from "./MaintUserReturn.page"
+import { Route, Routes, Navigate } from 'react-router-dom'
+import MaintLogin from './MaintLogin.page'
+import MaintRegister from './MaintRegister.page'
+import MaintUser from './MaintUser.page'
+import MaintUserApproval from './MaintUserApproval.page'
+import MaintUserReturn from './MaintUserReturn.page'
+import { useContext } from 'react'
+import { AuthContext } from '../../context/AuthContext'
 
 const Maint = () => {
-    return (
-        <Routes>
-            <Route
-                path="/issue/:id"
-                element={
-                    user ?
-                        <MaintUserApproval />
-                        : <MaintLogin />
-                }
-            />
-            <Route
-                path="/return/:id"
-                element={
-                    user ?
-                        <MaintUserReturn />
-                        : <MaintLogin />
-                }
-            />
-            <Route
-                path="/login"
-                element={
-                    user ?
-                        <MaintUser /> : <MaintLogin />
-                }
-            />
-            <Route
-                path="/register"
-                element={
-                    user ?
-                        <MaintUser /> : <MaintRegister />
-                }
-            />
+	const { user } = useContext(AuthContext)
+	return (
+		<Routes>
+			<Route
+				path='/issue/:id'
+				element={
+					user ? (
+						<MaintUserApproval />
+					) : (
+						<Navigate
+							to='/maitenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+			<Route
+				path='/user'
+				element={
+					user ? (
+						<MaintUser />
+					) : (
+						<Navigate
+							to='/maintenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+			<Route
+				path='/return/:id'
+				element={
+					user ? (
+						<MaintUserReturn />
+					) : (
+						<Navigate
+							to='/maitenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+			<Route
+				path='/login'
+				element={
+					user ? (
+						<Navigate to={state?.path || '/maintenance/user'} />
+					) : (
+						<MaintLogin />
+					)
+				}
+			/>
+			<Route
+				path='/register'
+				element={
+					user ? (
+						<Navigate to={state?.path || '/maintenance/user'} />
+					) : (
+						<MaintRegister />
+					)
+				}
+			/>
 
-            <Route
-                path="/"
-                element={
-                    user ?
-                        <MaintUser /> : <MaintLogin />
-                }
-            />
-        </Routes>
-    )
+			<Route
+				path='/'
+				element={
+					user ? (
+						<Navigate to={state?.path || '/maintenance/user'} />
+					) : (
+						<Navigate
+							to='/maitenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+		</Routes>
+	)
 }
 
 export default Maint
