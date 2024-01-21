@@ -6,7 +6,7 @@ import { generateTokens } from "../utils/generateToken.js";
 import { Request } from "../models/request.models.js";
 
 const registerAdmin = asyncHandler(async (req, res) => {
-    const { email, password, department, fullname, key } = req.body
+    const { email, password, department, fullname, key, type } = req.body // added type { admin, maintenance }
 
     if (
         [email, password, fullname, department].some((field) => field?.trim() === "")
@@ -28,7 +28,8 @@ const registerAdmin = asyncHandler(async (req, res) => {
         password: password,
         fullname: fullname,
         department,
-        key: key
+        key: key,
+        userType: type
     })
     const createdAdmin = await Admin.findById(admin._id).select("-password")
     if (!createdAdmin) {
@@ -183,6 +184,7 @@ const getRequestsFromDepartment = asyncHandler(async (req, res) => {
         )
 
 })
+
 const getOneRequest = asyncHandler(async (req, res) => {
     const { request } = req.params // TODO: add new req_no in models 
     if (!request?.trim()) {
@@ -205,7 +207,6 @@ const updateRequest = asyncHandler(async (req, res) => {
     // update the status from the button of a given request with a message
 })
 
-
 const viewProfile = asyncHandler(async (req, res) => {
     return res
         .status(200)
@@ -215,35 +216,12 @@ const viewProfile = asyncHandler(async (req, res) => {
 })
 
 
-// =============  M A I N T A I N A N C E  ========================//
-
-const getApproved = asyncHandler(async (req, res) => {
-    // get all the approved requests
-    // list of all approved
-    const allApproved = await Request.aggregate([
-        {
-            $match: {
-                status: "Approved"
-            }
-        }
-    ])
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, allApproved, "All approved requests fetched")
-        )
-})
-
-
-// if the laptop is alloed to someone it cant be alloted to others
-
 export {
     registerAdmin,
     loginAdmin,
     logoutAdmin,
     getRequests,
     getOneRequest,
-    getApproved,
     getRequestsFromDepartment,
     viewProfile
 }

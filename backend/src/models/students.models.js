@@ -54,6 +54,10 @@ const studentSchema  = new mongoose.Schema({
     ],
     refreshToken: {
         type: String
+    },
+    userType: {
+        type: String,
+        default: "student"
     }
 }, 
 {
