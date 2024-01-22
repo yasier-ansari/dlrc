@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken"
 import { generateTokens } from "../utils/generateToken.js";
 import { Request } from "../models/request.models.js";
+import { Issue } from "../models/issue.models.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { fullname, domain_id, prn, password, department, year, sem, number } = req.body
@@ -269,6 +270,58 @@ const getMyRequestHistory = asyncHandler( async (req, res) => {
     )
 })
 
+const getRequest = asyncHandler( async (req, res) => {
+    const student = req.student
+    const { request } = req.params // TODO: add new req_no in models 
+    if (!request?.trim()) {
+        throw new ApiError(400, "request id is missing")
+    }
+    // get all the data, images, texts from a given particular request based on params (id or req_no)
+    const showRequest = await Request.findOne({ _id: request })
+    if (!showRequest) {
+        throw new ApiError(404, "Request Not Found")
+    }
+
+    if( student._id != showRequest.student_id ){
+        throw new ApiError(500, "Bad request || You are unauthorised to view this page")
+    }
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(201, showRequest, "Sent Particular Request")
+        )
+})
+
+const getRecent = asyncHandler( async (req, res) => {
+    // get the most recent request by a student, shall appear on top whenever they log in
+    const student = req.student
+    const recent = await Request.aggregate([
+        {
+            $match: {
+              student_id: student._id
+            },
+          },
+        {
+            $sort: {
+              updatedAt: 1
+            }
+        },
+        {
+            $limit: 1
+        }
+    ])
+
+    if(!recent){
+        throw new ApiError(402, "Error while searching recent requests")
+    }
+    
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(201, recent, "Fetched Most Recent Request")
+    )
+})
+
 const getMyIssueHistory = asyncHandler( async (req, res) => {
     const student = req.student
     const getMyIssue = await Request.aggregate(
@@ -324,6 +377,63 @@ const getMyIssueHistory = asyncHandler( async (req, res) => {
     
 })
 
+const getIssue = asyncHandler( async (req, res) => {
+    const student = req.student
+    const { issue } = req.params // TODO: add new req_no in models 
+    if (!issue?.trim()) {
+        throw new ApiError(400, "issue id is missing")
+    }
+    // get all the data, images, texts from a given particular request based on params (id or req_no)
+    const showIssue = await Issue.findOne({ _id: issue })
+    if (!showIssue) {
+        throw new ApiError(404, "Issue Not Found")
+    }
+    const checkIssue = await Request.aggregate([
+        {
+          $match: {
+            student_id: ObjectId(
+              "658d6364c03e2480c405739c"
+            ),
+            status: "Fulfiled",
+          },
+        },
+        {
+          $lookup: {
+            from: "issues",
+            localField: "_id",
+            foreignField: "req_id",
+            as: "issue",
+          },
+        },
+        {
+          $addFields: {
+            issue: {
+              $first: "$issue",
+            },
+          },
+        },
+        {
+          $project: {
+            "issue._id": 1,
+          },
+        },
+        {
+            $match: {
+                "issue._id": issue
+            }
+        }
+      ]
+    )
+    if(!checkIssue){
+        throw new ApiError(500, "Bad request || You are unauthorised to view this page")
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(201, showIssue, "Sent Particular Issue")
+        )
+})
 export {
     registerUser,
     loginUser,
@@ -331,6 +441,9 @@ export {
     newRefreshToken,
     updateProfile,
     viewProfile,
+    getRecent,
     getMyRequestHistory,
-    getMyIssueHistory
+    getRequest,
+    getMyIssueHistory,
+    getIssue
 }
