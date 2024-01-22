@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const newRequest = asyncHandler(async (req, res) => {
     const student = req.student
-    console.log(student);
     const { purpose, duration, ews, family_status } = req.body
 
     if (
@@ -15,11 +14,11 @@ const newRequest = asyncHandler(async (req, res) => {
     }
 
     const existingReq = await Request.find({ // C O U L D   B E   B E T T E R
-        student_id: student.prn
+        student_id: student._id
     }).sort("createdAt desc")
 
-    if (existingReq !== null && (existingReq.status !== "Fulfiled" && existingReq.status !== "Rejected")) {
-        throw new ApiError(402, "You have already applied; be patient");
+    if (existingReq[0] !== null && (existingReq.status !== "Fulfiled" && existingReq.status !== "Rejected")) {
+        throw new ApiError(402, "You have already applied be patient");
     }
 
 
