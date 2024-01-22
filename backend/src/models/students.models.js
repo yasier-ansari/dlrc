@@ -52,12 +52,12 @@ const studentSchema = new mongoose.Schema(
                 ref: "Request",
             },
         ],
-        applicationStatus: {
-            type: Boolean,
-            default: false,
-        },
         refreshToken: {
             type: String,
+        },
+        userType: {
+            type: String,
+            default: "student",
         },
     },
     {

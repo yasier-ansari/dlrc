@@ -5,8 +5,8 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const newRequest = asyncHandler(async (req, res) => {
-    // const student = req.student
-    // console.log(student);
+    const student = req.student;
+    console.log(student);
     const { purpose, duration, ews, family_status, id } = req.body;
 
     if (
@@ -25,16 +25,14 @@ const newRequest = asyncHandler(async (req, res) => {
     }
 
     const existingReq = await Request.find({
-        // C O U L D   B E   B E T T E R
         student_id: id,
     }).sort("createdAt desc");
 
     if (
-        existingReq &&
+        existingReq[0] !== null &&
         existingReq.status !== "Fulfiled" &&
         existingReq.status !== "Rejected"
     ) {
-        // throw new ApiError(402, "You have already applied; be patient");
         res.status(402).json(
             new ApiResponse(
                 402,

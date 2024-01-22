@@ -3,8 +3,8 @@ import { Model, Schema, model } from "mongoose";
 
 const issueSchema = new Schema( {
     duration: {
-        type: Schema.Types.ObjectId,
-        ref: "Admin"
+        type: String,
+        required: true
     },
     req_id:{
         type: Schema.Types.ObjectId,
@@ -16,21 +16,18 @@ const issueSchema = new Schema( {
     },
     returned: {
         type: Boolean,
-        required: true,
         default: false
     },
     returned_on: {
         type: String,
-        required: true
     },
     issued_by: {
         type: String,
         required: true
     },
     recieved_by: {
-        type: Schema.Types.ObjectId,
-        ref: "Admin"
-    } 
+        type: String,
+    }  
 }, { timestamps: true})
 
 

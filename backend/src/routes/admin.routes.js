@@ -1,16 +1,23 @@
 import Router from "express";
 import {
+    registerAdmin,
     loginAdmin,
     logoutAdmin,
-    registerAdmin,
     getRequests,
     getOneRequest,
-    getApproved,
     getRequestsFromDepartment,
+    updateRequest,
     viewProfile,
 } from "../controllers/admin.controllers.js";
-import { adminJWT, verifyJWT } from "../middlewares/auth.middleware.js";
-import { newIssue } from "../controllers/issue.controllers.js";
+import {
+    getApproved,
+    newIssue,
+    allFreeLaptops,
+    allIssuedLaptops,
+    newReturn,
+    allReturn,
+} from "../controllers/issue.controllers.js";
+import { adminJWT } from "../middlewares/auth.middleware.js";
 
 const adminRouter = Router();
 
@@ -23,9 +30,14 @@ adminRouter.route("/allRequest").get(adminJWT, getRequests);
 adminRouter.route("/deptRequests").get(adminJWT, getRequestsFromDepartment);
 adminRouter.route("/request/:request").get(adminJWT, getOneRequest);
 adminRouter.route("/profile").get(adminJWT, viewProfile);
+adminRouter.route("/update-request").patch(adminJWT, updateRequest);
 
 // M A I N T A I N A N C E
-adminRouter.route("/allApproved").get(adminJWT, getApproved);
-adminRouter.route("/newIssue").post(adminJWT, newIssue);
+adminRouter.route("/all-approved").get(adminJWT, getApproved);
+adminRouter.route("/new-issue").post(adminJWT, newIssue);
+adminRouter.route("/free-laptop").get(adminJWT, allFreeLaptops);
+adminRouter.route("/issued-laptop").get(adminJWT, allIssuedLaptops);
+adminRouter.route("/new-return").post(adminJWT, newReturn);
+adminRouter.route("/all-return").get(adminJWT, allReturn);
 
 export { adminRouter };

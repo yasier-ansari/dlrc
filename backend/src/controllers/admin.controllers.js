@@ -7,7 +7,7 @@ import { Request } from "../models/request.models.js";
 import { Issue } from "../models/issue.models.js";
 
 const registerAdmin = asyncHandler(async (req, res) => {
-    const { email, password, department, fullname, key } = req.body;
+    const { email, password, department, fullname, key, type } = req.body; // added type { admin, maintenance }
 
     if (
         [email, password, fullname, department].some(
@@ -32,6 +32,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
         fullname: fullname,
         department,
         key: key,
+        userType: type,
     });
     const createdAdmin = await Admin.findById(admin._id).select("-password");
     if (!createdAdmin) {
@@ -113,7 +114,7 @@ const logoutAdmin = asyncHandler(async (req, res) => {
         req.admin._id,
         {
             $set: {
-                refreshToken: undefined,
+                refreshToken: 0,
             },
         },
         {
@@ -289,6 +290,36 @@ const getOneRequest = asyncHandler(async (req, res) => {
 
 const updateRequest = asyncHandler(async (req, res) => {
     // update the status from the button of a given request with a message
+    const { update, message } = req.body;
+
+    const { request } = req.params; // TODO: add new req_no in models
+    if (!request?.trim()) {
+        throw new ApiError(400, "Request id is missing");
+    }
+
+    const showRequest = await Request.findOne({ _id: request });
+    if (!showRequest) {
+        throw new ApiError(404, "Request Not Found");
+    }
+
+    const updatedRequest = await Request.findByIdAndUpdate(
+        request,
+        {
+            $set: {
+                status: update,
+                message: message,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    if (updatedRequest.status != update || updatedRequest.message != message) {
+        throw new ApiError(500, "An error uccored while updating requests");
+    }
+
+    return res.status(200).json(new ApiResponse(201, {}, "Request Updated"));
 });
 
 const viewProfile = asyncHandler(async (req, res) => {
@@ -322,7 +353,7 @@ export {
     logoutAdmin,
     getRequests,
     getOneRequest,
-    getApproved,
     getRequestsFromDepartment,
+    updateRequest,
     viewProfile,
 };
