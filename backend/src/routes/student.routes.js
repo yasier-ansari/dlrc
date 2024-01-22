@@ -1,5 +1,16 @@
 import { Router } from "express";
-import { loginUser, logoutUser, newRefreshToken, registerUser, updateProfile, viewProfile, getMyRequestHistory, getMyIssueHistory } from "../controllers/student.controller.js";
+import {registerUser,
+        loginUser,
+        logoutUser,
+        newRefreshToken,
+        updateProfile,
+        viewProfile,
+        getRecent,
+        getMyRequestHistory,
+        getRequest,
+        getMyIssueHistory,
+        getIssue
+} from "../controllers/student.controller.js";
 import { newRequest } from "../controllers/request.controllers.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -20,8 +31,11 @@ router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(newRefreshToken)
 router.route("/update-profile").patch(verifyJWT, updateProfile)
 router.route("/profile").get(verifyJWT, viewProfile)
+router.route("/recent-request").get(verifyJWT, getRecent)
 router.route("/request-history").get(verifyJWT, getMyRequestHistory)
+router.route("/request/:request").get(verifyJWT, getRequest)
 router.route("/issue-history").get(verifyJWT, getMyIssueHistory)
+router.route("/issue/:issue").get(verifyJWT, getIssue)
 
 router.route("/new-request").post(
     verifyJWT,
