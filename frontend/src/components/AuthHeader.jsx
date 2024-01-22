@@ -65,7 +65,7 @@ const AuthHeader = (props) => {
 	}
 	return (
 		<div
-			className={`sticky top-0 z-40 font-medium  min-h-20 h-full text-gray-800 w-full  `}
+			className={` z-40 font-medium  min-h-20 h-full text-gray-800 w-full  `}
 		>
 			<div
 				className={`flex items-center py-4 mx-auto px-4 sm:px-6 md:px-8 lg:px-16 max-w-7xl md:py-6  w-full ${
@@ -87,7 +87,7 @@ const AuthHeader = (props) => {
 										onClick={handleDropdownToggle}
 										className='flex items-center py-2 px-6 space-x-3 bg-gradient-to-tr border-2 border-green-800 to-[#52b788] font-bold  from-[#74c69d] rounded-xl  '
 									>
-										<p className='font-bold text-black '>
+										<p className='font-semibold text-gray-900 text-base md:text-lg lg:text-xl  '>
 											{reduceName(user?.fullname)}
 										</p>
 									</button>

@@ -39,18 +39,21 @@ const adminJWT = asyncHandler(async (req, _, next) => {
         if (!token) {
             throw new ApiError(401, "Unauthorized request");
         }
-
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const admin = await Admin.findById(decoded?._id).select(
             "-password -refreshToken"
         );
-
         if (!admin) {
+            console.log("this works");
             throw new ApiError(401, "Invalid Access Token");
         }
+        console.log("this works1");
         req.admin = admin;
+        console.log("this works2");
         next();
+        console.log("this works3");
     } catch (error) {
+        console.log("here we do it");
         throw new ApiError(401, "Invalid Access Token --catch");
     }
 });

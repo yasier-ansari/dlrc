@@ -2,7 +2,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { FaGithub } from 'react-icons/fa'
 import { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 
 const UserLogin = ({ authWork }) => {
@@ -77,7 +77,7 @@ const UserLogin = ({ authWork }) => {
 		if (response.status === 200) {
 			const res = await response.json()
 			setLoginData(res?.data)
-			toast.success('Login Successful')
+			toast.success('Welcom Back Student')
 			navigate(state?.path || '/user/profile')
 		} else if (response?.status === 401) {
 			setErrors({

@@ -89,14 +89,14 @@ const newRequest = asyncHandler(async (req, res) => {
         );
     }
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, createdRequest, "Request Successful"));
-
     const updateStudent = await Student.updateOne(
         { _id: id },
         { applicationStatus: true }
     );
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, createdRequest, "Request Successful"));
 });
 
 export { newRequest };

@@ -34,23 +34,23 @@ const About = () => {
 			<Header />
 			<main className='flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24 flex-col justify-center mx-auto items-center max-w-7xl w-full h-full '>
 				<div className='flex flex-col items-center space-y-6 sm:space-y-6 justify-center md:justify-between md:flex-row w-full h-full min-h-[85vh]'>
-					<div className='w-full h-full md:basis-1/2  '>
+					<div className='w-full h-full md:basis-1/2 select-none '>
 						<img
 							src={Hero}
-							className='w-full h-full -rotate-6 transform -skew-x-12 skew-y-4 '
+							className='w-full h-full -rotate-12 transform -skew-x-12  skew-y-6 '
 						/>
 						{/* Green */}
 					</div>
-					<div className='w-full h-full md:basis-[55%] flex flex-col gap-3 items-start justify-center space-y-6'>
+					<div className='w-full h-full md:basis-[55%] flex flex-col gap-3 items-start justify-center'>
 						<div className='flex flex-col items-start justfy-center'>
-							<div className='font-bold  text-sm md:text-base xl:text-lg text-gray-600 ml-2 sm:ml-0'>
+							<div className='font-bold italic text-sm md:text-base xl:text-lg text-gray-600 ml-2 sm:ml-0'>
 								M.H. Saboo Siddik's
 							</div>
-							<div className='font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl  text-[#40916c]'>
+							<div className='font-black text-3xl sofia sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl  text-[#40916c]'>
 								Digital Learning Resource Center
 							</div>
 						</div>
-						<div className='text-base sm:text-lg md:text-xl lg:text-2xl '>
+						<div className='text-base sm:text-lg md:text-xl lg:text-2xl mt-4 mb-2 '>
 							Apply for the scholarship and avail a laptop for a
 							definite period of time for your college studies
 						</div>

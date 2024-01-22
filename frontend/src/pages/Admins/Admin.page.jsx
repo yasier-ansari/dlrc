@@ -1,4 +1,9 @@
-import { Route, Routes, Navigate } from 'react-router-dom'
+import {
+	Route,
+	Routes,
+	Navigate,
+	useLocation
+} from 'react-router-dom'
 import AdminLogin from './AdminLogin.page'
 import AdminRegister from './AdminRegister.page'
 import AdminUser from './AdminUser.page'
@@ -8,6 +13,7 @@ import { AuthContext } from '../../context/AuthContext'
 
 const Admin = () => {
 	const { userType, user } = useContext(AuthContext)
+	const { state } = useLocation()
 	return (
 		<Routes>
 			<Route
@@ -29,6 +35,20 @@ const Admin = () => {
 				element={
 					user ? (
 						<AdminUser />
+					) : (
+						<Navigate
+							to='/admin/login'
+							replace
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+			<Route
+				path='/'
+				element={
+					user ? (
+						<Navigate to='/admin/user' />
 					) : (
 						<Navigate
 							to='/admin/login'

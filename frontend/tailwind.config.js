@@ -7,7 +7,7 @@ export default {
 				outfit: ['Outfit', 'sans-serif'],
 				victor: ['Victor Mono', 'sans-serif'],
 				barlow: ['Barlow', 'sans-serif'],
-				paytone: ['Paytone One', 'sans-serif']
+				sofia: ['Sofia Sans', 'sans-serif']
 			}
 		}
 	},

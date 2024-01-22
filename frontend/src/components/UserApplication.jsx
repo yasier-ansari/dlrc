@@ -333,10 +333,10 @@ const UserApplicationComp = () => {
 			<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full mx-auto'>
 				<div
 					div
-					className='flex items-center space-x-6 text-3xl sm:text-4xl  md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-12 mb-8 text-center mx-auto'
+					className='flex items-center space-x-2 text-3xl sm:text-4xl  md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-12 mb-8 text-center mx-auto'
 				>
-					<HiOutlineDocumentText className=' text-[#40916c] ' />
-					<h1 className='font-semibold '>Application</h1>
+					<HiOutlineDocumentText className=' text-[#40916c] -skew-x-6 ' />
+					<h1 className='font-semibold italic '>Application</h1>
 				</div>
 				<div className='mb-16'>
 					<p className='text-[0.8rem] sm:text-base md:text-lg font-semibold'>

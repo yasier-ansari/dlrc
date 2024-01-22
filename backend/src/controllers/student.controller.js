@@ -7,6 +7,8 @@ import { generateTokens } from "../utils/generateToken.js";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client from "../utils/s3.js";
+import { Issue } from "../models/issue.models.js";
+import { Request } from "../models/request.models.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     console.log(req.body);
@@ -77,10 +79,23 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!createdStudent) {
         throw new ApiError(500, "Error Creating Student");
     }
+    const { accessToken, refreshToken } = await generateTokens(
+        Student,
+        student._id
+    );
 
-    return res
-        .status(201)
-        .json(new ApiResponse(200, createdStudent, "Student Registered"));
+    return res.status(201).json(
+        new ApiResponse(
+            200,
+            {
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                userType: "student",
+                ...createdStudent,
+            },
+            "Student Registered"
+        )
+    );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -293,6 +308,69 @@ const viewProfile = asyncHandler(async (req, res) => {
         throw new ApiError(401, error.message);
     }
 });
+
+const getOneRequest = asyncHandler(async (req, res) => {
+    const { request } = req.params; // TODO: add new req_no in models
+    if (!request?.trim()) {
+        return res
+            .status(400)
+            .json(
+                new ApiResponse(
+                    400,
+                    { message: "No Student Id is given as param" },
+                    "No Student Id is given as param"
+                )
+            );
+    }
+    const showRequest = await Request.findOne({
+        student_id: request,
+    })
+        .sort({ createdAt: -1 })
+        .exec();
+
+    if (!showRequest) {
+        return res
+            .status(404)
+            .json(
+                new ApiResponse(
+                    404,
+                    { message: "No Request found for given student" },
+                    "No Request found for given student"
+                )
+            );
+    }
+    const showIssue = await Issue.findOne({
+        req_id: showRequest._id,
+    })
+        .sort({ createdAt: -1 })
+        .exec();
+
+    if (!showIssue) {
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(
+                    201,
+                    { request: showRequest },
+                    "Sent Particular Request"
+                )
+            );
+    }
+    const combinedData = {
+        request: showRequest,
+        issue: showIssue,
+    };
+
+    return res
+        .status(202)
+        .json(
+            new ApiResponse(
+                202,
+                combinedData,
+                "Sent Particular Request Along with Issue"
+            )
+        );
+});
 export {
     registerUser,
     loginUser,
@@ -300,4 +378,5 @@ export {
     newRefreshToken,
     updateProfile,
     viewProfile,
+    getOneRequest,
 };

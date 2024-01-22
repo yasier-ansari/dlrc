@@ -4,18 +4,19 @@ import { useContext, useEffect, useState } from 'react'
 // import { useSession } from "@/hooks/useSession"
 import { useNavigate, useLocation } from 'react-router-dom'
 // import { AuthContext } from "@/hooks/AuthContext"
-import { toast } from 'react-toastify'
+import { toast } from 'react-hot-toast'
 import { LuFolderEdit } from 'react-icons/lu'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
+import { IoWarningOutline } from 'react-icons/io5'
 const API = axios.create({ baseURL: 'http://localhost:5173' })
 
 const UserRegister = () => {
-	const { mainLoading, setLoginData } = useContext(AuthContext)
+	const { mainLoading, setLoginData, setUser } =
+		useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
 	const navigate = useNavigate()
 	const { state } = useLocation()
-	console.log(state)
 	const dept_options = [
 		'CSE (AI - ML)',
 		'CSE (IOT - BT)',
@@ -84,18 +85,6 @@ const UserRegister = () => {
 		formData.append('number', form?.number)
 		formData.append('idCard', form?.idCard)
 		console.log(form)
-
-		// const response = await fetch(
-		// 	'http://localhost:8000/api/v1/student/register',
-		// 	{
-		// 		method: 'POST',
-		// 		credentials: 'include',
-		// 		headers: {
-		// 			'Content-Type': `multipart/form-data;boundary=${formData._boundary}`
-		// 		},
-		// 		body: formData
-		// 	}
-		// )
 		var response
 		try {
 			response = await axios({
@@ -107,11 +96,13 @@ const UserRegister = () => {
 				}
 			})
 			const res = response?.data
-			setLoginData(res)
+			console.log(res)
+			setLoginData(res?.data)
+			setUser(res?.data?._doc)
 			toast.success('Register Successful')
 			navigate(state?.path || '/user/profile')
 		} catch (e) {
-			console.log(response)
+			console.log(e)
 			if (e?.response?.status === 401) {
 				setErrors({
 					fullname: '',
@@ -136,6 +127,9 @@ const UserRegister = () => {
 					idCard: '',
 					domain_id: 'User with entered Domain Id already exists'
 				})
+				toast.error(
+					"There's Already a student with your entered domain id"
+				)
 			} else if (e?.response?.status === 403) {
 				setErrors({
 					fullname: '',
@@ -148,12 +142,10 @@ const UserRegister = () => {
 					idCard: '',
 					prn: 'User with entered PRN already exists'
 				})
+				toast.error("There's Already a student with your entered PRN")
 			} else {
 				toast.error(
-					'Some Error Ocurred Please Register after some time',
-					{
-						position: 'top-center'
-					}
+					'Some Error Ocurred Please Register after some time'
 				)
 			}
 		}
@@ -218,6 +210,7 @@ const UserRegister = () => {
 
 		const fileSize = form?.idCard?.size / 1024
 		const allowedSize = 1024
+		const thresholdSize = 102
 		if (!form?.idCard) {
 			newErrors.idCard = 'ID card is required'
 			valid = false
@@ -230,6 +223,11 @@ const UserRegister = () => {
 		} else if (fileSize > allowedSize) {
 			newErrors.idCard = 'Image size must be under 1MB'
 			valid = false
+		} else if (fileSize < thresholdSize) {
+			newErrors.idCard = 'Image size must over  100kB'
+			valid = false
+		} else {
+			newErrors.idCard = ''
 		}
 
 		if (!form?.department) {
@@ -267,12 +265,27 @@ const UserRegister = () => {
 
 	const SubmitHandler = async (e) => {
 		e.preventDefault()
-		console.log(form.idCard.type)
 		if (validateForm()) {
-			console.log('done')
 			await registerHelper()
 		} else {
-			console.log('error')
+			toast(
+				'Please carefully fill each prop with correct Information',
+				{
+					id: `${e}`,
+					icon: (
+						<IoWarningOutline className='h-6 w-6 md:w-8 md:h-8 text-orange-500 ' />
+					),
+					style: {
+						border: '2px solid #fb923c',
+						padding: '12px 20px 12px 20px',
+						color: '#333'
+					},
+					iconTheme: {
+						primary: '#fb923c',
+						secondary: '#FFFAEE'
+					}
+				}
+			)
 		}
 	}
 	return (
@@ -490,7 +503,7 @@ const UserRegister = () => {
 										alt='Selected Image'
 										className={` ${
 											errors.idCard && 'border-2 border-[#db3100] '
-										} w-full h-full rounded-lg md:rounded-xl lg:rounded-2xl object-cover`}
+										} w-full h-full aspect-video rounded-lg md:rounded-xl lg:rounded-2xl object-cover`}
 										width={100}
 										height={100}
 									/>

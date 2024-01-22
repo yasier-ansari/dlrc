@@ -1,26 +1,29 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/apiError.js"
+import { ApiError } from "../utils/apiError.js";
 import { Admin } from "../models/admin.models.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { generateTokens } from "../utils/generateToken.js";
 import { Request } from "../models/request.models.js";
+import { Issue } from "../models/issue.models.js";
 
 const registerAdmin = asyncHandler(async (req, res) => {
-    const { email, password, department, fullname, key } = req.body
+    const { email, password, department, fullname, key } = req.body;
 
     if (
-        [email, password, fullname, department].some((field) => field?.trim() === "")
+        [email, password, fullname, department].some(
+            (field) => field?.trim() === ""
+        )
         //[fullname, domain_id, prn, password].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(401, "All Fields are mandatory")
+        throw new ApiError(401, "All Fields are mandatory");
     }
 
-    const exisitngAdmin = await Admin.findOne({ email })
+    const exisitngAdmin = await Admin.findOne({ email });
     if (exisitngAdmin) {
-        throw new ApiError(404, "Admin already exists")
+        throw new ApiError(404, "Admin already exists");
     }
     if (key !== process.env.ADMIN_SECRET_KEY) {
-        throw new ApiError(401, "Unauthorized -- please enter valid email ID")
+        throw new ApiError(405, "Unauthorized -- please enter valid email ID");
     }
 
     const admin = await Admin.create({
@@ -28,42 +31,64 @@ const registerAdmin = asyncHandler(async (req, res) => {
         password: password,
         fullname: fullname,
         department,
-        key: key
-    })
-    const createdAdmin = await Admin.findById(admin._id).select("-password")
+        key: key,
+    });
+    const createdAdmin = await Admin.findById(admin._id).select("-password");
     if (!createdAdmin) {
-        throw new ApiError(500, "Error while creating admin")
+        throw new ApiError(500, "Error while creating admin");
     }
-    return res.status(201).json(
-        new ApiResponse(200, createdAdmin, "Admin Registered")
-    )
-
-})
+    const { accessToken, refreshToken } = await generateTokens(
+        Admin,
+        createdAdmin._id
+    );
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+    return res
+        .status(201)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    userType: "admin",
+                    accessToken,
+                    refreshToken,
+                    ...createdAdmin,
+                },
+                "Admin Registered"
+            )
+        );
+});
 
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     if ([email, password].some((field) => field?.trim() === "")) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "All fields are required");
     }
 
-    const existingAdmin = await Admin.findOne({ email })
+    const existingAdmin = await Admin.findOne({ email });
     if (!existingAdmin) {
-        throw new ApiError(404, "Unregistered Admin email")
+        throw new ApiError(404, "Unregistered Admin email");
     }
 
-    const isPasswordValid = await existingAdmin.passwordCheck(password)
+    const isPasswordValid = await existingAdmin.passwordCheck(password);
     if (!isPasswordValid) {
-        throw new ApiError(401, JSON.stringify("Invalid Login Credentials"))
+        throw new ApiError(401, JSON.stringify("Invalid Login Credentials"));
     }
 
-    const { accessToken, refreshToken } = await generateTokens(Admin, existingAdmin._id)
-
+    const { accessToken, refreshToken } = await generateTokens(
+        Admin,
+        existingAdmin._id
+    );
 
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: true,
+    };
 
     return res
         .status(200)
@@ -76,57 +101,84 @@ const loginAdmin = asyncHandler(async (req, res) => {
                 {
                     accessToken: accessToken,
                     refreshToken: refreshToken,
-                    userType: "admin"
+                    userType: "admin",
                 },
                 "Admin logged in successfully"
             )
-        )
-})
+        );
+});
 
 const logoutAdmin = asyncHandler(async (req, res) => {
     await Admin.findByIdAndUpdate(
         req.admin._id,
         {
             $set: {
-                refreshToken: undefined
-            }
+                refreshToken: undefined,
+            },
         },
         {
-            new: true
+            new: true,
         }
-    )
+    );
 
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: true,
+    };
 
     return res
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "Admin logged Out"))
-})
+        .json(new ApiResponse(200, {}, "Admin logged Out"));
+});
 
 const getRequests = asyncHandler(async (req, res) => {
     // get all or filtered pending requests from your department or others
     // list of all requests
-    const allrequests = await Request.aggregate([
-        {
-            $match: {
-                status: "Pending"
-            }
-        }
-    ])
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, allrequests, "All pending requests fetched")
-        )
-})
+    // const allrequests = await Request.aggregate([
+    //     {
+    //         $match: {
+    //             status: "Pending",
+    //         },
+    //     },
+    // ]);
+    try {
+        const allrequests = await Request.aggregate([
+            {
+                $match: {
+                    status: "Pending",
+                },
+            },
+        ]).exec();
+
+        // Populate the 'student_id' field
+        await Request.populate(allrequests, { path: "student_id" });
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    allrequests,
+                    "All pending requests fetched"
+                )
+            );
+    } catch (e) {
+        return res
+            .status(404)
+            .json(
+                new ApiResponse(
+                    404,
+                    { message: "Not Found" },
+                    "Coulnd'nt fetch the user list"
+                )
+            );
+    }
+});
 
 const getRequestsFromDepartment = asyncHandler(async (req, res) => {
-    const admin = req.admin
+    const admin = req.admin;
     console.log(admin);
     const allRequest = await Request.aggregate([
         {
@@ -134,20 +186,20 @@ const getRequestsFromDepartment = asyncHandler(async (req, res) => {
                 from: "students",
                 localField: "student_id",
                 foreignField: "_id",
-                as: "student"
-            }
+                as: "student",
+            },
         },
         {
             $addFields: {
                 student: {
-                    $first: "$student"
-                }
-            }
+                    $first: "$student",
+                },
+            },
         },
         {
             $match: {
                 "student.department": admin.department,
-            }
+            },
         },
         {
             $project: {
@@ -163,57 +215,85 @@ const getRequestsFromDepartment = asyncHandler(async (req, res) => {
                 parents_Dec: 1,
                 createdAt: 1,
                 updatedAt: 1,
-                students_Dec: 1
-            }
+                students_Dec: 1,
+            },
         },
         {
             $sort: {
-                createdAt: 1
-            }
-        }
-    ])
+                createdAt: 1,
+            },
+        },
+    ]);
     if (!allRequest) {
-        throw new ApiError(400, "Error while finding requestd of your department")
+        throw new ApiError(
+            400,
+            "Error while finding requestd of your department"
+        );
     }
 
     return res
         .status(200)
         .json(
-            new ApiResponse(201, allRequest, "Request from your department fetched sucessfully")
-        )
+            new ApiResponse(
+                201,
+                allRequest,
+                "Request from your department fetched sucessfully"
+            )
+        );
+});
 
-})
 const getOneRequest = asyncHandler(async (req, res) => {
-    const { request } = req.params // TODO: add new req_no in models 
-    if (!request?.trim()) {
-        throw new ApiError(400, "request id is missing")
+    const { request } = req.params; // TODO: add new req_no in models
+    try {
+        if (!request?.trim()) {
+            return res
+                .status(400)
+                .json(
+                    new ApiResponse(
+                        400,
+                        { message: "No Student Id is given as param" },
+                        "No Student Id is given as param"
+                    )
+                );
+        }
+        const showRequest = await Request.findOne({
+            student_id: request,
+        }).populate("student_id");
+        if (!showRequest) {
+            return res
+                .status(404)
+                .json(
+                    new ApiResponse(
+                        404,
+                        { message: "No Request found for given student" },
+                        "No Request found for given student"
+                    )
+                );
+        }
+
+        return res
+            .status(202)
+            .json(new ApiResponse(202, showRequest, "Sent Particular Request"));
+    } catch (e) {
+        return res
+            .status(500)
+            .json(
+                new ApiResponse(
+                    500,
+                    { message: "Couldn't Fetch the Student Request" },
+                    "Couldn't Fetch the Student Request"
+                )
+            );
     }
-    // get all the data, images, texts from a given particular request based on params (id or req_no)
-    const showRequest = await Request.findOne({ student_id: request }).populate('student_id')
-    if (!showRequest) {
-        throw new ApiError(404, "Request Not Found")
-    }
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(201, showRequest, "Sent Particular Request")
-        )
-    // show all data in frontend and give option to accept / reject request with a message
-})
+});
 
 const updateRequest = asyncHandler(async (req, res) => {
     // update the status from the button of a given request with a message
-})
-
+});
 
 const viewProfile = asyncHandler(async (req, res) => {
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, req.admin, "User Data")
-        )
-})
-
+    return res.status(200).json(new ApiResponse(200, req.admin, "User Data"));
+});
 
 // =============  M A I N T A I N A N C E  ========================//
 
@@ -223,17 +303,16 @@ const getApproved = asyncHandler(async (req, res) => {
     const allApproved = await Request.aggregate([
         {
             $match: {
-                status: "Approved"
-            }
-        }
-    ])
+                status: "Approved",
+            },
+        },
+    ]);
     return res
         .status(200)
         .json(
             new ApiResponse(200, allApproved, "All approved requests fetched")
-        )
-})
-
+        );
+});
 
 // if the laptop is alloed to someone it cant be alloted to others
 
@@ -245,6 +324,5 @@ export {
     getOneRequest,
     getApproved,
     getRequestsFromDepartment,
-    viewProfile
-}
-
+    viewProfile,
+};

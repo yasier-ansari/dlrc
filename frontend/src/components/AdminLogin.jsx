@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const AdminLoginComp = () => {
 	const {
@@ -15,6 +15,7 @@ const AdminLoginComp = () => {
 	} = useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
 	const navigate = useNavigate()
+	const { state } = useLocation()
 	const [form, setForm] = useState({
 		email: '',
 		password: ''
@@ -55,7 +56,7 @@ const AdminLoginComp = () => {
 			const res = await response.json()
 			setLoginData(res?.data)
 			toast.success('Login Successfull')
-			navigate('/admin')
+			navigate(state?.path || '/admin/user')
 		} else if (response?.status === 401) {
 			setErrors({ email: '', password: 'Input the correct password' })
 		} else if (response?.status === 404) {

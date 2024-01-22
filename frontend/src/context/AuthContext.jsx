@@ -40,7 +40,7 @@ function AuthProvider({ children }) {
 	const setRefreshToken_ = (token) => {
 		setRefreshToken(token)
 		token
-			? localStorage.removeItem('refreshToken')
+			? localStorage.setItem('refreshToken', token)
 			: localStorage.removeItem('refreshToken')
 	}
 
@@ -98,7 +98,6 @@ function AuthProvider({ children }) {
 		setMainLoading(true)
 		const token = localStorage.getItem('token')
 		if (token) {
-			console.log('authenticating')
 			if (userType === 'student') {
 				fetchUserProfile(token)
 			} else {

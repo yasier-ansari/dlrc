@@ -2,10 +2,11 @@ import { FcGoogle } from 'react-icons/fc'
 import { FaGithub } from 'react-icons/fa'
 import { useContext, useEffect, useState } from 'react'
 // import { useSession } from "@/hooks/useSession"
-import { Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 // import { AuthContext } from "@/hooks/AuthContext"
-import { toast } from 'react-toastify'
+import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
+import axios from 'axios'
 
 const AdminRegisterComp = () => {
 	const dept_options = [
@@ -18,8 +19,11 @@ const AdminRegisterComp = () => {
 		'Civil',
 		'AutoMobile'
 	]
-	const { mainLoading, user, setLoginData } = useContext(AuthContext)
+	const { mainLoading, user, setLoginData, setUser } =
+		useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
+	const { state } = useLocation()
+	const navigate = useNavigate()
 	const [form, setForm] = useState({
 		email: '',
 		password: '',
@@ -81,6 +85,12 @@ const AdminRegisterComp = () => {
 		} else {
 			newErrors.department = ''
 		}
+
+		if (!form?.key) {
+			newErrors.key = 'Secret Key is required'
+		} else {
+			newErrors.key = ''
+		}
 		setErrors(newErrors)
 		return valid
 	}
@@ -91,41 +101,86 @@ const AdminRegisterComp = () => {
 		department,
 		fullname
 	) => {
+		// try {
+		// 	const response = await fetch(
+		// 		'http://localhost:8000/api/v1/admin/register',
+		// 		{
+		// 			method: 'POST',
+		// 			credentials: 'include',
+		// 			headers: {
+		// 				'Content-Type': 'application/json'
+		// 			},
+		// 			body: JSON.stringify({
+		// 				email,
+		// 				password,
+		// 				key,
+		// 				department,
+		// 				fullname
+		// 			})
+		// 		}
+		// 	)
+		// 	if (response.ok) {
+		// 		const data = await response.json()
+		// 		setLoginData(data?.data)
+		// 		console.log(data)
+		// 		return data
+		// 	} else {
+		// 		const errorData = await response.json()
+		// 		console.error('Login failed:', errorData)
+		// 		return errorData
+		// 	}
+		// } catch (error) {
+		// 	console.error('Error during login request:', error)
+		// 	return error
+		// }
+		var response
 		try {
-			const response = await fetch(
-				'http://localhost:8000/api/v1/admin/register',
-				{
-					method: 'POST',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email,
-						password,
-						key,
-						department,
-						fullname
-					})
+			response = await axios({
+				method: 'post',
+				url: 'http://localhost:8000/api/v1/admin/register',
+				data: form,
+				header: {
+					'Content-Type': 'application/json'
 				}
-			)
-			if (response.ok) {
-				const data = await response.json()
-				setLoginData(data?.data)
-				console.log(data)
-				return data
+			})
+			const res = response?.data
+			console.log(res)
+			setLoginData(res?.data)
+			setUser(res?.data?._doc)
+			toast.success(`Welcome to DLRC, ${res?.data?._doc?.fullname} `)
+			navigate(state?.path || '/admin/user')
+		} catch (e) {
+			console.log(e)
+			if (e?.response?.status === 401) {
+				toast.error('Please Fill All the necessary Information')
+			} else if (e?.response?.status === 404) {
+				setErrors({
+					email: 'Admin User with same email already exists',
+					password: '',
+					fullname: '',
+					key: '',
+					department: ''
+				})
+				toast.error('Admin User Already Exists')
+			} else if (e?.response?.status === 405) {
+				setErrors({
+					email: '',
+					password: '',
+					fullname: '',
+					key: 'Please enter correct secret key',
+					department: ''
+				})
+				toast.error('Enter Correct Secret Key')
 			} else {
-				const errorData = await response.json()
-				console.error('Login failed:', errorData)
-				return errorData
+				toast.error(
+					'Some Error Ocurred Please Register after some time'
+				)
 			}
-		} catch (error) {
-			console.error('Error during login request:', error)
-			return error
 		}
 	}
 	const SubmitHandler = (e) => {
 		e.preventDefault()
+		setLoading(true)
 		if (validateForm()) {
 			console.log(form)
 			loginHelper(
@@ -136,8 +191,9 @@ const AdminRegisterComp = () => {
 				form?.fullname
 			)
 		} else {
-			console.log('error')
+			toast.error('Please Fill All the necessary Information')
 		}
+		setLoading(false)
 	}
 	return (
 		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 '>
@@ -157,6 +213,7 @@ const AdminRegisterComp = () => {
 						<form className='flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center'>
 							<div className='text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='text'
 									name='fullname'
 									required={true}
@@ -176,6 +233,7 @@ const AdminRegisterComp = () => {
 							</div>
 							<div className='text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='email'
 									name='email'
 									required={true}
@@ -194,6 +252,7 @@ const AdminRegisterComp = () => {
 							</div>
 							<div className='text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='password'
 									name='password'
 									required={true}
@@ -214,6 +273,7 @@ const AdminRegisterComp = () => {
 							</div>
 							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<select
+									disabled={loading}
 									name='department'
 									required={true}
 									placeholder='sem'
@@ -242,6 +302,7 @@ const AdminRegisterComp = () => {
 
 							<div className='text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='password'
 									name='key'
 									required={true}
