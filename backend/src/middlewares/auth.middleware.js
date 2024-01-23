@@ -9,7 +9,6 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
         const token =
             req.cookies?.accessToken ||
             req.header("Authorization")?.replace("Bearer ", "");
-        console.log(req.header("Authorization"));
 
         if (!token) {
             throw new ApiError(401, "unauthorized request");
@@ -44,16 +43,11 @@ const adminJWT = asyncHandler(async (req, _, next) => {
             "-password -refreshToken"
         );
         if (!admin) {
-            console.log("this works");
             throw new ApiError(401, "Invalid Access Token");
         }
-        console.log("this works1");
         req.admin = admin;
-        console.log("this works2");
         next();
-        console.log("this works3");
     } catch (error) {
-        console.log("here we do it");
         throw new ApiError(401, "Invalid Access Token --catch");
     }
 });

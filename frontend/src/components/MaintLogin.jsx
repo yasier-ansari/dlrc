@@ -1,13 +1,15 @@
 import { FcGoogle } from 'react-icons/fc'
 import { FaGithub } from 'react-icons/fa'
 import { useContext, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 
 const MaintLoginComp = () => {
-	const { mainLoding, setLoginData } = useContext(AuthContext)
+	const { mainLoding, setLoginData, user } = useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
+	const navigate = useNavigate()
+	const { state } = useLocation()
 	const [form, setForm] = useState({
 		email: '',
 		password: ''
@@ -55,14 +57,14 @@ const MaintLoginComp = () => {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ email, password })
+				body: JSON.stringify({ email, password, type: 'maintenance' })
 			}
 		)
 		if (response.status === 200) {
 			const res = await response.json()
 			setLoginData(res?.data)
-			toast.success('Login Successfull')
-			navigate('/admin')
+			toast.success('Welcome Back')
+			navigate(state?.path || '/maintenance/user')
 		} else if (response?.status === 401) {
 			setErrors({
 				email: '',
@@ -71,11 +73,17 @@ const MaintLoginComp = () => {
 		} else if (response?.status === 404) {
 			setErrors({ password: '', email: 'Email not registered yet' })
 		} else {
-			toast.error(`Login fail - "Some Error Ocurred"`, {
-				position: 'top-center'
-			})
+			toast.error(`Some error occurred, please try again later`)
 		}
 	}
+	useEffect(() => {
+		const getUserIfExists = () => {
+			if (user) {
+				navigate(state?.path || '/maintenance/user')
+			}
+		}
+		getUserIfExists()
+	}, [])
 	return (
 		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 '>
 			{!mainLoding ? (

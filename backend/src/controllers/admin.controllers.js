@@ -5,14 +5,15 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { generateTokens } from "../utils/generateToken.js";
 import { Request } from "../models/request.models.js";
 import { Issue } from "../models/issue.models.js";
+import s3Client from "../utils/s3.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const registerAdmin = asyncHandler(async (req, res) => {
     const { email, password, department, fullname, key, type } = req.body; // added type { admin, maintenance }
 
     if (
-        [email, password, fullname, department].some(
-            (field) => field?.trim() === ""
-        )
+        [email, password, fullname].some((field) => field?.trim() === "")
         //[fullname, domain_id, prn, password].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(401, "All Fields are mandatory");
@@ -25,15 +26,26 @@ const registerAdmin = asyncHandler(async (req, res) => {
     if (key !== process.env.ADMIN_SECRET_KEY) {
         throw new ApiError(405, "Unauthorized -- please enter valid email ID");
     }
+    var admin;
+    if (department) {
+        admin = await Admin.create({
+            email: email,
+            password: password,
+            fullname: fullname,
+            department,
+            key: key,
+            userType: type,
+        });
+    } else {
+        admin = await Admin.create({
+            email: email,
+            password: password,
+            fullname: fullname,
+            key: key,
+            userType: type,
+        });
+    }
 
-    const admin = await Admin.create({
-        email: email,
-        password: password,
-        fullname: fullname,
-        department,
-        key: key,
-        userType: type,
-    });
     const createdAdmin = await Admin.findById(admin._id).select("-password");
     if (!createdAdmin) {
         throw new ApiError(500, "Error while creating admin");
@@ -54,10 +66,10 @@ const registerAdmin = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {
-                    userType: "admin",
                     accessToken,
                     refreshToken,
                     ...createdAdmin,
+                    userType: type,
                 },
                 "Admin Registered"
             )
@@ -65,7 +77,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
 });
 
 const loginAdmin = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, type } = req.body;
 
     if ([email, password].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "All fields are required");
@@ -95,14 +107,14 @@ const loginAdmin = asyncHandler(async (req, res) => {
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .cookie("userType", "admin", options)
+        .cookie("userType", type, options)
         .json(
             new ApiResponse(
                 200,
                 {
                     accessToken: accessToken,
                     refreshToken: refreshToken,
-                    userType: "admin",
+                    userType: type,
                 },
                 "Admin logged in successfully"
             )
@@ -243,6 +255,94 @@ const getRequestsFromDepartment = asyncHandler(async (req, res) => {
         );
 });
 
+// const getOneRequest = asyncHandler(async (req, res) => {
+//     const { request } = req.params; // TODO: add new req_no in models
+//     try {
+//         if (!request?.trim()) {
+//             return res
+//                 .status(400)
+//                 .json(
+//                     new ApiResponse(
+//                         400,
+//                         { message: "No Student Id is given as param" },
+//                         "No Student Id is given as param"
+//                     )
+//                 );
+//         }
+//         const showRequest =
+//             await Request.findById(request).populate("student_id");
+//         if (!showRequest) {
+//             return res
+//                 .status(404)
+//                 .json(
+//                     new ApiResponse(
+//                         404,
+//                         { message: "No Request found for given student" },
+//                         "No Request found for given student"
+//                     )
+//                 );
+//         }
+//         const Idparams = {
+//             Bucket: process.env.AWS_BUCKET_NAME,
+//             Key: `/id-card/${showRequest.student_id?.idCard}`,
+//         };
+//         const idcommand = new GetObjectCommand(Idparams);
+//         const idurl = await getSignedUrl(s3Client, command, {
+//             expiresIn: 14400,
+//         });
+//         showRequest.student_id.idCard = idurl;
+//         const pdcparams = {
+//             Bucket: process.env.AWS_BUCKET_NAME,
+//             Key: `/pdc/${showRequest.pdc}`,
+//         };
+//         const pdccommand = new GetObjectCommand(pdcparams);
+//         const pdcurl = await getSignedUrl(s3Client, pdccommand, {
+//             expiresIn: 14400,
+//         });
+//         showRequest.pdc = pdcurl;
+//         const frparams = {
+//             Bucket: process.env.AWS_BUCKET_NAME,
+//             Key: `/fr/${showRequest.faculty_Rec}`,
+//         };
+//         const frcommand = new GetObjectCommand(frparams);
+//         const frurl = await getSignedUrl(s3Client, frcommand, {
+//             expiresIn: 14400,
+//         });
+//         showRequest.faculty_Rec = frurl;
+//         const sdparams = {
+//             Bucket: process.env.AWS_BUCKET_NAME,
+//             Key: `/sd/${showRequest.students_Dec}`,
+//         };
+//         const sdcommand = new GetObjectCommand(sdparams);
+//         const sdurl = await getSignedUrl(s3Client, sdcommand, {
+//             expiresIn: 14400,
+//         });
+//         showRequest.students_Dec = sdurl;
+//         const pdparams = {
+//             Bucket: process.env.AWS_BUCKET_NAME,
+//             Key: `/pd/${showRequest.parents_Dec}`,
+//         };
+//         const pdcommand = new GetObjectCommand(pdparams);
+//         const pdurl = await getSignedUrl(s3Client, pdcommand, {
+//             expiresIn: 14400,
+//         });
+//         showRequest.students_Dec = pdurl;
+
+//         return res
+//             .status(202)
+//             .json(new ApiResponse(202, showRequest, "Sent Particular Request"));
+//     } catch (e) {
+//         return res
+//             .status(500)
+//             .json(
+//                 new ApiResponse(
+//                     500,
+//                     { message: e },
+//                     "Couldn't Fetch the Student Request"
+//                 )
+//             );
+//     }
+// });
 const getOneRequest = asyncHandler(async (req, res) => {
     const { request } = req.params; // TODO: add new req_no in models
     try {
@@ -252,25 +352,52 @@ const getOneRequest = asyncHandler(async (req, res) => {
                 .json(
                     new ApiResponse(
                         400,
-                        { message: "No Student Id is given as param" },
-                        "No Student Id is given as param"
+                        { message: "No Request ID is given as param" },
+                        "No Request ID is given as param"
                     )
                 );
         }
-        const showRequest = await Request.findOne({
-            student_id: request,
-        }).populate("student_id");
+
+        const showRequest =
+            await Request.findById(request).populate("student_id");
+
         if (!showRequest) {
             return res
                 .status(404)
                 .json(
                     new ApiResponse(
                         404,
-                        { message: "No Request found for given student" },
-                        "No Request found for given student"
+                        { message: "No Request found for the given ID" },
+                        "No Request found for the given ID"
                     )
                 );
         }
+
+        const getIdCardUrl = async (key) => {
+            const params = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: key,
+            };
+            const command = new GetObjectCommand(params);
+            const res = await getSignedUrl(s3Client, command, {
+                expiresIn: 14400,
+            });
+            return res;
+        };
+
+        showRequest.student_id.idCard = await getIdCardUrl(
+            `/id-card/${showRequest.student_id?.idCard}`
+        );
+        showRequest.pdc = await getIdCardUrl(`/pdc/${showRequest.pdc}`);
+        showRequest.faculty_Rec = await getIdCardUrl(
+            `/fr/${showRequest.faculty_Rec}`
+        );
+        showRequest.students_Dec = await getIdCardUrl(
+            `/sd/${showRequest.students_Dec}`
+        );
+        showRequest.parents_Dec = await getIdCardUrl(
+            `/pd/${showRequest.parents_Dec}`
+        );
 
         return res
             .status(202)
@@ -281,7 +408,7 @@ const getOneRequest = asyncHandler(async (req, res) => {
             .json(
                 new ApiResponse(
                     500,
-                    { message: "Couldn't Fetch the Student Request" },
+                    { message: e.message || "Internal Server Error" },
                     "Couldn't Fetch the Student Request"
                 )
             );
@@ -297,7 +424,7 @@ const updateRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Request id is missing");
     }
 
-    const showRequest = await Request.findOne({ _id: request });
+    const showRequest = await Request.findById(request);
     if (!showRequest) {
         throw new ApiError(404, "Request Not Found");
     }
@@ -314,10 +441,6 @@ const updateRequest = asyncHandler(async (req, res) => {
             new: true,
         }
     );
-
-    if (updatedRequest.status != update || updatedRequest.message != message) {
-        throw new ApiError(500, "An error uccored while updating requests");
-    }
 
     return res.status(200).json(new ApiResponse(201, {}, "Request Updated"));
 });
@@ -338,11 +461,83 @@ const getApproved = asyncHandler(async (req, res) => {
             },
         },
     ]);
+    await Request.populate(allApproved, { path: "student_id" });
     return res
         .status(200)
         .json(
             new ApiResponse(200, allApproved, "All approved requests fetched")
         );
+});
+
+const getOneApprovedRequest = asyncHandler(async (req, res) => {
+    const { request } = req.params; // TODO: add new req_no in models
+    try {
+        if (!request?.trim()) {
+            return res
+                .status(400)
+                .json(
+                    new ApiResponse(
+                        400,
+                        { message: "No Request ID is given as param" },
+                        "No Request ID is given as param"
+                    )
+                );
+        }
+        const showRequest =
+            await Request.findById(request).populate("student_id");
+
+        if (!showRequest) {
+            return res
+                .status(404)
+                .json(
+                    new ApiResponse(
+                        404,
+                        { message: "No Request found for the given ID" },
+                        "No Request found for the given ID"
+                    )
+                );
+        }
+
+        const getIdCardUrl = async (key) => {
+            const params = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: key,
+            };
+            const command = new GetObjectCommand(params);
+            const res = await getSignedUrl(s3Client, command, {
+                expiresIn: 14400,
+            });
+            return res;
+        };
+
+        showRequest.student_id.idCard = await getIdCardUrl(
+            `/id-card/${showRequest.student_id?.idCard}`
+        );
+        showRequest.pdc = await getIdCardUrl(`/pdc/${showRequest.pdc}`);
+        showRequest.faculty_Rec = await getIdCardUrl(
+            `/fr/${showRequest.faculty_Rec}`
+        );
+        showRequest.students_Dec = await getIdCardUrl(
+            `/sd/${showRequest.students_Dec}`
+        );
+        showRequest.parents_Dec = await getIdCardUrl(
+            `/pd/${showRequest.parents_Dec}`
+        );
+
+        return res
+            .status(202)
+            .json(new ApiResponse(202, showRequest, "Sent Particular Request"));
+    } catch (e) {
+        return res
+            .status(500)
+            .json(
+                new ApiResponse(
+                    500,
+                    { message: e.message || "Internal Server Error" },
+                    "Couldn't Fetch the Student Request"
+                )
+            );
+    }
 });
 
 // if the laptop is alloed to someone it cant be alloted to others
@@ -356,4 +551,5 @@ export {
     getRequestsFromDepartment,
     updateRequest,
     viewProfile,
+    getOneApprovedRequest,
 };

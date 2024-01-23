@@ -23,13 +23,12 @@ const Header = () => {
 	const [menuBar, setMenuBar] = useState(false)
 	const [isScrolled, setIsScrolled] = useState(false)
 	const [loading, setLoading] = useState(true)
-	const mobileRef = useRef(null)
 	const userRef = useRef(null)
 	const navigate = useNavigate()
 	const handleOutsideClick = useCallback(() => {
 		setDropdownOpen(false)
 	}, [])
-	useOnClickOutside(userRef, handleOutsideClick)
+	// useOnClickOutside(userRef, handleOutsideClick)
 	const {
 		token,
 		user,
@@ -41,7 +40,11 @@ const Header = () => {
 	} = useContext(AuthContext)
 
 	const handleDropdownToggle = () => {
-		setDropdownOpen(!dropdownOpen)
+		if (dropdownOpen === false) {
+			setDropdownOpen(true)
+		} else {
+			setDropdownOpen(false)
+		}
 	}
 
 	const handleClickOutside = (event, ref, setOpen) => {
@@ -50,6 +53,7 @@ const Header = () => {
 		}
 	}
 	const logoutHandler = async () => {
+		console.log('working')
 		if (userType === 'student') {
 			const response = await fetch(
 				'http://localhost:8000/api/v1/student/logout',
@@ -73,20 +77,25 @@ const Header = () => {
 		navigate('/')
 	}
 
-	useEffect(() => {
-		const handleClickOutsideMobile = (event) => {
-			handleClickOutside(event, mobileRef, setMenuBar)
-		}
+	// useEffect(() => {
+	// 	const handleClickOutsideMobile = (event) => {
+	// 		handleClickOutside(event, userRef, setDropdownOpen)
+	// 	}
 
-		document.addEventListener('mousedown', handleClickOutsideMobile)
+	// 	document.addEventListener('mousedown', handleClickOutsideMobile)
+	// 	document.addEventListener('touchstart', handleClickOutsideMobile)
 
-		return () => {
-			document.removeEventListener(
-				'mousedown',
-				handleClickOutsideMobile
-			)
-		}
-	}, [])
+	// 	return () => {
+	// 		document.removeEventListener(
+	// 			'mousedown',
+	// 			handleClickOutsideMobile
+	// 		)
+	// 		document.removeEventListener(
+	// 			'touchstart',
+	// 			handleClickOutsideMobile
+	// 		)
+	// 	}
+	// }, [])
 	useEffect(() => {
 		const getToken = localStorage.getItem('token')
 		setLoading(false)
@@ -138,9 +147,10 @@ const Header = () => {
 				>
 					<span className='text-[#52b788]'>DLRC</span>
 				</a>
-				<div className='flex flex-col font-sat h-full -space-y-8 sm:hidden'>
+
+				<div className='flex flex-col font-sat h-full -space-y-8 md:hidden'>
 					<button
-						className='transition-all z-50 duration-150 ease-in'
+						className='transition-all duration-150 ease-in'
 						onClick={() => setMenuBar(!menuBar)}
 					>
 						{!menuBar && <LuMenu className='w-7 h-7' />}
@@ -148,33 +158,30 @@ const Header = () => {
 					{menuBar && (
 						<div className='absolute z-40 top-0 -left-0 w-full h-screen bg-white'>
 							<button
-								className=' z-[99] absolute top-12 right-4 transition-all  duration-150 ease-in'
+								className=' absolute top-12 right-4 transition-all  duration-150 ease-in'
 								onClick={() => setMenuBar(!menuBar)}
 							>
-								<LuX className='h-7 w-7 stro stroke-[#40916c] stroke-[4] fill-gray-700 text-gray-800  rounded-lg  ' />
+								<LuX className='h-7 w-7 stro stroke-[#40916c] stroke-[3] fill-gray-700 text-gray-800  rounded-lg  ' />
 							</button>
-							<div
-								ref={mobileRef}
-								className=' flex sm:hidden flex-col mx-auto items-center space-y-12 justify-start pt-40 text-gray-700 px-6 -py-6 w-full h-screen  bg-gradient-radial  from-purple-100/60 via-purple-100 to-purple-200  '
-							>
+							<div className=' flex md:hidden flex-col mx-auto items-center space-y-12 justify-start pt-40 text-gray-700 px-6 -py-6 w-full h-screen  bg-gradient-radial  from-purple-100/60 via-purple-100 to-purple-200  '>
 								<div className=' flex flex-col space-y-12 items-center justify-center text-base '>
-									<Link
-										to={'/'}
+									<a
+										href={'/'}
 										onClick={() => setMenuBar(false)}
 										className='flex items-center text-lg  '
 									>
 										<HiOutlineDocumentText className='mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 ' />
 										About
-									</Link>
+									</a>
 									{userType === 'student' && (
-										<Link
-											to={'/user/apply'}
+										<a
+											href={'/user/apply'}
 											onClick={() => setMenuBar(false)}
 											className='flex items-center text-lg  '
 										>
 											<HiOutlineDocumentText className='mr-2 xs:mr-3 w-4 h-4 xs:w-5 xs:h-5 ' />
 											Apply
-										</Link>
+										</a>
 									)}
 									<a
 										href={'/rules'}
@@ -193,13 +200,16 @@ const Header = () => {
 										Admin
 									</a>
 								</div>
-								<div className='flex flex-col space-y-6 items-center justify-between'>
+								<div className='flex flex-col space-y-6 items-center justify-between z-50'>
 									{!loading ? (
 										user ? (
-											<div className='relative' ref={userRef}>
+											<div className='relative group'>
 												<button
-													onClick={handleDropdownToggle}
-													className='flex items-center py-2 px-4 sm:px-3 md:p-2 md:px-6 space-x-3 bg-gradient-to-tr to-[#52b788]  from-[#74c69d] rounded-xl '
+													ref={userRef}
+													onClick={() => {
+														handleDropdownToggle()
+													}}
+													className='flex items-center py-2 pl-4 pr-2 sm:pl-6 sm:pr-4 md:p-2 space-x-3 bg-gradient-to-tr to-[#52b788]  from-[#74c69d] rounded-xl '
 												>
 													{/* <LuAtom className="w-8 h-8 p-1 " /> */}
 													<p className='font-semibold text-gray-900  md:text-lg lg:text-xl  '>
@@ -211,68 +221,66 @@ const Header = () => {
 														} `}
 													/>
 												</button>
-												{dropdownOpen ? (
-													<div className='absolute top-12 mt-2 w-48 bg-white rounded-md shadow-lg'>
-														<ul className='p-2 text-start'>
-															{userType === 'student' ? (
-																<>
-																	<Link
-																		to='/user/profile'
-																		className='hover:bg-gray-800 cursor-pointer'
-																	>
-																		<button
-																			onClick={() => {
-																				setDropdownOpen(false)
-																				setMenuBar(false)
-																			}}
-																			className='flex w-full px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700'
-																		>
-																			profile
-																		</button>
-																	</Link>
-																	<Link
-																		to='/user/apply'
-																		className='hover:bg-gray-800 cursor-pointer'
-																	>
-																		<button
-																			onClick={() => {
-																				setDropdownOpen(false)
-																				setMenuBar(false)
-																			}}
-																			className='flex px-4 py-2 text-sm hover:bg-gray-200 w-full rounded-lg text-gray-700'
-																		>
-																			apply
-																		</button>
-																	</Link>
-																</>
-															) : null}
-															<button
-																onClick={logoutHandler}
-																className='flex w-full hover:bg-gray-200 rounded-lg cursor-pointer'
-															>
-																<span className='flex w-full px-4 py-2 text-sm text-red-400'>
-																	logout
-																</span>
-															</button>
-														</ul>
-													</div>
-												) : null}
+												<div
+													className={`  ${
+														dropdownOpen ? 'block' : 'hidden'
+													} absolute top-12 mt-2 w-48 bg-white rounded-md  border-2 shadow-lg`}
+												>
+													<ul className='p-2 text-start'>
+														{userType === 'student' ? (
+															<>
+																<a
+																	href={'/user/profile'}
+																	onClick={() => {
+																		setDropdownOpen(false)
+																	}}
+																	className='hover:bg-gray-800 cursor-pointer'
+																>
+																	<p className='flex w-full px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700'>
+																		profile
+																	</p>
+																</a>
+																<a
+																	href={'/user/apply'}
+																	onClick={() => {
+																		setDropdownOpen(false)
+																	}}
+																	className='hover:bg-gray-800 cursor-pointer'
+																>
+																	<p className='flex px-4 py-2 text-sm hover:bg-gray-200 w-full rounded-lg text-gray-700'>
+																		apply
+																	</p>
+																</a>
+															</>
+														) : null}
+														<button
+															onClick={() => {
+																logoutHandler()
+															}}
+															className='flex w-full hover:bg-gray-200 rounded-lg cursor-pointer'
+														>
+															<span className='flex w-full px-4 py-2 text-sm text-red-400'>
+																logout
+															</span>
+														</button>
+													</ul>
+												</div>
 											</div>
 										) : (
 											<div className='flex flex-col space-y-8 text-base font-semibold px-3 py-[4px] lg:px-4 '>
-												<Link
-													to='/user/login'
-													className=' bg-[#95d5b2] flex justify-center items-center text-gray-800 shadow-lg border-2 border-[#40916c] shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 '
+												<a
+													href='/user/login'
+													className=' bg-[#95d5b2] w-max h-10 px-4 md:px-6 flex justify-center items-center text-gray-800 shadow-lg border-2 border-[#40916c] shadow-stone-300 text-base rounded-xl py-1 md:py-2 lg:px-4 '
 												>
 													Log In
-												</Link>
+												</a>
 											</div>
 										)
 									) : (
-										<div className='flex items-center justify-center bg-white h-10 w-16 rounded-lg space-x-3 text-base  border-gray-700'>
-											<div className='animate-spin  rounded-full h-4 w-4 sm:h-5 sm:w-5  border-[2.2px] border-r-none border-r-white border-[#40916c]'>
-												{' '}
-												‎{' '}
+										<div className='flex items-center justify-center bg-[#95d5b2] w-max h-10 px-4 md:px-6 rounded-lg space-x-3 text-base  border-gray-700'>
+											<p className='text-gray-900'>Loading</p>
+											<div className='animate-spin'>
+												<div className='animate-spin rounded-full  h-5 w-5 lg:h-6 lg:w-6 border-[2.5px] border-r-none border-r-white border-transparent'></div>
 											</div>
 										</div>
 									)}
@@ -282,7 +290,7 @@ const Header = () => {
 					)}
 				</div>
 
-				<div className=' hidden sm:flex space-x-12 items-center justify-center text-base '>
+				<div className=' hidden md:flex space-x-12 items-center justify-center text-base '>
 					<Link
 						to={'/rules'}
 						className='flex items-center text-base hover:text-[#2d6a4f] md:text-lg lg:text-xl '
@@ -290,24 +298,22 @@ const Header = () => {
 						<LuInfo className='mr-2 w-4 h-4 md:w-5 md:h-5 ' />
 						Rules
 					</Link>
-					<a
-						href={'/admin/login'}
+					<Link
+						to={'/admin/login'}
 						className='flex items-center text-base hover:text-[#2d6a4f] md:text-lg lg:text-xl '
 					>
 						<GrUserAdmin className='mr-2 w-4 h-4 md:w-5 md:h-5 ' />
 						Admin
-					</a>
-					{token ? (
-						userType === 'student' && (
-							<Link
-								to={'/user/apply'}
-								onClick={() => setMenuBar(false)}
-								className='flex items-center text-base hover:text-[#2d6a4f] md:text-lg lg:text-xl  '
-							>
-								<HiOutlineDocumentText className='mr-2 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 ' />
-								Apply
-							</Link>
-						)
+					</Link>
+					{userType === 'student' ? (
+						<Link
+							to={'/user/apply'}
+							onClick={() => setMenuBar(false)}
+							className='flex items-center text-base hover:text-[#2d6a4f] md:text-lg lg:text-xl  '
+						>
+							<HiOutlineDocumentText className='mr-2 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 ' />
+							Apply
+						</Link>
 					) : (
 						<Link
 							to={'/user/apply'}
@@ -319,12 +325,15 @@ const Header = () => {
 						</Link>
 					)}
 				</div>
-				<div className='hidden sm:flex items-center  justify-between'>
+				<div className='hidden md:flex items-center  justify-between'>
 					{!loading ? (
 						user ? (
-							<div className='relative'>
+							<div className='relative group '>
 								<button
-									onClick={handleDropdownToggle}
+									ref={userRef}
+									onClick={() => {
+										handleDropdownToggle()
+									}}
 									className='flex items-center p-1 md:p-2 md:px-6 space-x-3 bg-gradient-to-tr to-[#52b788] from-[#74c69d] rounded-xl '
 								>
 									<p className='font-semibold text-gray-900  md:text-lg lg:text-xl  '>
@@ -336,65 +345,62 @@ const Header = () => {
 										} `}
 									/>
 								</button>
-								{dropdownOpen ? (
-									<div className='absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg'>
-										<ul
-											ref={userRef}
-											className='p-2 text-start border border-gray-300 rounded-xl '
-										>
-											{userType === 'student' ? (
-												<>
-													<Link
-														to='/user/profile'
-														className='hover:bg-gray-800 w-full cursor-pointer'
-													>
-														<button
-															onClick={() => {
-																setDropdownOpen(false)
-																setDropdownOpen(false)
-															}}
-															className='flex w-full md:text-base px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700'
-														>
-															profile
-														</button>
-													</Link>
-													<Link
-														to='/user/apply'
-														className='hover:bg-gray-800 cursor-pointer'
-													>
-														<button
-															onClick={() => {
-																setDropdownOpen(false)
-																setDropdownOpen(false)
-															}}
-															className='flex px-4 py-2 text-sm md:text-base hover:bg-gray-200 w-full rounded-lg text-gray-700'
-														>
-															apply
-														</button>
-													</Link>
-												</>
-											) : null}
+								<div
+									className={` ${
+										dropdownOpen ? 'block' : 'hidden'
+									} absolute  right-0 mt-2 w-48 bg-white rounded-md shadow-lg`}
+								>
+									<ul className='p-2 text-start border border-gray-300 rounded-xl '>
+										{userType === 'student' ? (
+											<>
+												<Link
+													to={'/user/profile'}
+													onClick={(e) => setDropdownOpen(false)}
+													className='hover:bg-gray-800 w-full cursor-pointer'
+												>
+													<p className='flex w-full md:text-base px-4 py-2 text-sm hover:bg-gray-200 rounded-lg text-gray-700'>
+														profile
+													</p>
+												</Link>
+												{/* <a
+													href={'/user/apply'}
+													onClick={() => setMenuBar(false)}
+													className='flex items-center text-base hover:text-[#2d6a4f] md:text-lg lg:text-xl  '
+												>
+													<HiOutlineDocumentText className='mr-2 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 ' />
+													Apply
+												</a> */}
+												<Link
+													to={'/user/apply'}
+													className='hover:bg-gray-800 w-full'
+													onClick={(e) => setDropdownOpen(false)}
+												>
+													<p className='flex px-4 py-2 text-sm md:text-base hover:bg-gray-200 w-full rounded-lg text-gray-700'>
+														apply
+													</p>
+												</Link>
+											</>
+										) : null}
 
-											<button
-												onClick={logoutHandler}
-												className='flex w-full hover:bg-gray-200 rounded-lg cursor-pointer'
-											>
-												<span className='flex w-full px-4 py-2 text-sm md:text-base text-red-400 font-bold'>
-													logout
-												</span>
-											</button>
-										</ul>
-									</div>
-								) : null}
+										<button
+											onClick={logoutHandler}
+											className='flex w-full hover:bg-gray-200 rounded-lg cursor-pointer'
+										>
+											<span className='flex w-full px-4 py-2 text-sm md:text-base text-red-400 font-bold'>
+												logout
+											</span>
+										</button>
+									</ul>
+								</div>
 							</div>
 						) : (
 							<div className='flex  space-x-5 md:space-x-6 text-base font-semibold  '>
-								<Link
-									to='/user/login'
+								<a
+									href='/user/login'
 									className=' bg-[#95d5b2] flex justify-center items-center text-gray-800 border-2 border-[#40916c] text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 '
 								>
 									Log In
-								</Link>
+								</a>
 							</div>
 						)
 					) : (

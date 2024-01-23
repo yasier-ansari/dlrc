@@ -1,4 +1,9 @@
-import { Route, Routes, Navigate } from 'react-router-dom'
+import {
+	Route,
+	Routes,
+	Navigate,
+	useLocation
+} from 'react-router-dom'
 import MaintLogin from './MaintLogin.page'
 import MaintRegister from './MaintRegister.page'
 import MaintUser from './MaintUser.page'
@@ -9,6 +14,7 @@ import { AuthContext } from '../../context/AuthContext'
 
 const Maint = () => {
 	const { user } = useContext(AuthContext)
+	const { state } = useLocation()
 	return (
 		<Routes>
 			<Route
@@ -18,7 +24,7 @@ const Maint = () => {
 						<MaintUserApproval />
 					) : (
 						<Navigate
-							to='/maitenance/login'
+							to='/maintenance/login'
 							state={{ path: location.pathname }}
 						/>
 					)
@@ -44,7 +50,7 @@ const Maint = () => {
 						<MaintUserReturn />
 					) : (
 						<Navigate
-							to='/maitenance/login'
+							to='/maintenance/login'
 							state={{ path: location.pathname }}
 						/>
 					)
@@ -78,7 +84,7 @@ const Maint = () => {
 						<Navigate to={state?.path || '/maintenance/user'} />
 					) : (
 						<Navigate
-							to='/maitenance/login'
+							to='/maintenance/login'
 							state={{ path: location.pathname }}
 						/>
 					)

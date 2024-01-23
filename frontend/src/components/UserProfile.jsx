@@ -5,9 +5,11 @@ import { BsArrowsFullscreen } from 'react-icons/bs'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
+import { IoWarningOutline } from 'react-icons/io5'
 const UserProfile = () => {
 	const [loading, setLoading] = useState(false)
-	const { setModalPopped, user, token, setUser } =
+	const [flag, setFlag] = useState(true)
+	const { setModalPopped, user, token, setUser, setLoginData } =
 		useContext(AuthContext)
 	const [request, setRequest] = useState(null)
 	const [selectedImage, setSelectedImage] = useState()
@@ -33,27 +35,39 @@ const UserProfile = () => {
 		'VIII'
 	]
 	const year_options = ['FE', 'SE', 'TE', 'BE']
+	function formatDate(inputDate) {
+		const options = {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		}
+		const formattedDate = new Date(inputDate).toLocaleDateString(
+			'en-US',
+			options
+		)
+		return formattedDate
+	}
 	const [form, setForm] = useState({
 		fullname: user?.fullname || '',
 		domain_id: user?.domain_id || '',
 		prn: user?.prn || '',
-		password: user?.password || '',
+		// password: user?.password || '',
 		department: user?.department || '',
 		year: user?.year || '',
-		sem: user?.sem || '',
-		number: user?.number || '',
-		idCard: user?.idCard || ''
+		sem: user?.sem || ''
+		// number: user?.number || ''
+		// idCard: user?.idCard || ''
 	})
 	const [errors, setErrors] = useState({
 		fullname: '',
 		domain_id: '',
 		prn: '',
-		password: '',
+		// password: '',
 		department: '',
 		year: '',
-		sem: '',
-		number: '',
-		idCard: ''
+		sem: ''
+		// number: ''
+		// idCard: ''
 	})
 	const validateForm = () => {
 		let valid = true
@@ -118,6 +132,37 @@ const UserProfile = () => {
 		setErrors(newErrors)
 		return valid
 	}
+	const updateHelper = async (accessToken) => {
+		var response
+		setLoading(true)
+		try {
+			response = await axios({
+				method: 'post',
+				url: 'http://localhost:8000/api/v1/student/update-profile',
+				data: form,
+				headers: { Authorization: `Bearer ${accessToken}` }
+			})
+			const res = response?.data
+			console.log(res)
+			setUser(res?.data)
+			setFlag(!flag)
+			toast.success('Profile Updated Successfully')
+			setLoading(false)
+		} catch (e) {
+			console.log(e)
+			setLoading(false)
+			if (e?.response?.status === 500) {
+				toast.error(
+					'Server Error Occurred, please try again after some time'
+				)
+			} else {
+				toast.error(
+					'Some Error Ocurred Please try again after some time'
+				)
+			}
+		}
+		setLoading(false)
+	}
 	const handleImageChange = (e) => {
 		const file = e.target.files[0]
 		setForm({ ...form, idCard: file })
@@ -129,10 +174,36 @@ const UserProfile = () => {
 			reader.readAsDataURL(file)
 		}
 	}
-	const SubmitHandler = (e) => {
+	const SubmitHandler = async (e) => {
 		e.preventDefault()
 		if (validateForm()) {
-			console.log(form)
+			if (
+				form?.fullname === user?.fullname &&
+				form?.domain_id === user?.domain_id &&
+				form?.department === user?.department &&
+				form?.prn === user?.prn &&
+				form?.year === user?.year &&
+				form?.sem === user?.sem
+			) {
+				// toast.error('You need to change your info first')
+				toast('No profile changes has been made yet ', {
+					id: `${e}`,
+					icon: (
+						<IoWarningOutline className='h-6 w-6 md:w-8 md:h-8 text-orange-500 ' />
+					),
+					style: {
+						border: '2px solid #fb923c',
+						padding: '12px 20px 12px 20px',
+						color: '#333'
+					},
+					iconTheme: {
+						primary: '#fb923c',
+						secondary: '#FFFAEE'
+					}
+				})
+			} else {
+				await updateHelper(token)
+			}
 		}
 	}
 	useEffect(() => {
@@ -166,7 +237,7 @@ const UserProfile = () => {
 				try {
 					const response = await axios({
 						method: 'get',
-						url: `http://localhost:8000/api/v1/student/request/${id}`,
+						url: `http://localhost:8000/api/v1/student/recent-request`,
 						headers: { Authorization: `Bearer ${accessToken}` }
 					})
 					// console.log(response?.data?.data)
@@ -193,22 +264,22 @@ const UserProfile = () => {
 		}
 		getData()
 		setLoading(false)
-	}, [token])
-	console.log(request)
+	}, [token, flag])
+	console.log(user)
 
 	return (
 		<>
 			<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full text-gray-800/90 mx-auto'>
 				<div
 					div
-					className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full mt-12 mb-16 text-center mx-auto'
+					className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full my-16  text-center mx-auto'
 				>
 					<LuUserCircle2 className=' text-[#40916c] -skew-x-6 ' />
 					<h1 className='font-bold italic'>Profile</h1>
 				</div>
 			</div>
 			<div
-				className={`flex relative w-full items-center mx-auto flex-col space-y-4 max-w-3xl pb-20 ${
+				className={`flex relative w-full items-center mx-auto flex-col space-y-4 max-w-3xl ${
 					loading && 'opacity-50'
 				} `}
 			>
@@ -376,13 +447,15 @@ const UserProfile = () => {
 											// selectedImage
 											// 	? selectedImage
 											// 	:
-											user?.idCard ||
-											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											user?.idCard
+											// ||
+											// 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										}
-										alt='Selected Image'
+										alt='Please refresh the page if image is not visible'
 										className='w-full h-full rounded-lg aspect-video min-h-full sm:rounded-xl md:rounded-2xl object-cover'
 										width={80}
 										height={80}
+										loading='lazy'
 									/>
 									{/* <div className='absolute top-0 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-1 sm:p-2 md:p-3 '>
 										<LuInfo className='w-6 h-6 sm:h-8 sm:w-8 md:h-10 md:w-10' />
@@ -422,20 +495,11 @@ const UserProfile = () => {
 					</button>
 				</div>
 			</div>
-			<div className='flex items-center justify-center w-full bg-gray-400 h-[2px] rounded-full mt-12 '></div>
 			<div
-				className={`flex items-center w-full justify-center mx-auto flex-col space-y-12 max-w-6xl  py-20 `}
+				className={`flex items-center w-full justify-center mx-auto flex-col space-y-12 max-w-6xl  pb-20 `}
 			>
-				<div className='flex w-full h-full items-center justify-start mb-4 md:mb-6'>
-					<h3 className=' w-max font-bold text-[#2d6a4f] text-2xl md:text-3xl p-0 m-0 rounded-md md:self-start italic '>
-						Requests
-					</h3>
-					<div className='w-full h-full bg-[#74c69d90] ml-6 p-1 rounded-sm'>
-						‎
-					</div>
-				</div>
 				{loading ? (
-					<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl space-y-6 md:space-y-8 border-2 border-green-600/40 animate-pulse '>
+					<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2  border-green-600/40 animate-pulse '>
 						<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
 							<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
 								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-24 '></p>
@@ -498,17 +562,30 @@ const UserProfile = () => {
 					</div>
 				) : (
 					<>
-						{request ? (
+						{request?.request?.length > 0 ||
+						request?.issue?.length > 0 ? (
 							<>
-								{request?.request?.issue ? (
+								<div className='flex items-center justify-center w-full bg-stone-300 h-[2px] rounded-full mt-12 '></div>
+								<div
+									id='request-history'
+									className='flex w-full h-full items-center justify-start mb-4 md:mb-6'
+								>
+									<h3 className=' min-w-fit font-bold text-[#2d6a4f] text-2xl md:text-3xl p-0 m-0 rounded-md md:self-start italic '>
+										Recent Request
+									</h3>
+									<div className='w-full h-full bg-[#74c69d90] ml-6 p-1 rounded-sm'>
+										‎
+									</div>
+								</div>
+								{request?.issue ? (
 									<>
-										<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl space-y-6 md:space-y-8 border-2 border-green-600 relative '>
+										<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2  border-green-600 relative '>
 											<div
 												className='absolute inset-0 left-[50%] translate-x-[-50%] w-full -top-5  z-10
 '
 											>
 												<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-													<p className='p-2 sm:px-4 md:px-6  bg-gradient-to-tr from-[#52b788] font-semibold  to-[#40916c] text-white rounded-xl mx-auto'>
+													<p className='p-2 sm:px-4 md:px-6  bg-gradient-to-br from-[#52b788] font-semibold  to-[#40916c] text-white rounded-xl mx-auto'>
 														Issuance Fulfilled
 													</p>
 												</div>
@@ -519,7 +596,9 @@ const UserProfile = () => {
 														Applied On
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-														21, Dec 2023
+														{formatDate(
+															request?.request[0]?.createdAt
+														)}
 													</p>
 												</div>
 												<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
@@ -527,124 +606,27 @@ const UserProfile = () => {
 														Duration
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-														Medium
+														{request?.request[0]?.duration === 'Long'
+															? 'Half Yearly'
+															: request?.request[0]?.duration ===
+															  'Medium'
+															? '1-2 Month'
+															: '1 Month'}{' '}
 													</p>
 												</div>
 											</div>
-											<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-												<button
-													onClick={(e) => {
-														setModalPopped(
-															'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														)
-													}}
-													className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-												>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-														Pdc
-													</p>
-
-													<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-														<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-															<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-														</div>
-														<img
-															src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-															className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-														/>
-													</div>
-												</button>
-												<button
-													onClick={(e) => {
-														setModalPopped(
-															'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														)
-													}}
-													className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-												>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-														Parent Dec
-													</p>
-
-													<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-														<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-															<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-														</div>
-														<img
-															src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-															className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-														/>
-													</div>
-												</button>
-												<button
-													onClick={(e) => {
-														setModalPopped(
-															'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														)
-													}}
-													className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-												>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-														Student Dec
-													</p>
-
-													<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-														<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-															<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-														</div>
-														<img
-															src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-															className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-														/>
-													</div>
-												</button>
-												<button
-													onClick={(e) => {
-														setModalPopped(
-															'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														)
-													}}
-													className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-												>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-														Faculty Rec
-													</p>
-													<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-														<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-															<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-														</div>
-														<img
-															src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-															className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-														/>
-													</div>
-												</button>
-											</div>
-											<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-												<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-														Approved By
-													</p>
-													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-														Admin Name
-													</p>
-												</div>
+											<div className='w-full flex flex-col md:flex-row items-center justify-between  mt-4 md:mt-6 space-y-4 md:space-y-0 md:space-x-6  '>
 												<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
 													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
 														Approved On
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-														30, Dec 2023
-													</p>
-												</div>
-											</div>
-											<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-												<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-														Issued By
-													</p>
-													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-														Maint Name
+														{request?.request[0]?.createdAt !==
+														request?.request[0]?.updatedAt
+															? formatDate(
+																	request?.request[0]?.updatedAt
+															  )
+															: "Couldn't Fetch Date"}
 													</p>
 												</div>
 												<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
@@ -652,14 +634,16 @@ const UserProfile = () => {
 														Issued On
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-														3, Jan 2024
+														{request?.issue?.createdAt
+															? formatDate(request?.issue?.createdAt)
+															: "Couldn't Fetch Date"}
 													</p>
 												</div>
 											</div>
 										</div>
 									</>
-								) : request?.request?.status === 'Rejected' ? (
-									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl space-y-6 md:space-y-8 border-2 border-red-600 relative '>
+								) : request?.request[0]?.status === 'Rejected' ? (
+									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2  border-red-600 relative '>
 										<div
 											className='absolute inset-0 left-[50%] translate-x-[-50%] w-full -top-5  z-10
 '
@@ -676,7 +660,7 @@ const UserProfile = () => {
 													Applied On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													21, Dec 2023
+													{formatDate(request?.request[0]?.createdAt)}
 												</p>
 											</div>
 											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
@@ -684,103 +668,33 @@ const UserProfile = () => {
 													Duration
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													Medium
+													{request?.request[0]?.duration === 'Long'
+														? 'Half Yearly'
+														: request?.request[0]?.duration ===
+														  'Medium'
+														? '1-2 Month'
+														: '1 Month'}{' '}
 												</p>
 											</div>
 										</div>
-										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
+										<div className='w-full flex flex-col md:flex-row items-center justify-between mt-4 md:mt-6  space-y-4 md:space-y-0 md:space-x-6 mx-auto  '>
+											<div className='flex items-start justify-center space-y-2 flex-col  w-full '>
 												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Pdc
+													Rejected On
 												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Parent Dec
+												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
+													{request?.request[0]?.createdAt !==
+													request?.request[0]?.updatedAt
+														? formatDate(
+																request?.request[0]?.updatedAt
+														  )
+														: null}
 												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Student Dec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Faculty Rec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
+											</div>
 										</div>
 									</div>
-								) : request?.request?.status === 'Approved' ? (
-									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl space-y-6 md:space-y-8 border-2 border-sky-600 relative '>
+								) : request?.request[0]?.status === 'Approved' ? (
+									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2  border-sky-600 relative '>
 										<div
 											className='absolute inset-0 left-[50%] translate-x-[-50%] w-full -top-5  z-10
 '
@@ -797,7 +711,7 @@ const UserProfile = () => {
 													Applied On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													21, Dec 2023
+													{formatDate(request?.request[0]?.createdAt)}
 												</p>
 											</div>
 											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
@@ -805,121 +719,33 @@ const UserProfile = () => {
 													Duration
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													Medium
+													{request?.request[0]?.duration === 'Long'
+														? 'Half Yearly'
+														: request?.request[0]?.duration ===
+														  'Medium'
+														? '1-2 Month'
+														: '1 Month'}{' '}
 												</p>
 											</div>
 										</div>
-										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Pdc
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Parent Dec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Student Dec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Faculty Rec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-										</div>
-										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Approved By
-												</p>
-												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													Admin Name
-												</p>
-											</div>
-											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
+										<div className='w-full flex flex-col md:flex-row items-center justify-between mt-4 md:mt-6  space-y-4 md:space-y-0 md:space-x-6 mx-auto  '>
+											<div className='flex items-start justify-center space-y-2 flex-col  w-full '>
 												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
 													Approved On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													30, Dec 2023
+													{request?.request[0]?.createdAt !==
+													request?.request[0]?.updatedAt
+														? formatDate(
+																request?.request[0]?.updatedAt
+														  )
+														: null}
 												</p>
 											</div>
 										</div>
 									</div>
 								) : (
-									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl space-y-6 md:space-y-8 border-2 border-orange-300 relative '>
+									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl  border-2  border-orange-300 relative '>
 										<div
 											className='absolute inset-0 left-[50%] translate-x-[-50%] w-max -top-5  z-10
 '
@@ -936,7 +762,7 @@ const UserProfile = () => {
 													Applied On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													21, Dec 2023
+													{formatDate(request?.request[0]?.createdAt)}
 												</p>
 											</div>
 											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
@@ -944,106 +770,30 @@ const UserProfile = () => {
 													Duration
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
-													Medium
+													{request?.request[0]?.duration === 'Long'
+														? 'Half Yearly'
+														: request?.request[0]?.duration ===
+														  'Medium'
+														? '1-2 Month'
+														: '1 Month'}
 												</p>
 											</div>
-										</div>
-										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Pdc
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Parent Dec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Student Dec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
-											<button
-												onClick={(e) => {
-													setModalPopped(
-														'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-													)
-												}}
-												className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '
-											>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
-													Faculty Rec
-												</p>
-
-												<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-													<div className='absolute w-full h-full hidden group-hover:bg-black/70 rounded-lg group-hover:flex items-center justify-center text-white z-20 '>
-														<BsArrowsFullscreen className=' w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 md:stroke-[1.5] ' />
-													</div>
-													<img
-														src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-														className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
-													/>
-												</div>
-											</button>
 										</div>
 									</div>
 								)}
 							</>
 						) : (
 							<>
-								<p>Nothing to see here</p>
+								{/* <div className='flex items-center justify-center w-full bg-gray-400 h-[2px] rounded-full mt-12 '></div>
+
+								<div className='flex w-full h-full items-center justify-start mb-4 md:mb-6'>
+									<h3 className=' w-max font-bold text-[#2d6a4f] text-2xl md:text-3xl p-0 m-0 rounded-md md:self-start italic '>
+										Requests
+									</h3>
+									<div className='w-full h-full bg-[#74c69d90] ml-6 p-1 rounded-sm'>
+										‎
+									</div>
+								</div> */}
 							</>
 						)}
 					</>

@@ -1,9 +1,10 @@
 import { FcGoogle } from 'react-icons/fc'
 import { FaGithub } from 'react-icons/fa'
 import { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
+import axios from 'axios'
 
 const MaintRegisterComp = () => {
 	const {
@@ -17,6 +18,7 @@ const MaintRegisterComp = () => {
 	} = useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
 	const navigate = useNavigate()
+	const { state } = useLocation()
 	const [form, setForm] = useState({
 		email: '',
 		password: '',
@@ -35,17 +37,17 @@ const MaintRegisterComp = () => {
 		const newErrors = { ...errors }
 
 		if (!form.fullname) {
-			newErrors.name = 'Name is required'
+			newErrors.fullname = 'Name is required'
 			valid = false
 		} else {
-			newErrors.name = ''
+			newErrors.fullname = ''
 		}
 
 		if (!form.email) {
 			newErrors.email = 'Email is required'
 			valid = false
 		} else if (
-			!/^[a-zA-Z0-9._%+-]+@mhssce\.ac\.in$/.test(form.domain_idemail)
+			!/^[a-zA-Z0-9._%+-]+@mhssce\.ac\.in$/.test(form.email)
 		) {
 			newErrors.email = 'College Domain Email required'
 			valid = false
@@ -73,6 +75,7 @@ const MaintRegisterComp = () => {
 		}
 
 		setErrors(newErrors)
+		console.log(errors)
 		return valid
 	}
 	const loginHelper = async (
@@ -82,48 +85,53 @@ const MaintRegisterComp = () => {
 		department,
 		fullname
 	) => {
+		var response
 		try {
-			const response = await fetch(
-				'http://localhost:8000/api/v1/admin/register',
-				{
-					method: 'POST',
-					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email,
-						password,
-						key,
-						fullname
-					})
+			response = await axios({
+				method: 'post',
+				url: 'http://localhost:8000/api/v1/admin/register',
+				data: { type: 'maintenance', ...form },
+				header: {
+					'Content-Type': 'application/json'
 				}
-			)
-			if (response.ok) {
-				const data = await response.json()
-				setLoginData(data?.data)
-				console.log(data)
-				return data
+			})
+			const res = response?.data
+			console.log(res)
+			setLoginData(res?.data)
+			setUser(res?.data?._doc)
+			// toast.success(`Welcome to DLRC, ${res?.data?._doc?.fullname} `)
+			// navigate(state?.path || '/maintenance/user')
+		} catch (e) {
+			console.log(e)
+			if (e?.response?.status === 401) {
+				toast.error('Please Fill All the necessary Information')
+			} else if (e?.response?.status === 404) {
+				setErrors({
+					email: 'Maintenance User with same email already exists',
+					password: '',
+					fullname: '',
+					key: ''
+				})
+				toast.error('Maintenance User Already Exists')
+			} else if (e?.response?.status === 405) {
+				setErrors({
+					email: '',
+					password: '',
+					fullname: '',
+					key: 'Please enter correct secret key'
+				})
+				toast.error('Enter Correct Secret Key')
 			} else {
-				const errorData = await response.json()
-				console.error('Login failed:', errorData)
-				return errorData
+				toast.error(
+					'Some Error Ocurred Please Register after some time'
+				)
 			}
-		} catch (error) {
-			console.error('Error during login request:', error)
-			return error
 		}
 	}
 	const SubmitHandler = (e) => {
 		e.preventDefault()
 		if (validateForm()) {
-			console.log(form)
-			loginHelper(
-				form?.email,
-				form?.password,
-				form?.key,
-				form?.fullname
-			)
+			loginHelper()
 		} else {
 			console.log('error')
 		}
@@ -146,6 +154,7 @@ const MaintRegisterComp = () => {
 						<form className='flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center'>
 							<div className='text-base md:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='text'
 									name='fullname'
 									required={true}
@@ -167,45 +176,48 @@ const MaintRegisterComp = () => {
 							</div>
 							<div className='text-base md:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='email'
 									name='email'
 									required
 									placeholder='Email'
-									value={form.domain_id}
+									value={form.email}
 									onChange={(e) =>
 										setForm({ ...form, email: e.target.value })
 									}
 									className={` ${
-										errors.fullname &&
-										'border-[1.5px] border-red-400 '
+										errors.email && 'border-[1.5px] border-red-400 '
 									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
 								/>
 								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.fullname || '‎'}
+									{errors.email || '‎'}
 								</p>
 							</div>
 							<div className='text-base md:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='password'
 									name='password'
 									required
+									autoComplete='true'
 									placeholder='Password'
 									value={form.password}
 									onChange={(e) =>
 										setForm({ ...form, password: e.target.value })
 									}
 									className={` ${
-										errors.fullname &&
+										errors.password &&
 										'border-[1.5px] border-red-400 '
 									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
 								/>
 								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.fullname || '‎'}
+									{errors.password || '‎'}
 								</p>
 							</div>
 
 							<div className='text-base md:text-lg w-full'>
 								<input
+									disabled={loading}
 									type='text'
 									name='key'
 									required={true}
@@ -215,12 +227,11 @@ const MaintRegisterComp = () => {
 										setForm({ ...form, key: e.target.value })
 									}
 									className={` ${
-										errors.fullname &&
-										'border-[1.5px] border-red-400 '
+										errors.key && 'border-[1.5px] border-red-400 '
 									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
 								/>
 								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.fullname || '‎'}
+									{errors.key || '‎'}
 								</p>
 							</div>
 							<div className='text-base md:text-lg xl:text-xl md:p-2  font-normal w-full'>

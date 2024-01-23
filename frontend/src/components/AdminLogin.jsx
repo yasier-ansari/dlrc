@@ -49,7 +49,7 @@ const AdminLoginComp = () => {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ email, password })
+				body: JSON.stringify({ email, password, type: 'admin' })
 			}
 		)
 		if (response.status === 200) {

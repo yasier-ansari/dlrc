@@ -4,7 +4,11 @@ import { Student } from "../models/students.models.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import jwt from "jsonwebtoken";
 import { generateTokens } from "../utils/generateToken.js";
-
+import s3Client from "../utils/s3.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Request } from "../models/request.models.js";
+import { Issue } from "../models/issue.models.js";
 const registerUser = asyncHandler(async (req, res) => {
     console.log(req.body);
     const {
@@ -85,8 +89,8 @@ const registerUser = asyncHandler(async (req, res) => {
             {
                 accessToken: accessToken,
                 refreshToken: refreshToken,
-                userType: "student",
                 ...createdStudent,
+                userType: "student",
             },
             "Student Registered"
         )
@@ -232,37 +236,94 @@ const newRefreshToken = asyncHandler(async (req, res) => {
     }
 });
 
+// const updateProfile = asyncHandler(async (req, res) => {
+//     const student = req.student;
+
+//     const updateStudent = await Student.findById(student._id);
+//     if (!updateStudent) {
+//         throw new ApiError(404, "User not found");
+//     }
+
+//     const { fullname, domain_id, prn, department, year, sem, number } =
+//         req.body;
+
+//     // if (
+//     //     [fullname, domain_id, prn, department, year, sem, number].some(
+//     //         (field) => field?.trim() === ""
+//     //     )
+//     // ) {
+//     //     throw new ApiError(400, "All fields are required");
+//     // }
+
+//     const updatedStudent = await Student.findByIdAndUpdate(
+//         student._id,
+//         {
+//             $set: {
+//                 fullname,
+//                 domain_id,
+//                 prn,
+//                 department,
+//                 year,
+//                 sem,
+//                 number,
+//             },
+//         },
+//         {
+//             new: true,
+//         }
+//     ).select("-password -idCard -refreshToken");
+
+//     if (!updatedStudent) {
+//         throw new ApiError(500, "Error While Updating Information");
+//     }
+
+//     return res
+//         .status(200)
+//         .json(
+//             new ApiResponse(200, updatedStudent, "Profile Changes Successful")
+//         );
+// });
 const updateProfile = asyncHandler(async (req, res) => {
     const student = req.student;
-
+    console.log(student);
     const updateStudent = await Student.findById(student._id);
     if (!updateStudent) {
-        throw new ApiError(404, "User not found");
+        return res
+            .status(404)
+            .json(new ApiResponse(404, {}, "Student Not Found"));
     }
 
     const { fullname, domain_id, prn, department, year, sem, number } =
         req.body;
 
-    if (
-        [fullname, domain_id, prn, department, year, sem, number].some(
-            (field) => field?.trim() === ""
-        )
-    ) {
-        throw new ApiError(400, "All fields are required");
+    const updateFields = {};
+
+    if (fullname !== undefined) {
+        updateFields.fullname = fullname;
+    }
+    if (domain_id !== undefined) {
+        updateFields.domain_id = domain_id;
+    }
+    if (prn !== undefined) {
+        updateFields.prn = prn;
+    }
+    if (department !== undefined) {
+        updateFields.department = department;
+    }
+    if (year !== undefined) {
+        updateFields.year = year;
+    }
+    if (sem !== undefined) {
+        updateFields.sem = sem;
+    }
+    if (number !== undefined) {
+        updateFields.number = number;
     }
 
     const updatedStudent = await Student.findByIdAndUpdate(
         student._id,
         {
-            $set: {
-                fullname,
-                domain_id,
-                prn,
-                department,
-                year,
-                sem,
-                number,
-            },
+            $set: updateFields,
         },
         {
             new: true,
@@ -270,7 +331,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     ).select("-password -idCard -refreshToken");
 
     if (!updatedStudent) {
-        throw new ApiError(500, "Error While Updating Information");
+        return res.status(500).json(new ApiResponse(500, {}, "Server Error"));
     }
 
     return res
@@ -402,7 +463,7 @@ const getRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, "request id is missing");
     }
     // get all the data, images, texts from a given particular request based on params (id or req_no)
-    const showRequest = await Request.findOne({ _id: request });
+    const showRequest = await Request.find({ student_id: request });
     if (!showRequest) {
         throw new ApiError(404, "Request Not Found");
     }
@@ -436,6 +497,15 @@ const getRecent = asyncHandler(async (req, res) => {
             $limit: 1,
         },
     ]);
+    const showIssue = await Issue.findOne({
+        req_id: recent._id,
+    })
+        .sort({ createdAt: -1 })
+        .exec();
+    const combinedData = {
+        request: recent,
+        issue: showIssue,
+    };
 
     if (!recent) {
         throw new ApiError(402, "Error while searching recent requests");
@@ -443,7 +513,9 @@ const getRecent = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(201, recent, "Fetched Most Recent Request"));
+        .json(
+            new ApiResponse(201, combinedData, "Fetched Most Recent Request")
+        );
 });
 
 const getMyIssueHistory = asyncHandler(async (req, res) => {
@@ -563,4 +635,6 @@ export {
     getRequest,
     getMyIssueHistory,
     getIssue,
+    getOneRequest,
+    getRecent,
 };

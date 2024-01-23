@@ -59,6 +59,10 @@ const studentSchema = new mongoose.Schema(
             type: String,
             default: "student",
         },
+        appliedCurrent: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

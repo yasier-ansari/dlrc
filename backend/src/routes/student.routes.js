@@ -33,7 +33,7 @@ router.route("/login").post(loginUser);
 // ALL ROUTES
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(newRefreshToken);
-router.route("/update-profile").patch(verifyJWT, updateProfile);
+router.route("/update-profile").post(verifyJWT, updateProfile);
 router.route("/profile").get(verifyJWT, viewProfile);
 router.route("/recent-request").get(verifyJWT, getRecent);
 router.route("/request-history").get(verifyJWT, getMyRequestHistory);

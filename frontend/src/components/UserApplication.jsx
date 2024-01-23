@@ -10,6 +10,8 @@ import axios from 'axios'
 import useAutosizeTextArea from '../context/AutoResizer'
 import { IoWarningOutline } from 'react-icons/io5'
 import { toast } from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+
 const API = axios.create({ baseURL: 'http://localhost:5173' })
 
 const UserApplicationComp = () => {
@@ -43,6 +45,7 @@ const UserApplicationComp = () => {
 	})
 	const textAreaRef = useRef()
 	useAutosizeTextArea(textAreaRef, form?.message)
+	const navigate = useNavigate()
 	const handleChange = (e) => {
 		const val = e.target?.value
 		setForm({ ...form, message: val })
@@ -246,7 +249,9 @@ const UserApplicationComp = () => {
 			console.log(response?.status, 'here')
 			const res = response.data
 			toast.success('Application Sent to DLRC Successfully')
+			navigate('/user/profile#request-history')
 		} catch (e) {
+			setLoading(false)
 			if (e?.response?.status === 402) {
 				setErrors({
 					parents_Dec: '',
@@ -290,19 +295,37 @@ const UserApplicationComp = () => {
 					"Your Request couldn't be saved in the database, please try after some time"
 				)
 			} else {
-				showToast()
 				toast.error(
 					'Some Error Ocurred Please Register after some time'
 				)
 			}
 		}
 	}
+	console.log(user)
 	const handleSubmit = async (e) => {
 		setLoading(true)
 		e.preventDefault()
-		if (user?.applicationStatus) {
-			toast.success(
-				'Your previous application is pending, apply after the status has been changed'
+		if (user?.appliedCurrent === true) {
+			// toast.success(
+			// 	'Your previous application is pending, apply after the status has been changed'
+			// )
+			toast(
+				'Your previous application is pending, apply after the status has been changed',
+				{
+					id: `${e}`,
+					icon: (
+						<IoWarningOutline className='h-6 w-6 md:w-8 md:h-8 text-orange-500 ' />
+					),
+					style: {
+						border: '2px solid #fb923c',
+						padding: '12px 20px 12px 20px',
+						color: '#333'
+					},
+					iconTheme: {
+						primary: '#fb923c',
+						secondary: '#FFFAEE'
+					}
+				}
 			)
 		} else if (validateForm()) {
 			await applicationHelper()
@@ -466,9 +489,10 @@ const UserApplicationComp = () => {
 													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											}
 											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video '
+											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
+											loading='laxy'
 										/>
 										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
 											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
@@ -506,9 +530,10 @@ const UserApplicationComp = () => {
 													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											}
 											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video '
+											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
+											loading='laxy'
 										/>
 										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
 											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
@@ -548,9 +573,10 @@ const UserApplicationComp = () => {
 													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											}
 											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video '
+											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
+											loading='laxy'
 										/>
 										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
 											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
@@ -588,9 +614,10 @@ const UserApplicationComp = () => {
 													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											}
 											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-cover aspect-video '
+											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
+											loading='laxy'
 										/>
 										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
 											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />

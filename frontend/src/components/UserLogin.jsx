@@ -76,6 +76,7 @@ const UserLogin = ({ authWork }) => {
 		)
 		if (response.status === 200) {
 			const res = await response.json()
+			console.log(res)
 			setLoginData(res?.data)
 			toast.success('Welcom Back Student')
 			navigate(state?.path || '/user/profile')
@@ -125,7 +126,7 @@ const UserLogin = ({ authWork }) => {
 		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 '>
 			{!mainLoading ? (
 				<>
-					<div className='flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-6 md:space-y-8 xl:space-y-10 '>
+					<div className='flex flex-col relative max-w-[450px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-6 md:space-y-8 xl:space-y-10 '>
 						<div className='flex w-full flex-col '>
 							<h2 className='text-2xl md:text-3xl lg:text-4xl font-bold text-center'>
 								Log In

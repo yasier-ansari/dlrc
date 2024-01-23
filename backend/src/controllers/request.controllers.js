@@ -28,18 +28,23 @@ const newRequest = asyncHandler(async (req, res) => {
         student_id: id,
     }).sort("createdAt desc");
 
-    if (
-        existingReq[0] !== null &&
-        existingReq.status !== "Fulfiled" &&
-        existingReq.status !== "Rejected"
-    ) {
-        res.status(402).json(
-            new ApiResponse(
-                402,
-                { message: "You have already applied; be patient" },
-                "Request Not Written"
-            )
-        );
+    if (existingReq.length > 0) {
+        const latestRequest = existingReq[0];
+
+        if (
+            latestRequest.status !== "Fulfilled" &&
+            latestRequest.status !== "Rejected"
+        ) {
+            return res
+                .status(402)
+                .json(
+                    new ApiResponse(
+                        402,
+                        { message: "You have already applied; be patient" },
+                        "Request Not Written"
+                    )
+                );
+        }
     }
 
     // const parents_DecLocalPath = req.files?.parents_Dec[0];
@@ -87,10 +92,11 @@ const newRequest = asyncHandler(async (req, res) => {
         );
     }
 
-    const updateStudent = await Student.updateOne(
-        { _id: id },
-        { applicationStatus: true }
-    );
+    const updateStudent = await Student.findByIdAndUpdate(id, {
+        $set: {
+            appliedCurrent: true,
+        },
+    });
 
     return res
         .status(200)

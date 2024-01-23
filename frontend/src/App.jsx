@@ -23,12 +23,12 @@ function App() {
 		userType
 	} = useContext(AuthContext)
 	return (
-		<div>
+		<div className=' antialiased scroll-smooth  '>
 			<Toaster
 				containerStyle={{}}
 				toastOptions={{
 					// Define default options
-					className: ' font-barlow font-medium md:font-semibold  ',
+					className: ' font-barlow font-medium md:font-semibold ',
 					duration: 5000,
 					style: {
 						background: '#ffffff',

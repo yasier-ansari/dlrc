@@ -88,6 +88,7 @@ function AuthProvider({ children }) {
 				setUser(userProfile?.data)
 			} else {
 				setUser(null)
+				console.log(response)
 			}
 		} catch (error) {
 			console.error('Error fetching user profile:', error)
@@ -100,7 +101,7 @@ function AuthProvider({ children }) {
 		if (token) {
 			if (userType === 'student') {
 				fetchUserProfile(token)
-			} else {
+			} else if (userType === 'admin' || userType === 'maintenance') {
 				fetchAdminProfile(token)
 			}
 			setMainLoading(false)
