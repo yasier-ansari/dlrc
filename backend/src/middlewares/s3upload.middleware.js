@@ -2,7 +2,7 @@ import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import multer from "multer";
 import makeId from "../utils/makeNewId.js";
 import s3Client from "../utils/s3.js";
-import path from 'path';
+import path from "path";
 
 const fileFilter = (req, file, callback) => {
     if (file.mimetype === "image/png" || "image/jpeg" || "image/jpg") {
@@ -28,22 +28,24 @@ export const uploadIdCard = async (req, res, next) => {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: `/id-card/${id_urn}`,
                 Body: req.file?.buffer,
-            }
+            };
 
-            const command = new PutObjectCommand(params)
-            const fileSend = await s3Client.send(new PutObjectCommand(params))
+            const command = new PutObjectCommand(params);
+            const fileSend = await s3Client.send(new PutObjectCommand(params));
             res.locals.idCard = id_urn;
             return next();
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Something went wrong! Please try again later" });
+                .json({
+                    message: "Something went wrong! Please try again later",
+                });
         }
     } catch (error) {
         console.log("IdCard upload error - " + error);
         return res.status(500).json({ message: "Some error occured" });
     }
-}
+};
 export const updateIdCard = async (req, res, next) => {
     try {
         const name = makeId(15);
@@ -74,22 +76,24 @@ export const updateIdCard = async (req, res, next) => {
         } catch (error) {
             return res
                 .status(500)
-                .json({ message: "Something went wrong! Please try again later" });
+                .json({
+                    message: "Something went wrong! Please try again later",
+                });
         }
     } catch (error) {
         console.log("resume upload " + error);
         return res.status(500).json({ message: "Some error occurred" });
     }
-}
+};
 export const uploadFiles = async (req, res, next) => {
     try {
         const filePromises = [];
 
         const fields = [
-            { name: 'parents_Dec', maxCount: 1, folder: 'pd' },
-            { name: 'students_Dec', maxCount: 1, folder: 'sd' },
-            { name: 'faculty_Rec', maxCount: 1, folder: 'fr' },
-            { name: 'pdc', maxCount: 1, folder: 'pdc' },
+            { name: "parents_Dec", maxCount: 1, folder: "pd" },
+            { name: "students_Dec", maxCount: 1, folder: "sd" },
+            { name: "faculty_Rec", maxCount: 1, folder: "fr" },
+            { name: "pdc", maxCount: 1, folder: "pdc" },
         ];
 
         const uploadFile = async (field) => {
@@ -127,11 +131,7 @@ export const uploadFiles = async (req, res, next) => {
 
         return next();
     } catch (error) {
-        console.log('Files upload error - ' + error);
-        return res.status(500).json({ message: 'Some error occurred' });
+        console.log("Files upload error - " + error);
+        return res.status(500).json({ message: "Some error occurred" });
     }
 };
-
-
-
-

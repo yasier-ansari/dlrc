@@ -373,31 +373,31 @@ const getOneRequest = asyncHandler(async (req, res) => {
                 );
         }
 
-        const getIdCardUrl = async (key) => {
-            const params = {
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: key,
-            };
-            const command = new GetObjectCommand(params);
-            const res = await getSignedUrl(s3Client, command, {
-                expiresIn: 14400,
-            });
-            return res;
-        };
+        // const getIdCardUrl = async (key) => {
+        //     const params = {
+        //         Bucket: process.env.AWS_BUCKET_NAME,
+        //         Key: key,
+        //     };
+        //     const command = new GetObjectCommand(params);
+        //     const res = await getSignedUrl(s3Client, command, {
+        //         expiresIn: 14400,
+        //     });
+        //     return res;
+        // };
 
-        showRequest.student_id.idCard = await getIdCardUrl(
-            `/id-card/${showRequest.student_id?.idCard}`
-        );
-        showRequest.pdc = await getIdCardUrl(`/pdc/${showRequest.pdc}`);
-        showRequest.faculty_Rec = await getIdCardUrl(
-            `/fr/${showRequest.faculty_Rec}`
-        );
-        showRequest.students_Dec = await getIdCardUrl(
-            `/sd/${showRequest.students_Dec}`
-        );
-        showRequest.parents_Dec = await getIdCardUrl(
-            `/pd/${showRequest.parents_Dec}`
-        );
+        // showRequest.student_id.idCard = await getIdCardUrl(
+        //     `/id-card/${showRequest.student_id?.idCard}`
+        // );
+        // showRequest.pdc = await getIdCardUrl(`/pdc/${showRequest.pdc}`);
+        // showRequest.faculty_Rec = await getIdCardUrl(
+        //     `/fr/${showRequest.faculty_Rec}`
+        // );
+        // showRequest.students_Dec = await getIdCardUrl(
+        //     `/sd/${showRequest.students_Dec}`
+        // );
+        // showRequest.parents_Dec = await getIdCardUrl(
+        //     `/pd/${showRequest.parents_Dec}`
+        // );
 
         return res
             .status(202)
@@ -498,31 +498,31 @@ const getOneApprovedRequest = asyncHandler(async (req, res) => {
                 );
         }
 
-        const getIdCardUrl = async (key) => {
-            const params = {
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: key,
-            };
-            const command = new GetObjectCommand(params);
-            const res = await getSignedUrl(s3Client, command, {
-                expiresIn: 14400,
-            });
-            return res;
-        };
+        // const getIdCardUrl = async (key) => {
+        //     const params = {
+        //         Bucket: process.env.AWS_BUCKET_NAME,
+        //         Key: key,
+        //     };
+        //     const command = new GetObjectCommand(params);
+        //     const res = await getSignedUrl(s3Client, command, {
+        //         expiresIn: 14400,
+        //     });
+        //     return res;
+        // };
 
-        showRequest.student_id.idCard = await getIdCardUrl(
-            `/id-card/${showRequest.student_id?.idCard}`
-        );
-        showRequest.pdc = await getIdCardUrl(`/pdc/${showRequest.pdc}`);
-        showRequest.faculty_Rec = await getIdCardUrl(
-            `/fr/${showRequest.faculty_Rec}`
-        );
-        showRequest.students_Dec = await getIdCardUrl(
-            `/sd/${showRequest.students_Dec}`
-        );
-        showRequest.parents_Dec = await getIdCardUrl(
-            `/pd/${showRequest.parents_Dec}`
-        );
+        // showRequest.student_id.idCard = await getIdCardUrl(
+        //     `/id-card/${showRequest.student_id?.idCard}`
+        // );
+        // showRequest.pdc = await getIdCardUrl(`/pdc/${showRequest.pdc}`);
+        // showRequest.faculty_Rec = await getIdCardUrl(
+        //     `/fr/${showRequest.faculty_Rec}`
+        // );
+        // showRequest.students_Dec = await getIdCardUrl(
+        //     `/sd/${showRequest.students_Dec}`
+        // );
+        // showRequest.parents_Dec = await getIdCardUrl(
+        //     `/pd/${showRequest.parents_Dec}`
+        // );
 
         return res
             .status(202)

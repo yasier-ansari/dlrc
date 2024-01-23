@@ -50,7 +50,12 @@ const newIssue = asyncHandler(async (req, res) => {
     if ([duration, req_id, laptop_id].some((field) => field.trim() === "")) {
         throw new ApiError(400, "All fields are required");
     }
-
+    const existingIssue = await Issue.findOne({
+        req_id: req_id,
+    });
+    if (existingIssue) {
+        return res.status(400).json(new ApiResponse(400, {}, "Already Issued"));
+    }
     const createIssue = await Issue.create({
         duration,
         req_id,
@@ -58,22 +63,11 @@ const newIssue = asyncHandler(async (req, res) => {
         issued_by: admin.fullname,
     });
 
-    const createdIssue = await Issue.findById(createIssue._id);
-    if (!createdIssue) {
-        throw new ApiError("Error Creating New Issue");
-    }
-
-    await Request.findOneAndReplace(
-        req_id,
-        {
-            $set: {
-                status: "Fulfiled",
-            },
+    await Request.findByIdAndUpdate(req_id, {
+        $set: {
+            status: "Fulfiled",
         },
-        {
-            new: true,
-        }
-    );
+    });
 
     return res.status(200).json(new ApiResponse(200, createdIssue, "Issued"));
 });

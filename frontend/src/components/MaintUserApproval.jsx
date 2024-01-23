@@ -7,15 +7,21 @@ import useAutosizeTextArea from '../context/AutoResizer'
 import { TbUserSquareRounded } from 'react-icons/tb'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
+import { IoWarningOutline } from 'react-icons/io5'
+import { useNavigate } from 'react-router-dom'
+
 const MaintUserApprovalComp = ({ flag, id }) => {
 	const {
 		setModalPopped,
 		userType,
 		token,
 		setUserInfo,
+		userInfo,
 		mainLoading
 	} = useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
+	const [laptopOpt, setLaptopOpt] = useState(null)
+	const navigate = useNavigate()
 	const dur_options = [
 		{ value: 'Short', text: '2-4 Weeks', id: 1 },
 		{ value: 'Medium', text: '1-2 Months', id: 2 },
@@ -36,6 +42,18 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 		duration: '',
 		laptop_id: ''
 	})
+	const formatTimeDifference = (inputDate) => {
+		const options = {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		}
+		const formattedDate = new Date(inputDate).toLocaleDateString(
+			'en-US',
+			options
+		)
+		return formattedDate
+	}
 	const [userNotFound, setuserNotFound] = useState(false)
 	const textAreaRef = useRef(null)
 	const handleChange = (e) => {
@@ -69,8 +87,8 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 			newErrors.laptop_id = 'Issue a Laptop'
 			valid = false
 		} else if (
-			!laptop_options.some(
-				(option) => option.value === form?.laptop_id
+			!laptopOpt.some(
+				(option) => option.laptop_id === form?.laptop_id
 			)
 		) {
 			newErrors.laptop_id = 'Issue a free Laptop'
@@ -81,19 +99,89 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 		setErrors(newErrors)
 		return valid
 	}
-	const SubmitHandler = (e, text) => {
+	const updateHelper = async (approve) => {
+		var response
+		try {
+			response = await axios({
+				method: 'post',
+				url: `http://localhost:8000/api/v1/admin/new-issue`,
+				data: {
+					duration: form?.duration,
+					req_id: userInfo?._id,
+					laptop_id: form?.laptop_id
+				},
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			})
+			const res = response?.data
+			console.log(res)
+			// setLoginData(res?.data)
+			// setUser(res?.data?._doc)
+			setLoading(false)
+			toast.success(` Request ${approve} Successfully `)
+			navigate('/maintenance/user')
+		} catch (e) {
+			setLoading(false)
+
+			console.log(e)
+			if (e?.response?.status === 400) {
+				setErrors({
+					reason: ''
+				})
+				toast.success(' Student is Already Approved ')
+				navigate('/maintenance/user')
+			} else {
+				setErrors({
+					reason: ''
+				})
+				toast.error(
+					'Error Occurred, please try again after some time'
+				)
+			}
+		}
+	}
+
+	const SubmitHandler = async (e, text) => {
+		// e.preventDefault()
+		// if (validateForm()) {
+		// 	if (text == 'accept') {
+		// 		console.log('accepted')
+		// 	} else if (text == 'reject') {
+		// 		console.log('rejected')
+		// 	} else {
+		// 		console.log('dont give gibberish')
+		// 	}
+		// }
+		// else {
+		// 	console.log('give real ting')
+		// }
+		setLoading(true)
 		e.preventDefault()
 		if (validateForm()) {
-			if (text == 'accept') {
-				console.log('accepted')
-			} else if (text == 'reject') {
-				console.log('rejected')
+			if (text === 'Accept') {
+				await updateHelper(text)
 			} else {
-				console.log('dont give gibberish')
+				navigate('/maintenance/user')
 			}
 		} else {
-			console.log('give real ting')
+			toast('Please provide a approval status ', {
+				id: `${e}`,
+				icon: (
+					<IoWarningOutline className='h-6 w-6 md:w-8 md:h-8 text-orange-500 ' />
+				),
+				style: {
+					border: '2px solid #fb923c',
+					padding: '12px 20px 12px 20px',
+					color: '#333'
+				},
+				iconTheme: {
+					primary: '#fb923c',
+					secondary: '#FFFAEE'
+				}
+			})
 		}
+		setLoading(false)
 	}
 	const getAllLaptop = async () => {
 		var response
@@ -108,11 +196,11 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 			})
 			const res = response?.data
 			console.log(res)
-			// setUserInfo(res.data)
+			setLaptopOpt(res.data)
 			setLoading(false)
 		} catch (e) {
 			setLoading(false)
-			// setuserNotFound(true)
+			setLaptopOpt(null)
 			toast.error("Couldn't Find Request with given Id")
 		}
 	}
@@ -225,7 +313,8 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 								<button
 									onClick={(e) => {
 										setModalPopped(
-											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										)
 									}}
 									className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
@@ -238,7 +327,10 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											<BsArrowsFullscreen className='w-12 h-12 stroke-[1.5] ' />
 										</div>
 										<img
-											src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											src={
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											}
 											className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
 										/>
 									</div>
@@ -246,7 +338,8 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 								<button
 									onClick={(e) => {
 										setModalPopped(
-											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										)
 									}}
 									className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
@@ -259,7 +352,10 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											<BsArrowsFullscreen className='w-12 h-12 stroke-[1.5] ' />
 										</div>
 										<img
-											src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											src={
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											}
 											className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
 										/>
 									</div>
@@ -269,7 +365,8 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 								<button
 									onClick={(e) => {
 										setModalPopped(
-											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										)
 									}}
 									className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
@@ -282,7 +379,10 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											<BsArrowsFullscreen className='w-12 h-12 stroke-[1.5] ' />
 										</div>
 										<img
-											src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											src={
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											}
 											className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
 										/>
 									</div>
@@ -290,7 +390,8 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 								<button
 									onClick={(e) => {
 										setModalPopped(
-											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										)
 									}}
 									className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
@@ -303,7 +404,10 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											<BsArrowsFullscreen className='w-12 h-12 stroke-[1.5] ' />
 										</div>
 										<img
-											src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											src={
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											}
 											className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
 										/>
 									</div>
@@ -311,7 +415,8 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 								<button
 									onClick={(e) => {
 										setModalPopped(
-											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										)
 									}}
 									className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
@@ -324,7 +429,10 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											<BsArrowsFullscreen className='w-12 h-12 stroke-[1.5] ' />
 										</div>
 										<img
-											src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											src={
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											}
 											className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
 										/>
 									</div>
@@ -335,18 +443,18 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 										Approved Reason
 									</p>
-									<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
-										Yasier Zahir Ansari
+									<p className=' font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d]  h-auto '>
+										{userInfo?.purpose}
 									</p>
 								</div>
 							</div>
 							<div className='w-full flex items-center justify-between space-x-6  '>
 								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
 									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-										Approved By
+										Requested On
 									</p>
 									<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
-										Nasheet Tarik
+										{formatTimeDifference(userInfo?.createdAt)}
 									</p>
 								</div>
 								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
@@ -354,7 +462,25 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 										Approved On
 									</p>
 									<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
-										21, Dec 2023
+										{formatTimeDifference(userInfo?.updatedAt)}
+									</p>
+								</div>
+							</div>
+							<div className='w-full flex items-center justify-between space-x-6  '>
+								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
+									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										EWS
+									</p>
+									<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
+										{userInfo?.ews ? 'Yes' : 'No'}
+									</p>
+								</div>
+								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
+									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										Family Problem
+									</p>
+									<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
+										{userInfo?.family_status ? 'Yes' : 'No'}
 									</p>
 								</div>
 							</div>
@@ -450,9 +576,26 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 									<option value='' disabled hidden>
 										Select Laptop
 									</option>
-									{laptop_options?.map((el) => (
-										<option value={el?.value} key={el?.idx}>
-											{el?.text}
+									{laptopOpt?.map((el) => (
+										<option
+											className='flex items-center justify-center py-4 my-4 px-2 bg-stone-200 hover:bg-green-100'
+											value={el?.laptop_id}
+											key={el?._id}
+										>
+											<div className='flex items-center justify-center py-4 my-4 px-2 bg-stone-200 hover:bg-green-100'>
+												<span>{el?.laptop_id}</span>
+												{/* <span
+													className={`${
+														el?.condition === 'Poor'
+															? 'bg-red-200'
+															: el?.condition === 'Good'
+															? 'bg-yellow-200'
+															: 'bg-lime-300'
+													} px-2 py-1 rounded-sm `}
+												>
+													{el?.condition}
+												</span> */}
+											</div>
 										</option>
 									))}
 								</select>
@@ -466,7 +609,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 						<div className='w-full flex items-center text-white justify-between space-x-6 sm:space-x-8 md:space-x-12 mx-auto max-w-2xl  '>
 							<button
 								onClick={(e) => {
-									SubmitHandler(e, 'accept')
+									SubmitHandler(e, 'Accept')
 								}}
 								className='flex flex-col items-start justify-center space-y-2  w-full '
 							>
@@ -483,7 +626,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 							</button>
 							<button
 								onClick={(e) => {
-									SubmitHandler(e, 'reject')
+									SubmitHandler(e, 'Reject')
 								}}
 								className='flex items-start justify-center space-y-2 flex-col  w-full '
 							>

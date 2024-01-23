@@ -345,18 +345,18 @@ const viewProfile = asyncHandler(async (req, res) => {
     console.log(req.student);
     try {
         var userProfile = req.student;
-        const params = {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: `/id-card/${req.student?.idCard}`,
-        };
-        const command = new GetObjectCommand(params);
-        const url = await getSignedUrl(s3Client, command, {
-            expiresIn: 14400,
-        });
-        if (userProfile) {
-            userProfile.idCard = url;
-        }
-        console.log(userProfile);
+        // const params = {
+        //     Bucket: process.env.AWS_BUCKET_NAME,
+        //     Key: `/id-card/${req.student?.idCard}`,
+        // };
+        // const command = new GetObjectCommand(params);
+        // const url = await getSignedUrl(s3Client, command, {
+        //     expiresIn: 14400,
+        // });
+        // if (userProfile) {
+        //     userProfile.idCard = url;
+        // }
+        // console.log(userProfile);
         return res
             .status(200)
             .json(new ApiResponse(200, userProfile, "User Data"));

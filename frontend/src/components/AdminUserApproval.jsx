@@ -229,7 +229,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 									<button
 										onClick={(e) => {
 											setModalPopped(
-												userInfo?.student_id?.idCard ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -245,7 +245,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													userInfo?.student_id?.idCard ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
@@ -257,7 +257,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 									<button
 										onClick={(e) => {
 											setModalPopped(
-												userInfo?.student_id?.idCard ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -273,7 +273,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													userInfo?.student_id?.idCard ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
@@ -287,7 +287,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 									<button
 										onClick={(e) => {
 											setModalPopped(
-												userInfo?.student_id?.idCard ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -303,7 +303,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													userInfo?.student_id?.idCard ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
@@ -315,7 +315,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 									<button
 										onClick={(e) => {
 											setModalPopped(
-												userInfo?.student_id?.idCard ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -331,7 +331,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													userInfo?.student_id?.idCard ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'
@@ -343,7 +343,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 									<button
 										onClick={(e) => {
 											setModalPopped(
-												userInfo?.student_id?.idCard ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -359,7 +359,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													userInfo?.student_id?.idCard ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg'

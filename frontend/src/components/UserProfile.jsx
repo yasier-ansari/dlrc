@@ -447,9 +447,8 @@ const UserProfile = () => {
 											// selectedImage
 											// 	? selectedImage
 											// 	:
-											user?.idCard
-											// ||
-											// 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+											`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${user?.idCard}` ||
+											'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										}
 										alt='Please refresh the page if image is not visible'
 										className='w-full h-full rounded-lg aspect-video min-h-full sm:rounded-xl md:rounded-2xl object-cover'

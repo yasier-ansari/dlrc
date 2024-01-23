@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 // import { ListContext } from "../context/ListContext"
 // import Paginator from "./Paginator";
 import { Link } from 'react-router-dom'
@@ -39,6 +39,7 @@ const List = () => {
 			return 'Just now'
 		}
 	}
+	const [loading, setLoading] = useState(null)
 	const formatDuration = (durationString) => {
 		switch (durationString) {
 			case 'Short':
@@ -79,111 +80,118 @@ const List = () => {
 					setUserList(res?.data)
 				} catch (e) {
 					console.log(e)
+					setUserList(null)
 					toast.error(
 						'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
 					)
 				}
 			}
 		}
-		getUserList()
+		setLoading(true)
+		try {
+			getUserList()
+		} finally {
+			setLoading(false)
+		}
 	}, [])
 	let apiData = []
 	console.log(userList)
 	return (
 		<>
-			{userList?.length > 0 ? (
-				<>
-					<Search />
-					<div className='flex barlow flex-col rounded-md items-center justify-center '>
-						<div className='pt-2 overflow-scroll px-0 w-full'>
-							<table className='mt-4 w-full min-w-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
-								<thead>
-									<tr>
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Name{' '}
-											</p>
-										</th>
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Email{' '}
-											</p>
-										</th>
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Class{' '}
-											</p>
-										</th>
-										{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+			{!loading ? (
+				userList?.length > 0 ? (
+					<>
+						<Search />
+						<div className='flex barlow flex-col rounded-md items-center justify-center '>
+							<div className='pt-2 overflow-scroll px-0 w-full'>
+								<table className='mt-4 w-full min-w-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
+									<thead>
+										<tr>
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Name{' '}
+												</p>
+											</th>
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Email{' '}
+												</p>
+											</th>
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Class{' '}
+												</p>
+											</th>
+											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
 									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
 										Year - Sem{' '}
 									</p>
 								</th> */}
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Roll No{' '}
-											</p>
-										</th>
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Duration
-											</p>
-										</th>
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Requested
-											</p>
-										</th>
-										{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Roll No{' '}
+												</p>
+											</th>
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Duration
+												</p>
+											</th>
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Requested
+												</p>
+											</th>
+											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
 									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
 										Status
 									</p>
 								</th> */}
-										<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-											<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-												Approve
-											</p>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{userList?.map((el, idx) => {
-										console.log(userList?.length === idx + 1)
-										console.log(el?._id, 'req id')
+											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+													Approve
+												</p>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										{userList?.map((el, idx) => {
+											console.log(userList?.length === idx + 1)
+											console.log(el?._id, 'req id')
 
-										return (
-											<tr
-												key={idx}
-												className='group p-2 rounded-xl hover:bg-[#d8f3dc]'
-											>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+											return (
+												<tr
+													key={idx}
+													className='group p-2 rounded-xl hover:bg-[#d8f3dc]'
 												>
-													<div className='flex items-center gap-3'>
-														<div className='flex flex-col'>
-															{/* <p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+													>
+														<div className='flex items-center gap-3'>
+															<div className='flex flex-col'>
+																{/* <p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
 														React Project
 													</p>
 													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal opacity-70'>
 														Start date: 10 Dec 2023
 													</p> */}
-															<p>{el?.student_id?.fullname}</p>
+																<p>{el?.student_id?.fullname}</p>
+															</div>
 														</div>
-													</div>
-												</td>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
-												>
-													<div className='flex items-center gap-3'>
-														{/* <img
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+													>
+														<div className='flex items-center gap-3'>
+															{/* <img
 													src='https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg'
 													alt='John Michael'
 													className='inline-block relative object-cover object-center w-9 h-9 rounded-md'
@@ -196,59 +204,59 @@ const List = () => {
 														john@creative-tim.com
 													</p>
 												</div> */}
-														<p>{el?.student_id?.domain_id}</p>
-													</div>
-												</td>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-xs sm:text-sm font-medium text-gray-800 text-center `}
-												>
-													<div className='flex flex-col'>
-														<p className='block antialiased  leading-normal '>
-															{el?.student_id?.department}
+															<p>{el?.student_id?.domain_id}</p>
+														</div>
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-xs sm:text-sm font-medium text-gray-800 text-center `}
+													>
+														<div className='flex flex-col'>
+															<p className='block antialiased  leading-normal '>
+																{el?.student_id?.department}
+															</p>
+															<p className='block antialiased   leading-normal opacity-80'>
+																{el?.student_id?.year +
+																	' - ' +
+																	el?.student_id?.sem}
+															</p>
+														</div>
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+													>
+														<div className='w-max'>
+															<p className='block antialiased '>
+																{el?.student_id?.prn}
+															</p>
+														</div>
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+													>
+														<p className='block antialiased leading-normal '>
+															{formatDuration(el?.duration)}
 														</p>
-														<p className='block antialiased   leading-normal opacity-80'>
-															{el?.student_id?.year +
-																' - ' +
-																el?.student_id?.sem}
-														</p>
-													</div>
-												</td>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-												>
-													<div className='w-max'>
-														<p className='block antialiased '>
-															{el?.student_id?.prn}
-														</p>
-													</div>
-												</td>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-												>
-													<p className='block antialiased leading-normal '>
-														{formatDuration(el?.duration)}
-													</p>
-												</td>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-												>
-													{/* <button
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+													>
+														{/* <button
 												className='relative align-middle select-none   font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-blue-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30'
 												type='button'
 											>
@@ -264,46 +272,54 @@ const List = () => {
 													</svg>
 												</span>
 											</button> */}
-													<p className='block antialiased  leading-normal '>
-														{formatTimeDifference(el?.createdAt)}
-													</p>
-												</td>
-												<td
-													className={`p-4 ${
-														userList?.length !== idx + 1
-															? 'border-b border-stone-400/60'
-															: null
-													}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-												>
-													<Link
-														to={
-															user?.userType === 'admin'
-																? `/admin/user/${el?._id}`
-																: `/maintenance/issue/${el?._id}`
-														}
-														className='  '
-														type='button'
+														<p className='block antialiased  leading-normal '>
+															{formatTimeDifference(el?.createdAt)}
+														</p>
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
 													>
-														<HiOutlineDocumentText className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
-													</Link>
-												</td>
-											</tr>
-										)
-									})}
-								</tbody>
-							</table>
+														<Link
+															to={
+																user?.userType === 'admin'
+																	? `/admin/user/${el?._id}`
+																	: `/maintenance/issue/${el?._id}`
+															}
+															className='  '
+															type='button'
+														>
+															<HiOutlineDocumentText className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
+														</Link>
+													</td>
+												</tr>
+											)
+										})}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</>
+				) : (
+					<div className='flex-grow flex flex-col justify-center mx-auto items-center max-w-4xl w-full h-full '>
+						<div className='flex flex-col items-center justify-center w-full h-full max-w-5xl '>
+							<h3 className='text-3xl sm:text-4xl md:text-5xl'>
+								<LuUserCircle2 className=' text-[#52b788] w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 -ml-1 sm:-ml-2 md:-ml-3 ' />
+							</h3>
+							<h1 className='text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold '>
+								No Issues to Scrutinize
+							</h1>
 						</div>
 					</div>
-				</>
+				)
 			) : (
-				<div className='flex-grow flex flex-col justify-center mx-auto items-center max-w-4xl w-full h-full '>
-					<div className='flex flex-col items-center justify-center w-full h-full max-w-5xl '>
-						<h3 className='text-3xl sm:text-4xl md:text-5xl'>
-							<LuUserCircle2 className=' text-[#52b788] w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 -ml-1 sm:-ml-2 md:-ml-3 ' />
-						</h3>
-						<h1 className='text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold '>
-							No Issues to Scrutinize
-						</h1>
+				<div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50'>
+					<div className='flex items-center space-x-3 bg-white px-3 py-2 rounded-lg'>
+						<h2 className='text-lg font-semibold'>Loading</h2>
+						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c]'></div>
 					</div>
 				</div>
 			)}
