@@ -9,7 +9,8 @@ import Maint from './pages/Maintenance/Maint.page'
 import Rules from './pages/Rules.page'
 import { AuthContext } from './context/AuthContext'
 import Access from './pages/Access.page'
-import { Toaster, toast } from 'react-hot-toast'
+import { Toaster as RHTToaster, toast } from 'react-hot-toast'
+import { Toaster } from './components/ui/sonner'
 function App() {
 	const [loading, setLoading] = useState(false)
 	const {
@@ -24,7 +25,7 @@ function App() {
 	} = useContext(AuthContext)
 	return (
 		<div className=' antialiased scroll-smooth  '>
-			<Toaster
+			<RHTToaster
 				containerStyle={{}}
 				toastOptions={{
 					// Define default options
@@ -81,6 +82,7 @@ function App() {
 				richColors
 				position='top-center'
 			/>
+			<Toaster />
 			<BrowserRouter>
 				{!loading && (
 					<Routes>

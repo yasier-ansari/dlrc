@@ -8,6 +8,7 @@ import { Issue } from "../models/issue.models.js";
 import s3Client from "../utils/s3.js";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Laptop } from "../models/laptop.models.js";
 
 const registerAdmin = asyncHandler(async (req, res) => {
     const { email, password, department, fullname, key, type } = req.body; // added type { admin, maintenance }
@@ -540,6 +541,95 @@ const getOneApprovedRequest = asyncHandler(async (req, res) => {
     }
 });
 
+const getOneIssuedRequest = asyncHandler(async (req, res) => {
+    const { id } = req.params; // TODO: add new req_no in models
+    try {
+        if (!id?.trim()) {
+            return res
+                .status(400)
+                .json(
+                    new ApiResponse(
+                        400,
+                        { message: "No Request ID is given as param" },
+                        "No Request ID is given as param"
+                    )
+                );
+        }
+        const showRequest = await Issue.findById(id).populate({
+            path: "req_id",
+            populate: {
+                path: "student_id",
+                model: "Student", // Adjust this with the actual model name for students
+            },
+        });
+
+        if (!showRequest) {
+            return res
+                .status(404)
+                .json(
+                    new ApiResponse(
+                        404,
+                        { message: "No Request found for the given ID" },
+                        "No Request found for the given ID"
+                    )
+                );
+        }
+
+        return res
+            .status(202)
+            .json(new ApiResponse(202, showRequest, "Sent Particular Request"));
+    } catch (e) {
+        return res
+            .status(500)
+            .json(
+                new ApiResponse(
+                    500,
+                    { message: e.message || "Internal Server Error" },
+                    "Couldn't Fetch the Student Request"
+                )
+            );
+    }
+});
+
+const changeLaptopStatus = asyncHandler(async (req, res) => {
+    const { status, id } = req.body;
+    console.log(status, id);
+    try {
+        const updatedLaptop = await Laptop.findOneAndUpdate(
+            { laptop_id: id },
+            { condition: status }
+        );
+
+        if (!updatedLaptop) {
+            // If no laptop with the specified ID is found
+            return res
+                .status(404)
+                .json(
+                    new ApiResponse(
+                        404,
+                        { message: "No Laptop found for the given ID" },
+                        "No Laptop found for the given ID"
+                    )
+                );
+        }
+
+        // The updatedLaptop variable now contains the updated document
+        return res
+            .status(202)
+            .json(new ApiResponse(202, {}, "Status Changed Successfully"));
+    } catch (e) {
+        return res
+            .status(500)
+            .json(
+                new ApiResponse(
+                    500,
+                    { message: e.message || "Internal Server Error" },
+                    "Couldn't Update the Status "
+                )
+            );
+    }
+});
+
 // if the laptop is alloed to someone it cant be alloted to others
 
 export {
@@ -552,4 +642,6 @@ export {
     updateRequest,
     viewProfile,
     getOneApprovedRequest,
+    getOneIssuedRequest,
+    changeLaptopStatus,
 };

@@ -6,12 +6,12 @@ import {
 } from 'react-router-dom'
 import MaintLogin from './MaintLogin.page'
 import MaintRegister from './MaintRegister.page'
-import MaintUser from './MaintUser.page'
 import MaintUserApproval from './MaintUserApproval.page'
 import MaintUserReturn from './MaintUserReturn.page'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
-
+import MaintLaptopList from './Maint.Laptop'
+import MaintUser from './MaintUser.page'
 const Maint = () => {
 	const { user } = useContext(AuthContext)
 	const { state } = useLocation()
@@ -48,6 +48,45 @@ const Maint = () => {
 				element={
 					user ? (
 						<MaintUserReturn />
+					) : (
+						<Navigate
+							to='/maintenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+			<Route
+				path='/issued'
+				element={
+					user ? (
+						<MaintLaptopList />
+					) : (
+						<Navigate
+							to='/maintenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/>
+			{/* <Route
+				path='/issued'
+				element={
+					user ? (
+						<MaintLaptopList />
+					) : (
+						<Navigate
+							to='/maintenance/login'
+							state={{ path: location.pathname }}
+						/>
+					)
+				}
+			/> */}
+			<Route
+				path='/laptop'
+				element={
+					user ? (
+						<MaintLaptopList />
 					) : (
 						<Navigate
 							to='/maintenance/login'

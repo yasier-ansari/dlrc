@@ -9,6 +9,8 @@ import {
     updateRequest,
     viewProfile,
     getOneApprovedRequest,
+    getOneIssuedRequest,
+    changeLaptopStatus,
 } from "../controllers/admin.controllers.js";
 import {
     getApproved,
@@ -41,7 +43,10 @@ adminRouter
 adminRouter.route("/new-issue").post(adminJWT, newIssue);
 adminRouter.route("/free-laptop").get(adminJWT, allFreeLaptops);
 adminRouter.route("/issued-laptop").get(adminJWT, allIssuedLaptops);
-adminRouter.route("/new-return").post(adminJWT, newReturn);
+adminRouter.route("/issued-laptop/:id").get(adminJWT, getOneIssuedRequest);
+adminRouter.route("/change-laptop").post(adminJWT, changeLaptopStatus);
+
+adminRouter.route("/new-return/:issue").post(adminJWT, newReturn);
 adminRouter.route("/all-return").get(adminJWT, allReturn);
 
 export { adminRouter };

@@ -1,14 +1,39 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 // import { ListContext } from "../context/ListContext"
 // import Paginator from "./Paginator";
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
-import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { LuUserCircle2 } from 'react-icons/lu'
+import { BiEditAlt } from 'react-icons/bi'
+import { LuLaptop, LuUserCircle2 } from 'react-icons/lu'
 import Search from './UserSearch'
-const List = () => {
+import { Button } from '@/components/ui/button.jsx'
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from '@/components/ui/dialog.jsx'
+import { Input } from '@/components/ui/input.jsx'
+import { Label } from '@/components/ui/label.jsx'
+import useAutosizeTextArea from '@/context/AutoResizer'
+import { Textarea } from './ui/textarea'
+
+const LaptopIdList = () => {
+	const textAreaRef = useRef(null)
+	const [form, setForm] = useState({ prevStatus: '', currStatus: '' })
+	useAutosizeTextArea(textAreaRef, form?.prevStatus)
+	useAutosizeTextArea(textAreaRef, form?.currStatus)
+	const [modalOpen, setMoadalOpen] = useState(false)
+	const handleChange = (e) => {
+		const val = e.target?.value
+		setForm({ ...form, [e.target.name]: val })
+	}
+
 	const formatTimeDifference = (dateString) => {
 		const currentDate = new Date()
 		const targetDate = new Date(dateString)
@@ -54,25 +79,57 @@ const List = () => {
 	}
 	const { userList, setUserList, token, user } =
 		useContext(AuthContext)
-	console.log(user)
+	const [currentId, setCurrentId] = useState()
+	const updateStatus = async () => {
+		var response
+		console.log(currentId?.laptop_id, form?.currStatus)
+		try {
+			response = await axios({
+				method: 'post',
+				url: `http://localhost:8000/api/v1/admin/change-laptop`,
+				data: { status: form?.currStatus, id: currentId?.laptop_id },
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			})
+			const res = response?.data
+			console.log(res)
+			setLoading(false)
+			setMoadalOpen(false)
+			toast.success(` Laptop status changed Successfully `)
+		} catch (e) {
+			setLoading(false)
+			setMoadalOpen(false)
+			console.log(e)
+			if (e?.response?.status === 404) {
+				toast.error(' Technical Error, please contact developer')
+			} else {
+				toast.error(
+					'Error Occurred, please try again after some time'
+				)
+			}
+		}
+	}
 	const getUserLaptop = async () => {
 		var response
 		if (token) {
 			try {
 				if (user?.userType === 'maintenance') {
+					console.log('issu here')
 					response = await axios({
 						method: 'get',
 						credentials: 'include',
-						url: 'http://localhost:8000/api/v1/admin/issued-laptop',
+						url: 'http://localhost:8000/api/v1/admin/free-laptop',
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				}
 				const res = response?.data
+				console.log('working')
 				console.log(res)
-				// setUserList(res?.data)
+				setUserList(res?.data)
 			} catch (e) {
 				console.log(e)
-				// setUserList(null)
+				setUserList(null)
 				toast.error(
 					'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
 				)
@@ -80,40 +137,9 @@ const List = () => {
 		}
 	}
 	useEffect(() => {
-		const getUserList = async () => {
-			var response
-			if (token) {
-				try {
-					if (user?.userType === 'admin') {
-						response = await axios({
-							method: 'get',
-							credentials: 'include',
-							url: 'http://localhost:8000/api/v1/admin/allRequest',
-							headers: { Authorization: `Bearer ${token}` }
-						})
-					} else if (user?.userType === 'maintenance') {
-						response = await axios({
-							method: 'get',
-							credentials: 'include',
-							url: 'http://localhost:8000/api/v1/admin/all-approved',
-							headers: { Authorization: `Bearer ${token}` }
-						})
-					}
-					const res = response?.data
-					console.log(res)
-					setUserList(res?.data)
-				} catch (e) {
-					console.log(e)
-					setUserList(null)
-					toast.error(
-						'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
-					)
-				}
-			}
-		}
 		setLoading(true)
 		try {
-			getUserList()
+			// getUserList()
 			getUserLaptop()
 		} finally {
 			setLoading(false)
@@ -125,26 +151,21 @@ const List = () => {
 		<>
 			{!loading ? (
 				userList?.length > 0 ? (
-					<>
-						<Search />
-						<div className='flex barlow flex-col rounded-md items-center justify-center '>
-							<div className='pt-2 overflow-scroll px-0 w-full'>
-								<table className='mt-4 w-full min-w-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
+					<Dialog>
+						<Search laptopList={true} />
+						<div className='flex barlow flex-col rounded-md items-center max-w-7xl  justify-center '>
+							<div className='pt-2  px-0 w-full overflow-x-scroll '>
+								<table className='overflow-scroll mt-4 w-full minw-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
 									<thead>
 										<tr>
 											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
 												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Name{' '}
+													Laptop Id{' '}
 												</p>
 											</th>
 											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
 												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Email{' '}
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Class{' '}
+													Status{' '}
 												</p>
 											</th>
 											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
@@ -154,27 +175,12 @@ const List = () => {
 								</th> */}
 											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
 												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Roll No{' '}
+													Department
 												</p>
 											</th>
 											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
 												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Duration
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Requested
-												</p>
-											</th>
-											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-										Status
-									</p>
-								</th> */}
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Approve
+													Edit Status
 												</p>
 											</th>
 										</tr>
@@ -189,49 +195,27 @@ const List = () => {
 													key={idx}
 													className='group p-2 rounded-xl hover:bg-[#d8f3dc]'
 												>
-													<td
+													{/* <td
 														className={`p-4 ${
 															userList?.length !== idx + 1
 																? 'border-b border-stone-400/60'
 																: null
 														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
 													>
-														<div className='flex items-center gap-3'>
-															<div className='flex flex-col'>
-																{/* <p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
-														React Project
-													</p>
-													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal opacity-70'>
-														Start date: 10 Dec 2023
-													</p> */}
-																<p>{el?.student_id?.fullname}</p>
+														<div className='flex flex-col'>
+															<div className='flex items-center space-x-3'>
+																<p className='block antialiased  leading-normal '>
+																	{el?.laptop_id}
+																</p>
+																<p className='block antialiased   leading-normal opacity-80'>
+																	{el?.condition}
+																</p>
 															</div>
+															<p className='block antialiased   leading-normal opacity-80'>
+																{el?.department}
+															</p>
 														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
-													>
-														<div className='flex items-center gap-3'>
-															{/* <img
-													src='https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg'
-													alt='John Michael'
-													className='inline-block relative object-cover object-center w-9 h-9 rounded-md'
-												/>
-												<div className='flex flex-col'>
-													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
-														John Michael
-													</p>
-													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal opacity-70'>
-														john@creative-tim.com
-													</p>
-												</div> */}
-															<p>{el?.student_id?.domain_id}</p>
-														</div>
-													</td>
+													</td> */}
 													<td
 														className={`p-4 ${
 															userList?.length !== idx + 1
@@ -239,39 +223,19 @@ const List = () => {
 																: null
 														}  rounded-sm text-xs sm:text-sm font-medium text-gray-800 text-center `}
 													>
-														<div className='flex flex-col'>
-															<p className='block antialiased  leading-normal '>
-																{el?.student_id?.department}
-															</p>
-															<p className='block antialiased   leading-normal opacity-80'>
-																{el?.student_id?.year +
-																	' - ' +
-																	el?.student_id?.sem}
-															</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<div className='w-max'>
-															<p className='block antialiased '>
-																{el?.student_id?.prn}
-															</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
 														<p className='block antialiased leading-normal '>
-															{formatDuration(el?.duration)}
+															{el?.laptop_id}
+														</p>
+													</td>
+													<td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+													>
+														<p className='block antialiased   leading-normal opacity-80'>
+															{el?.condition}
 														</p>
 													</td>
 													<td
@@ -298,9 +262,20 @@ const List = () => {
 												</span>
 											</button> */}
 														<p className='block antialiased  leading-normal '>
-															{formatTimeDifference(el?.createdAt)}
+															{el?.department}
 														</p>
 													</td>
+													{/* <td
+														className={`p-4 ${
+															userList?.length !== idx + 1
+																? 'border-b border-stone-400/60'
+																: null
+														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+													>
+														<p className='block antialiased  leading-normal '>
+															{el?.laptop_id}
+														</p>
+													</td> */}
 													<td
 														className={`p-4 ${
 															userList?.length !== idx + 1
@@ -308,17 +283,28 @@ const List = () => {
 																: null
 														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
 													>
-														<Link
-															to={
-																user?.userType === 'admin'
-																	? `/admin/user/${el?._id}`
-																	: `/maintenance/issue/${el?._id}`
-															}
+														{/* <Link
+															to={`/maintenance/return/${el?._id}`}
 															className='  '
 															type='button'
 														>
-															<HiOutlineDocumentText className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
-														</Link>
+															<BiEditAlt className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
+														</Link> */}
+														<DialogTrigger asChild>
+															<Button
+																onClick={(e) => {
+																	setCurrentId(el)
+																	setMoadalOpen(true)
+																	setForm({
+																		...form,
+																		status: el?.condition
+																	})
+																}}
+																variant='outline'
+															>
+																Edit Profile
+															</Button>
+														</DialogTrigger>
 													</td>
 												</tr>
 											)
@@ -327,15 +313,56 @@ const List = () => {
 								</table>
 							</div>
 						</div>
-					</>
+						{modalOpen && (
+							<DialogContent className='sm:max-w-[500px]'>
+								<DialogHeader>
+									<DialogTitle>Edit Status</DialogTitle>
+								</DialogHeader>
+								<div className='grid gap-4 py-4'>
+									<div className='grid grid-cols-4 items-center gap-4'>
+										<Label htmlFor='name' className='text-right'>
+											Current
+										</Label>
+										<Textarea
+											id='name'
+											name='prevStatus'
+											value={currentId?.condition}
+											disabled={true}
+											className='col-span-3 bg-stone-200 '
+										/>
+									</div>
+									<div className='grid grid-cols-4 items-center gap-4'>
+										<Label htmlFor='username' className='text-right'>
+											Edit
+										</Label>
+										<Textarea
+											id='name'
+											name='currStatus'
+											value={form?.currStatus}
+											disabled={loading}
+											onChange={(e) => {
+												handleChange(e)
+											}}
+											className='col-span-3 bg-stone-200 '
+										/>
+									</div>
+								</div>
+								<DialogFooter>
+									<Button onClick={updateStatus} type='submit'>
+										Save changes
+									</Button>
+								</DialogFooter>
+							</DialogContent>
+						)}
+					</Dialog>
 				) : (
 					<div className='flex-grow flex flex-col justify-center mx-auto items-center max-w-4xl w-full h-full '>
 						<div className='flex flex-col items-center justify-center w-full h-full max-w-5xl '>
 							<h3 className='text-3xl sm:text-4xl md:text-5xl'>
-								<LuUserCircle2 className=' text-[#52b788] w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 -ml-1 sm:-ml-2 md:-ml-3 ' />
+								<LuLaptop className=' text-[#52b788] w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 -ml-1 sm:-ml-2 md:-ml-3 ' />
 							</h3>
 							<h1 className='text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold '>
-								No Issues to Scrutinize
+								No Allotted Laptop to see here
 							</h1>
 						</div>
 					</div>
@@ -352,4 +379,4 @@ const List = () => {
 	)
 }
 
-export default List
+export default LaptopIdList
