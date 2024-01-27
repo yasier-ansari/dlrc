@@ -1,14 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
-// import { ListContext } from "../context/ListContext"
-// import Paginator from "./Paginator";
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { LuUserCircle2 } from 'react-icons/lu'
+import { LuArrowDownUp, LuUserCircle2 } from 'react-icons/lu'
 import Search from './UserSearch'
+import MaxWidthWrapper from './MaxWidthWrapper'
 const List = () => {
+	const [newList, setNewList] = useState()
+	const [emailOrder, setEmailOrder] = useState('asc')
+	const [classOrder, setclassOrder] = useState('asc')
 	const formatTimeDifference = (dateString) => {
 		const currentDate = new Date()
 		const targetDate = new Date(dateString)
@@ -39,7 +41,7 @@ const List = () => {
 			return 'Just now'
 		}
 	}
-	const [loading, setLoading] = useState(null)
+	const [loading, setLoading] = useState(true)
 	const formatDuration = (durationString) => {
 		switch (durationString) {
 			case 'Short':
@@ -52,33 +54,10 @@ const List = () => {
 				return '1-2 Month'
 		}
 	}
+
 	const { userList, setUserList, token, user } =
 		useContext(AuthContext)
 	console.log(user)
-	const getUserLaptop = async () => {
-		var response
-		if (token) {
-			try {
-				if (user?.userType === 'maintenance') {
-					response = await axios({
-						method: 'get',
-						credentials: 'include',
-						url: 'http://localhost:8000/api/v1/admin/issued-laptop',
-						headers: { Authorization: `Bearer ${token}` }
-					})
-				}
-				const res = response?.data
-				console.log(res)
-				// setUserList(res?.data)
-			} catch (e) {
-				console.log(e)
-				// setUserList(null)
-				toast.error(
-					'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
-				)
-			}
-		}
-	}
 	useEffect(() => {
 		const getUserList = async () => {
 			var response
@@ -102,229 +81,292 @@ const List = () => {
 					const res = response?.data
 					console.log(res)
 					setUserList(res?.data)
+					setNewList(res?.data)
 				} catch (e) {
 					console.log(e)
 					setUserList(null)
+					setNewList(null)
 					toast.error(
 						'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
 					)
 				}
 			}
 		}
-		setLoading(true)
 		try {
 			getUserList()
-			getUserLaptop()
 		} finally {
 			setLoading(false)
 		}
 	}, [])
 	let apiData = []
 	console.log(userList)
+	const sortData = (data, sortBy, sortOrder) => {
+		if (data?.length > 0) {
+			const newData = data.slice().sort((a, b) => {
+				const aValue =
+					sortBy === 'domain_id'
+						? a.student_id[sortBy]
+						: a.student_id[sortBy].toLowerCase()
+				const bValue =
+					sortBy === 'domain_id'
+						? b.student_id[sortBy]
+						: b.student_id[sortBy].toLowerCase()
+
+				if (sortOrder === 'asc') {
+					return aValue.localeCompare(bValue, undefined, {
+						sensitivity: 'base'
+					})
+				} else {
+					return bValue.localeCompare(aValue, undefined, {
+						sensitivity: 'base'
+					})
+				}
+			})
+			setNewList(newData)
+		}
+	}
+	const sortList = (tag) => {
+		sortData(
+			newList,
+			tag === 'domain_id' ? 'domain_id' : 'department',
+			tag === 'domain_id' ? emailOrder : classOrder
+		)
+	}
 	return (
-		<>
+		<MaxWidthWrapper className='w-full  h-full items-center justify-center mx-auto max-w-5xl text-gray-800/90 py-6 flex grow px-8 md:px-12 lg:px-20 xl:px-24 flex-col'>
 			{!loading ? (
 				userList?.length > 0 ? (
 					<>
-						<Search />
-						<div className='flex barlow flex-col rounded-md items-center justify-center '>
-							<div className='pt-2 overflow-scroll px-0 w-full'>
-								<table className='mt-4 w-full min-w-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
-									<thead>
-										<tr>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Name{' '}
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Email{' '}
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Class{' '}
-												</p>
-											</th>
-											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+						<Search
+							userList={userList}
+							setNewList={setNewList}
+							laptopList={false}
+						/>
+						<div className='flex flex-col mx-auto overflow-x-scroll  max-w-6xl rounded-md items-center justify-center '>
+							<div className='w-full mb-8 overflow-hidden rounded-lg shadow-lg'>
+								<div className='pt-2 w-full overflow-x-auto px-0'>
+									<table className='mt-4 w-full min-w-max rounded-lg text-start border-2 border-separate border-stone-200  '>
+										<thead>
+											<tr className='text-md  text-gray-800 text-left spline rounded-md  '>
+												{/* <th className='cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+														Name{' '}
+													</p>
+												</th> */}
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<button
+														onClick={() => {
+															setEmailOrder(
+																emailOrder === 'asc' ? 'desc' : 'asc'
+															)
+															sortList('domain_id')
+														}}
+														className='flex items-center justify-between w-full'
+													>
+														<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+															Info{' '}
+														</p>
+														<div>
+															<LuArrowDownUp className='text-gray-700' />
+														</div>
+													</button>
+												</th>
+												<th className='cursor-pointer hidden md:table-cell p-4 bg-green-200/70 rounded-sm'>
+													<button
+														onClick={() => {
+															setclassOrder(
+																classOrder === 'asc' ? 'desc' : 'asc'
+															)
+															sortList('department')
+														}}
+														className='flex items-center justify-between w-full'
+													>
+														<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+															Class{' '}
+														</p>
+														<div>
+															<LuArrowDownUp className='text-gray-700' />
+														</div>
+													</button>
+												</th>
+												{/* <th className='cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+									<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
 										Year - Sem{' '}
 									</p>
 								</th> */}
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Roll No{' '}
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Duration
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Requested
-												</p>
-											</th>
-											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+												<th className=' hidden xl:table-cell cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Roll No{' '}
+													</p>
+												</th>
+												<th className='cursor-pointer hidden lg:table-cell p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Duration
+													</p>
+												</th>
+												<th className=' hidden xs:table-cell cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Requested
+													</p>
+												</th>
+												{/* <th className='cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+									<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
 										Status
 									</p>
 								</th> */}
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Approve
-												</p>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{userList?.map((el, idx) => {
-											console.log(userList?.length === idx + 1)
-											console.log(el?._id, 'req id')
-
-											return (
-												<tr
-													key={idx}
-													className='group p-2 rounded-xl hover:bg-[#d8f3dc]'
-												>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
-													>
-														<div className='flex items-center gap-3'>
-															<div className='flex flex-col'>
-																{/* <p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
-														React Project
+												<th className='cursor-pointer hidden sm:table-cell p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Approve
 													</p>
-													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal opacity-70'>
-														Start date: 10 Dec 2023
-													</p> */}
-																<p>{el?.student_id?.fullname}</p>
-															</div>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											{newList?.length > 0 ? (
+												newList?.map((el, idx) => {
+													return (
+														<>
+															<tr
+																key={el?._id}
+																className='group p-2 rounded-xl hover:bg-stone-200/60'
+															>
+																<td
+																	className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+																>
+																	<div className='flex items-center gap-3'>
+																		<div className='flex flex-col'>
+																			<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
+																				{el?.student_id?.fullname}
+																			</p>
+																			<p>
+																				{el?.student_id?.domain_id}
+																			</p>
+																		</div>
+																	</div>
+																</td>
+																{/* <td
+																	className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+																>
+																	<div className='flex items-center gap-3'>
+																		<p>{el?.student_id?.domain_id}</p>
+																	</div>
+																</td> */}
+																<td
+																	className={`p-4 rounded-sm hidden md:table-cell text-xs sm:text-sm font-medium text-gray-800 text-center `}
+																>
+																	<div className='flex flex-col'>
+																		<p className='block antialiased  leading-normal '>
+																			{el?.student_id?.department}
+																		</p>
+																		<p className='block antialiased   leading-normal opacity-80'>
+																			{el?.student_id?.year +
+																				' - ' +
+																				el?.student_id?.sem}
+																		</p>
+																	</div>
+																</td>
+																<td
+																	className={`p-4 rounded-sm hidden xl:table-cell text-sm sm:text-base font-medium text-gray-800 text-center `}
+																>
+																	<div className='w-max'>
+																		<p className='block antialiased '>
+																			{el?.student_id?.prn}
+																		</p>
+																	</div>
+																</td>
+																<td
+																	className={`p-4 hidden lg:table-cell  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+																>
+																	<p className='block antialiased leading-normal '>
+																		{formatDuration(el?.duration)}
+																	</p>
+																</td>
+																<td
+																	className={`p-4 hidden xs:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+																>
+																	<p className='block antialiased  leading-normal '>
+																		{formatTimeDifference(
+																			el?.createdAt
+																		)}
+																	</p>
+																</td>
+																<td
+																	className={` p-4 rounded-sm hidden sm:table-cell  text-sm sm:text-base font-medium text-gray-800 text-center `}
+																>
+																	<Link
+																		to={
+																			user?.userType === 'admin'
+																				? `/admin/user/${el?._id}`
+																				: `/maintenance/issue/${el?._id}`
+																		}
+																		className='  '
+																		type='button'
+																	>
+																		<HiOutlineDocumentText className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
+																	</Link>
+																</td>
+															</tr>
+														</>
+													)
+												})
+											) : (
+												<>
+													<tr
+														key={'escape'}
+														className='group p-2 rounded-xl hover:bg-[#f0fff2]'
 													>
-														<div className='flex items-center gap-3'>
-															{/* <img
-													src='https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg'
-													alt='John Michael'
-													className='inline-block relative object-cover object-center w-9 h-9 rounded-md'
-												/>
-												<div className='flex flex-col'>
-													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal'>
-														John Michael
-													</p>
-													<p className='block antialiased   text-sm leading-normal text-blue-gray-900 font-normal opacity-70'>
-														john@creative-tim.com
-													</p>
-												</div> */}
-															<p>{el?.student_id?.domain_id}</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-xs sm:text-sm font-medium text-gray-800 text-center `}
-													>
-														<div className='flex flex-col'>
-															<p className='block antialiased  leading-normal '>
-																{el?.student_id?.department}
-															</p>
-															<p className='block antialiased   leading-normal opacity-80'>
-																{el?.student_id?.year +
-																	' - ' +
-																	el?.student_id?.sem}
-															</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<div className='w-max'>
-															<p className='block antialiased '>
-																{el?.student_id?.prn}
-															</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<p className='block antialiased leading-normal '>
-															{formatDuration(el?.duration)}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														{/* <button
-												className='relative align-middle select-none   font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-blue-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30'
-												type='button'
-											>
-												<span className='absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2'>
-													<svg
-														xmlns='http://www.w3.org/2000/svg'
-														viewBox='0 0 24 24'
-														fill='currentColor'
-														aria-hidden='true'
-														className='h-4 w-4'
-													>
-														<path d='M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z'></path>
-													</svg>
-												</span>
-											</button> */}
-														<p className='block antialiased  leading-normal '>
-															{formatTimeDifference(el?.createdAt)}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<Link
-															to={
-																user?.userType === 'admin'
-																	? `/admin/user/${el?._id}`
-																	: `/maintenance/issue/${el?._id}`
-															}
-															className='  '
-															type='button'
+														<td
+															className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
 														>
-															<HiOutlineDocumentText className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
-														</Link>
-													</td>
-												</tr>
-											)
-										})}
-									</tbody>
-								</table>
+															<div className='flex items-center gap-3'>
+																<div className='flex flex-col'>
+																	<p>ㅤㅤㅤ - ㅤㅤㅤ </p>
+																</div>
+															</div>
+														</td>
+														<td
+															className={`p-4 rounded-sm hidden md:table-cell text-xs sm:text-sm font-medium text-gray-800 text-center `}
+														>
+															<div className='flex flex-col'>
+																<p className='block antialiased  leading-normal '>
+																	ㅤㅤㅤ - ㅤㅤㅤ
+																</p>
+															</div>
+														</td>
+														<td
+															className={`p-4 rounded-sm hidden lg:table-cell text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															<div className='w-max'>
+																<p className='block antialiased '>
+																	ㅤㅤ- ㅤㅤ
+																</p>
+															</div>
+														</td>
+														<td
+															className={`p-4 rounded-sm  hidden xl:table-cell text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															<p className='block antialiased leading-normal '>
+																ㅤㅤ- ㅤㅤ
+															</p>
+														</td>
+														<td
+															className={`p-4 hidden xs:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															<p className='block antialiased  leading-normal '>
+																ㅤㅤ -ㅤㅤ
+															</p>
+														</td>
+														<td
+															className={`p-4 rounded-sm hidden sm:table-cell text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															ㅤㅤ-ㅤㅤ
+														</td>
+													</tr>
+												</>
+											)}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</>
@@ -348,7 +390,7 @@ const List = () => {
 					</div>
 				</div>
 			)}
-		</>
+		</MaxWidthWrapper>
 	)
 }
 

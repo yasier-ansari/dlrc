@@ -9,6 +9,7 @@ import { LuFolderEdit } from 'react-icons/lu'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { IoWarningOutline } from 'react-icons/io5'
+import MaxWidthWrapper from './MaxWidthWrapper'
 const API = axios.create({ baseURL: 'http://localhost:5173' })
 
 const UserRegister = () => {
@@ -289,10 +290,10 @@ const UserRegister = () => {
 		}
 	}
 	return (
-		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 '>
+		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24 min-h-screen '>
 			{!mainLoading ? (
 				<>
-					<div className='flex flex-col relative max-w-[500px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-8 xl:space-y-10 '>
+					<div className='flex flex-col relative max-w-[500px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-8 xl:space-y-10 '>
 						<div className='flex w-full flex-col '>
 							<h2 className='text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center'>
 								Register
@@ -303,7 +304,11 @@ const UserRegister = () => {
 							</h6>
 						</div>
 						<div className='bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl'></div>
-						<form className='flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center'>
+						<form
+							className={`flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center ${
+								loading && 'opacity-60'
+							} `}
+						>
 							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
 									disabled={loading}
@@ -491,7 +496,7 @@ const UserRegister = () => {
 									htmlFor='image-input'
 									className=' relative cursor-pointer'
 								>
-									<p className=' text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max m-1 px-2 text-white mb-2 '>
+									<p className=' text-xs sm:text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max m-1 px-2 text-white mb-2 '>
 										Id Card
 									</p>
 									<img
@@ -507,8 +512,8 @@ const UserRegister = () => {
 										width={100}
 										height={100}
 									/>
-									<div className='absolute top-5 -right-4 bg-[#74c69d] rounded-lg md:rounded-xl lg:rounded-2xl p-2 md:p-3 '>
-										<LuFolderEdit className='w-5 h-5 md:h-6 md:w-6' />
+									<div className='absolute top-8 sm:top-9 right-0 md:top-10 bg-[#74c69d] rounded-md sm:rounded-lg md:rounded-xl lg:rounded-2xl p-1 sm:p-2 md:p-3 '>
+										<LuFolderEdit className=' w-4 h-4 sm:w-5 sm:h-5 md:h-6 md:w-6' />
 									</div>
 								</label>
 								<input
@@ -525,7 +530,6 @@ const UserRegister = () => {
 									{errors.idCard || '‎'}
 								</p>
 							</div>
-
 							<div className='text-base md:text-lg xl:text-xl md:p-2 font-normal w-full'>
 								<button
 									type='submit'
@@ -542,7 +546,6 @@ const UserRegister = () => {
 									)}
 								</button>
 							</div>
-
 							<a
 								href='/user/login'
 								className='group hover:underline-offset-[5px] text-sm decoration hover:decoration-green-500 hover:underline hover:decora hover:decoration-2 font-normal hover:font-semibold cursor-pointer w-max sm:text-base md:text-lg -mt-2 flex justify-center items-center'
@@ -551,7 +554,7 @@ const UserRegister = () => {
 								<span className=' text-green-700  '>‎ Login </span>
 							</a>
 						</form>
-						<div className='absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 '></div>
+						{/* <div className='absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 '></div> */}
 					</div>
 				</>
 			) : (
@@ -562,7 +565,7 @@ const UserRegister = () => {
 					</div>
 				</div>
 			)}
-		</div>
+		</MaxWidthWrapper>
 	)
 }
 

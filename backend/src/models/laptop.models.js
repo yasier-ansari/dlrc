@@ -21,6 +21,13 @@ const laptopSchema = new Schema(
             type: String,
             required: true,
         },
+        rating: {
+            type: String,
+            required: true,
+            trim: true,
+            enum: ["Poor", "Fair", "Good", "Very Good", "Excellent"],
+            default: ["Excellent"],
+        },
     },
     { timestamps: true }
 );

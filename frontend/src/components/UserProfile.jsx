@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { IoWarningOutline } from 'react-icons/io5'
+import MaxWidthWrapper from './MaxWidthWrapper'
 const UserProfile = () => {
 	const [loading, setLoading] = useState(false)
 	const [flag, setFlag] = useState(true)
@@ -268,18 +269,18 @@ const UserProfile = () => {
 	console.log(user)
 
 	return (
-		<>
+		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-6xl text-gray-800/90 py-6 flex grow px-8 md:px-12 lg:px-20 xl:px-24 flex-col'>
 			<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full text-gray-800/90 mx-auto'>
 				<div
 					div
-					className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full my-16  text-center mx-auto'
+					className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full m-6 sm:m-8 md:m-12  text-center mx-auto'
 				>
 					<LuUserCircle2 className=' text-[#40916c] -skew-x-6 ' />
 					<h1 className='font-bold italic'>Profile</h1>
 				</div>
 			</div>
 			<div
-				className={`flex relative w-full items-center mx-auto flex-col space-y-4 max-w-3xl ${
+				className={`flex relative w-full items-center mx-auto flex-col space-y-2 sm:space-y-4 max-w-3xl ${
 					loading && 'opacity-50'
 				} `}
 			>
@@ -290,9 +291,9 @@ const UserProfile = () => {
 					applications. College Id card are not updatable, If you need
 					to update those, contact your Department Head.
 				</p>
-				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-6  '>
+				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 					<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-						<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+						<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 							Name
 						</p>
 						<input
@@ -310,9 +311,9 @@ const UserProfile = () => {
 						</p>
 					</div>
 				</div>
-				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-6  '>
+				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 					<div className='flex items-start justify-center space-y-2 flex-col w-full '>
-						<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+						<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 							Email
 						</p>
 						<input
@@ -330,9 +331,9 @@ const UserProfile = () => {
 						</p>
 					</div>
 				</div>
-				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-3 '>
+				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 					<div className='flex  w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-						<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+						<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 							Prn
 						</p>
 						<input
@@ -352,7 +353,7 @@ const UserProfile = () => {
 						</p>
 					</div>
 					<div className='flex w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-						<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+						<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 							Dept
 						</p>
 						<select
@@ -378,9 +379,9 @@ const UserProfile = () => {
 						</p>
 					</div>
 				</div>
-				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-3 '>
+				<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 					<div className='flex w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-						<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+						<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 							Year
 						</p>
 						<select
@@ -405,7 +406,7 @@ const UserProfile = () => {
 						</p>
 					</div>
 					<div className='flex w-full sm:basis-[50%]  items-start justify-center space-y-2 flex-col '>
-						<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+						<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 							Sem
 						</p>
 						<select
@@ -431,10 +432,10 @@ const UserProfile = () => {
 						</p>
 					</div>
 				</div>
-				<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
+				<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 					<div className='flex flex-col items-start justify-center space-y-2 w-full '>
 						<div className='flex items-start justify-start w-full h-full flex-col space-y-3 '>
-							<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+							<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Id Card (not Editable)
 							</p>
 							<div className='flex items-center opacity-70 justify-center group transition-all duration-300 ease-in-out  w-full h-full rounded-lg'>
@@ -498,7 +499,7 @@ const UserProfile = () => {
 				className={`flex items-center w-full justify-center mx-auto flex-col space-y-12 max-w-6xl  pb-20 `}
 			>
 				{loading ? (
-					<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2  border-green-600/40 animate-pulse '>
+					<div className='flex items-center justify-center flex-col w-full h-full mt-8 sm:mt-10 md:mt-12 p-4 sm:p-8 md:p-12 rounded-xl border-2  border-green-600/40 animate-pulse space-y-4 '>
 						<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
 							<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
 								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-24 '></p>
@@ -509,43 +510,19 @@ const UserProfile = () => {
 								<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-12 '></p>
 							</div>
 						</div>
-						<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-							<div className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '>
+						<div className='w-full flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-6  '>
+							<div className='flex flex-col items-start justify-center space-y-2 sm:basis-1/2 w-full '>
 								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-16 '></p>
 								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
 									<div className='w-full h-full bg-slate-100 aspect-video transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg' />
 								</div>
 							</div>
-							<div className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '>
-								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-16 '></p>
-
-								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-									<div className='w-full h-full bg-slate-100 aspect-video transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg' />
-								</div>
-							</div>
-							<div className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '>
+							<div className='flex flex-col items-start justify-center space-y-2 sm:basis-1/2 w-full '>
 								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-16 '></p>
 
 								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
 									<div className='w-full h-full bg-slate-100 aspect-video transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg' />
 								</div>
-							</div>
-							<div className='flex flex-col items-start justify-center space-y-2 basis-1/4 w-full '>
-								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-16 '></p>
-
-								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
-									<div className='w-full h-full bg-slate-100 aspect-video transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg' />
-								</div>
-							</div>
-						</div>
-						<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
-							<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-24 '></p>
-								<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-12 '></p>
-							</div>
-							<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-								<p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-24 '></p>
-								<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-12 '></p>
 							</div>
 						</div>
 						<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
@@ -569,8 +546,8 @@ const UserProfile = () => {
 									id='request-history'
 									className='flex w-full h-full items-center justify-start mb-4 md:mb-6'
 								>
-									<h3 className=' min-w-fit font-bold text-[#2d6a4f] text-2xl md:text-3xl p-0 m-0 rounded-md md:self-start italic '>
-										Recent Request
+									<h3 className=' min-w-fit font-bold text-[#2d6a4f] text-xl sm:text-2xl md:text-3xl p-0 m-0 rounded-md md:self-start italic '>
+										Request
 									</h3>
 									<div className='w-full h-full bg-[#74c69d90] ml-6 p-1 rounded-sm'>
 										‎
@@ -584,14 +561,14 @@ const UserProfile = () => {
 '
 											>
 												<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-													<p className='p-2 sm:px-4 md:px-6  bg-gradient-to-br from-[#52b788] font-semibold  to-[#40916c] text-white rounded-xl mx-auto'>
+													<p className=' w-full py-1 px-3 sm:py-2 sm:px-4 md:px-6 bg-gradient-to-tr text-xs sm:text-sm md:text-base from-[#52b788] font-semibold  to-[#40916c] text-white rounded-xl mx-auto'>
 														Issuance Fulfilled
 													</p>
 												</div>
 											</div>
 											<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
 												<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+													<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 														Applied On
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -601,7 +578,7 @@ const UserProfile = () => {
 													</p>
 												</div>
 												<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+													<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 														Duration
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -616,7 +593,7 @@ const UserProfile = () => {
 											</div>
 											<div className='w-full flex flex-col md:flex-row items-center justify-between  mt-4 md:mt-6 space-y-4 md:space-y-0 md:space-x-6  '>
 												<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+													<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 														Approved On
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -629,7 +606,7 @@ const UserProfile = () => {
 													</p>
 												</div>
 												<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-													<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+													<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 														Issued On
 													</p>
 													<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -648,14 +625,14 @@ const UserProfile = () => {
 '
 										>
 											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-												<p className='p-2 sm:px-4 md:px-6  bg-gradient-to-tr from-red-400 font-semibold  to-red-500 text-white rounded-xl mx-auto'>
+												<p className=' w-full py-1 px-3 sm:py-2 sm:px-4 md:px-6 bg-gradient-to-tr text-xs sm:text-sm md:text-base from-red-400 font-semibold  to-red-500 text-white rounded-xl mx-auto'>
 													Approval Rejected
 												</p>
 											</div>
 										</div>
 										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
 											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Applied On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -663,7 +640,7 @@ const UserProfile = () => {
 												</p>
 											</div>
 											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Duration
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -678,7 +655,7 @@ const UserProfile = () => {
 										</div>
 										<div className='w-full flex flex-col md:flex-row items-center justify-between mt-4 md:mt-6  space-y-4 md:space-y-0 md:space-x-6 mx-auto  '>
 											<div className='flex items-start justify-center space-y-2 flex-col  w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Rejected On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -699,14 +676,14 @@ const UserProfile = () => {
 '
 										>
 											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-												<p className='p-2 sm:px-4 md:px-6  bg-gradient-to-tr from-blue-400 font-semibold  to-blue-500 text-white rounded-xl mx-auto'>
+												<p className=' w-full py-1 px-3 sm:py-2 sm:px-4 md:px-6 bg-gradient-to-tr text-xs sm:text-sm md:text-base from-blue-400 font-semibold  to-blue-500 text-white rounded-xl mx-auto'>
 													Issuance Pending
 												</p>
 											</div>
 										</div>
 										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
 											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Applied On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -714,7 +691,7 @@ const UserProfile = () => {
 												</p>
 											</div>
 											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Duration
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -729,7 +706,7 @@ const UserProfile = () => {
 										</div>
 										<div className='w-full flex flex-col md:flex-row items-center justify-between mt-4 md:mt-6  space-y-4 md:space-y-0 md:space-x-6 mx-auto  '>
 											<div className='flex items-start justify-center space-y-2 flex-col  w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Approved On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -744,20 +721,20 @@ const UserProfile = () => {
 										</div>
 									</div>
 								) : (
-									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl  border-2  border-orange-300 relative '>
+									<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2  border-orange-300 relative '>
 										<div
-											className='absolute inset-0 left-[50%] translate-x-[-50%] w-max -top-5  z-10
+											className='absolute inset-0 left-[50%] translate-x-[-50%] w-max -top-3 md:-top-5 z-10
 '
 										>
-											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-												<p className=' w-full py-2 px-4 md:px-6 bg-gradient-to-tr  from-orange-400 font-medium to-orange-500 text-white rounded-xl mx-auto'>
+											<div className='flex items-center justify-center w-full mx-auto '>
+												<p className=' w-full py-1 px-3 sm:py-2 sm:px-4 md:px-6 bg-gradient-to-tr text-xs sm:text-sm md:text-base from-orange-400 font-semibold to-orange-500 text-white rounded-lg md:rounded-xl mx-auto'>
 													Approval Pending
 												</p>
 											</div>
 										</div>
-										<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
+										<div className='w-full flex mt-2 sm:mt-1 md:mt-0 flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
 											<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Applied On
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -765,7 +742,7 @@ const UserProfile = () => {
 												</p>
 											</div>
 											<div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-												<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs sm:text-sm font-medium text-white'>
+												<p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 													Duration
 												</p>
 												<p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
@@ -798,7 +775,7 @@ const UserProfile = () => {
 					</>
 				)}
 			</div>
-		</>
+		</MaxWidthWrapper>
 	)
 }
 

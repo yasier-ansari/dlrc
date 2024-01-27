@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
+import MaxWidthWrapper from './MaxWidthWrapper'
 
 const AdminLoginComp = () => {
 	const {
@@ -74,17 +75,21 @@ const AdminLoginComp = () => {
 		}
 	}
 	return (
-		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 '>
+		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24 '>
 			{!mainLoding ? (
 				<>
-					<div className='flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-4 md:space-y-8 xl:space-y-10 '>
+					<div className='flex flex-col relative max-w-[500px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-8 xl:space-y-10'>
 						<div className='flex w-full flex-col '>
 							<h2 className='text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-center'>
 								Log In
 							</h2>
 						</div>
 						<div className='bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl'></div>
-						<form className='flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center'>
+						<form
+							className={`flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center ${
+								loading && 'opacity-60'
+							} `}
+						>
 							<div className='text-base md:text-lg w-full'>
 								<input
 									disabled={loading}
@@ -159,7 +164,7 @@ const AdminLoginComp = () => {
 					</div>
 				</div>
 			)}
-		</div>
+		</MaxWidthWrapper>
 	)
 }
 

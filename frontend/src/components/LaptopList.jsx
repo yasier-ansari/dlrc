@@ -6,9 +6,17 @@ import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { BiEditAlt } from 'react-icons/bi'
-import { LuLaptop, LuUserCircle2 } from 'react-icons/lu'
+import {
+	LuArrowDownUp,
+	LuLaptop,
+	LuUserCircle2
+} from 'react-icons/lu'
 import Search from './UserSearch'
+import MaxWidthWrapper from './MaxWidthWrapper'
 const LaptopList = () => {
+	const [newList, setNewList] = useState()
+	const [emailOrder, setEmailOrder] = useState('asc')
+	const [classOrder, setclassOrder] = useState('asc')
 	const formatTimeDifference = (dateString) => {
 		const currentDate = new Date()
 		const targetDate = new Date(dateString)
@@ -71,9 +79,11 @@ const LaptopList = () => {
 				console.log('working')
 				console.log(res)
 				setUserList(res?.data)
+				setNewList(res?.data)
 			} catch (e) {
 				console.log(e)
 				setUserList(null)
+				setNewList(null)
 				toast.error(
 					'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
 				)
@@ -89,190 +99,233 @@ const LaptopList = () => {
 			setLoading(false)
 		}
 	}, [])
-	let apiData = []
 	console.log(userList)
+	const sortData = (data, sortBy, sortOrder) => {
+		if (data?.length > 0) {
+			const newData = data.slice().sort((a, b) => {
+				const aValue =
+					sortBy === 'domain_id'
+						? a.studentInfo[sortBy]
+						: a.studentInfo[sortBy].toLowerCase()
+				const bValue =
+					sortBy === 'domain_id'
+						? b.studentInfo[sortBy]
+						: b.studentInfo[sortBy].toLowerCase()
+
+				if (sortOrder === 'asc') {
+					return aValue.localeCompare(bValue, undefined, {
+						sensitivity: 'base'
+					})
+				} else {
+					return bValue.localeCompare(aValue, undefined, {
+						sensitivity: 'base'
+					})
+				}
+			})
+			setNewList(newData)
+		}
+	}
+	const sortList = (tag) => {
+		sortData(
+			newList,
+			tag === 'domain_id' ? 'domain_id' : 'department',
+			tag === 'domain_id' ? emailOrder : classOrder
+		)
+	}
 	return (
-		<>
+		<MaxWidthWrapper className='w-full  h-full items-center justify-center mx-auto max-w-5xl text-gray-800/90 py-6 flex grow px-8 md:px-12 lg:px-20 xl:px-24 flex-col'>
 			{!loading ? (
 				userList?.length > 0 ? (
 					<>
-						<Search />
-						<div className='flex barlow flex-col rounded-md items-center max-w-7xl  justify-center '>
-							<div className='pt-2  px-0 w-full overflow-x-scroll '>
-								<table className='overflow-scroll mt-4 w-full minw-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
-									<thead>
-										<tr>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Info{' '}
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Class{' '}
-												</p>
-											</th>
-											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-										Year - Sem{' '}
-									</p>
-								</th> */}
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Duration
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Issued On
-												</p>
-											</th>
-											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-										Status
-									</p>
-								</th> */}
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Laptop Id
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Return
-												</p>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{userList?.map((el, idx) => {
-											console.log(userList?.length === idx + 1)
-											console.log(el?._id, 'req id')
-
-											return (
-												<tr
-													key={idx}
-													className='group p-2 rounded-xl hover:bg-[#d8f3dc]'
-												>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+						<Search
+							userList={userList}
+							setNewList={setNewList}
+							laptopList={true}
+						/>
+						<div className='flex flex-col mx-auto overflow-x-scroll  max-w-6xl rounded-md items-center justify-center '>
+							<div className='w-full mb-8 overflow-hidden rounded-lg shadow-lg'>
+								<div className='pt-2 w-full overflow-x-auto px-0 '>
+									<table className='mt-4 w-full min-w-max rounded-lg text-start border-2 border-separate border-stone-200 '>
+										<thead>
+											<tr className='text-md  text-gray-800 text-left spline rounded-md '>
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<button
+														onClick={() => {
+															setEmailOrder(
+																emailOrder === 'asc' ? 'desc' : 'asc'
+															)
+															sortList('domain_id')
+														}}
+														className='flex items-center justify-between w-full'
 													>
-														<div className='flex flex-col'>
-															<div className='flex items-center space-x-3'>
-																<p className='block antialiased  leading-normal '>
-																	{el?.studentInfo?.fullname}
+														<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+															Info{' '}
+														</p>
+														<div>
+															<LuArrowDownUp className='text-gray-700' />
+														</div>
+													</button>
+												</th>
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<button
+														onClick={() => {
+															setclassOrder(
+																classOrder === 'asc' ? 'desc' : 'asc'
+															)
+															sortList('department')
+														}}
+														className='flex items-center justify-between w-full'
+													>
+														<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+															Class{' '}
+														</p>
+														<div>
+															<LuArrowDownUp className='text-gray-700' />
+														</div>
+													</button>
+												</th>
+												<th className=' hidden xs:table-cell cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Duration{' '}
+													</p>
+												</th>
+												<th className='cursor-pointer hidden md:table-cell p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Issued On
+													</p>
+												</th>
+												<th className=' hidden lg:table-cell cursor-pointer p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Laptop
+													</p>
+												</th>
+												<th className='cursor-pointer hidden sm:table-cell p-4 bg-green-200/70 rounded-sm'>
+													<p className='antialiased text-base lg:text-lg flex items-center justify-between font-medium  '>
+														Return
+													</p>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											{newList?.length > 0 ? (
+												newList?.map((el, idx) => {
+													return (
+														<tr
+															key={el?._id}
+															className='group p-2 rounded-xl hover:bg-stone-200/60'
+														>
+															<td
+																className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+															>
+																<div className='flex flex-col'>
+																	<div className='flex items-center space-x-3'>
+																		<p className='block antialiased  leading-normal '>
+																			{el?.studentInfo?.fullname}
+																		</p>
+																		<p className='block antialiased   leading-normal opacity-80'>
+																			{el?.studentInfo?.prn}
+																		</p>
+																	</div>
+																	<p className='block antialiased   leading-normal opacity-80'>
+																		{el?.studentInfo?.domain_id}
+																	</p>
+																</div>
+															</td>
+															<td
+																className={`p-4 rounded-sm hidden xs:table-cell text-sm sm:text-base font-medium text-gray-800 text-center`}
+															>
+																<div className='flex flex-col'>
+																	<p className='block antialiased  leading-normal '>
+																		{el?.studentInfo?.department}
+																	</p>
+																	<p className='block antialiased   leading-normal opacity-80'>
+																		{el?.studentInfo?.year +
+																			' - ' +
+																			el?.studentInfo?.sem}
+																	</p>
+																</div>
+															</td>
+															<td
+																className={`p-4 hidden md:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+															>
+																<p className='block antialiased leading-normal '>
+																	{formatDuration(el?.duration)}
 																</p>
-																<p className='block antialiased   leading-normal opacity-80'>
-																	{el?.studentInfo?.prn}
+															</td>
+															<td
+																className={`p-4 hidden lg:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center  `}
+															>
+																<p className='block antialiased  leading-normal '>
+																	{formatTimeDifference(
+																		el?.createdAt
+																	)}
+																</p>
+															</td>
+															<td
+																className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+															>
+																<p className='block antialiased  leading-normal '>
+																	{el?.laptop_id}
+																</p>
+															</td>
+															<td
+																className={` p-4 rounded-sm hidden sm:table-cell text-sm sm:text-base font-medium text-gray-800 text-center  `}
+															>
+																<Link
+																	to={`/maintenance/return/${el?._id}`}
+																	className='  '
+																	type='button'
+																>
+																	<BiEditAlt className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
+																</Link>
+															</td>
+														</tr>
+													)
+												})
+											) : (
+												<>
+													<tr
+														key={'escape'}
+														className='group p-2 rounded-xl hover:bg-[#f0fff2]'
+													>
+														<td
+															className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+														>
+															<div className='flex items-center gap-3'>
+																<div className='flex flex-col'>
+																	<p>ㅤㅤㅤ - ㅤㅤㅤ </p>
+																</div>
+															</div>
+														</td>
+														<td
+															className={`p-4 hidden md:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+														>
+															<div className='flex items-center gap-3'>
+																<p>ㅤㅤㅤㅤㅤ - ㅤㅤㅤㅤㅤ </p>
+															</div>
+														</td>
+														<td
+															className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															<div className='w-max'>
+																<p className='block antialiased '>
+																	ㅤㅤ- ㅤㅤ
 																</p>
 															</div>
-															<p className='block antialiased   leading-normal opacity-80'>
-																{el?.studentInfo?.domain_id}
-															</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-xs sm:text-sm font-medium text-gray-800 text-center `}
-													>
-														<div className='flex flex-col'>
+														</td>
+														<td
+															className={`p-4 hidden lg:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
 															<p className='block antialiased  leading-normal '>
-																{el?.studentInfo?.department}
+																ㅤㅤ -ㅤㅤ
 															</p>
-															<p className='block antialiased   leading-normal opacity-80'>
-																{el?.studentInfo?.year +
-																	' - ' +
-																	el?.studentInfo?.sem}
-															</p>
-														</div>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<p className='block antialiased leading-normal '>
-															{formatDuration(el?.duration)}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														{/* <button
-												className='relative align-middle select-none   font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-blue-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30'
-												type='button'
-											>
-												<span className='absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2'>
-													<svg
-														xmlns='http://www.w3.org/2000/svg'
-														viewBox='0 0 24 24'
-														fill='currentColor'
-														aria-hidden='true'
-														className='h-4 w-4'
-													>
-														<path d='M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z'></path>
-													</svg>
-												</span>
-											</button> */}
-														<p className='block antialiased  leading-normal '>
-															{formatTimeDifference(el?.createdAt)}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														{/* <Link
-															to={
-																user?.userType === 'admin'
-																	? `/admin/user/${el?._id}`
-																	: `/maintenance/issue/${el?._id}`
-															}
-															className='  '
-															type='button'
-														>
-															<HiOutlineDocumentText className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
-														</Link> */}
-														<p className='block antialiased  leading-normal '>
-															{el?.laptop_id}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<Link
-															to={`/maintenance/return/${el?._id}`}
-															className='  '
-															type='button'
-														>
-															<BiEditAlt className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
-														</Link>
-													</td>
-												</tr>
-											)
-										})}
-									</tbody>
-								</table>
+														</td>
+													</tr>
+												</>
+											)}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</>
@@ -296,7 +349,7 @@ const LaptopList = () => {
 					</div>
 				</div>
 			)}
-		</>
+		</MaxWidthWrapper>
 	)
 }
 

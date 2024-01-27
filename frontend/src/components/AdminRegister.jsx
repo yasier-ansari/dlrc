@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
+import MaxWidthWrapper from './MaxWidthWrapper'
 
 const AdminRegisterComp = () => {
 	const dept_options = [
@@ -196,10 +197,10 @@ const AdminRegisterComp = () => {
 		setLoading(false)
 	}
 	return (
-		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 '>
+		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24'>
 			{!mainLoading ? (
 				<>
-					<div className='flex flex-col relative max-w-[450px] items-center py-12 px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-4 md:space-y-8 xl:space-y-10 '>
+					<div className='flex flex-col relative max-w-[500px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-8 xl:space-y-10  '>
 						<div className='flex w-full flex-col '>
 							<h2 className='text-2xl md:text-3xl lg:text-4xl font-bold text-center'>
 								Register
@@ -210,7 +211,11 @@ const AdminRegisterComp = () => {
 							</h6>
 						</div>
 						<div className='bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl'></div>
-						<form className='flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center'>
+						<form
+							className={`flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center ${
+								loading && 'opacity-60'
+							} `}
+						>
 							<div className='text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
 									disabled={loading}
@@ -305,6 +310,7 @@ const AdminRegisterComp = () => {
 									disabled={loading}
 									type='password'
 									name='key'
+									autoComplete='true'
 									required={true}
 									placeholder='Secret Key'
 									value={form.key}
@@ -343,18 +349,18 @@ const AdminRegisterComp = () => {
 								<span className=' text-green-700  '>‎ Login</span>
 							</a>
 						</form>
-						<div className='text-[0.8rem] sm:text-base md:text-lg absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 '></div>
+						{/* <div className='text-[0.8rem] sm:text-base md:text-lg absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 '></div> */}
 					</div>
 				</>
 			) : (
 				<div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50'>
 					<div className='flex items-center space-x-3 bg-white px-3 py-2 rounded-lg'>
 						<h2 className='text-lg font-semibold'>Loading</h2>
-						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c'></div>
+						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c]'></div>
 					</div>
 				</div>
 			)}
-		</div>
+		</MaxWidthWrapper>
 	)
 }
 

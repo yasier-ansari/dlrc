@@ -108,14 +108,14 @@ const loginAdmin = asyncHandler(async (req, res) => {
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .cookie("userType", type, options)
+        .cookie("userType", existingAdmin.userType, options)
         .json(
             new ApiResponse(
                 200,
                 {
                     accessToken: accessToken,
                     refreshToken: refreshToken,
-                    userType: type,
+                    userType: existingAdmin.userType,
                 },
                 "Admin logged in successfully"
             )
@@ -562,6 +562,13 @@ const getOneIssuedRequest = asyncHandler(async (req, res) => {
                 model: "Student", // Adjust this with the actual model name for students
             },
         });
+        // const showRequest = await Issue.findById(id).populate([
+        //     {
+        //         path: "req_id",
+        //         populate: { path: "student_id", model: "Student" },
+        //     },
+        //     { path: "laptop_id" }, // Assuming laptop_id is a string field
+        // ]);
 
         if (!showRequest) {
             return res

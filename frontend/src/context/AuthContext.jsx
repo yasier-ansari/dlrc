@@ -14,6 +14,7 @@ function AuthProvider({ children }) {
 	const [userType, setUserType] = useState(
 		localStorage.getItem('userType')
 	)
+	const [dialogImage, setDialogImage] = useState('')
 	const [mainLoading, setMainLoading] = useState(true)
 
 	const logout = () => {
@@ -120,6 +121,7 @@ function AuthProvider({ children }) {
 		userType,
 		mainLoading,
 		refreshToken,
+		dialogImage,
 		logout,
 		setUser,
 		setToken,
@@ -131,7 +133,8 @@ function AuthProvider({ children }) {
 		setToken_,
 		setUserType_,
 		setRefreshToken_,
-		setLoginData
+		setLoginData,
+		setDialogImage
 	}
 
 	return (

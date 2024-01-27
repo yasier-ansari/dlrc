@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
+import MaxWidthWrapper from './MaxWidthWrapper'
 
 const UserLogin = ({ authWork }) => {
 	const [authType, setAuthType] = useState('login')
@@ -123,10 +124,10 @@ const UserLogin = ({ authWork }) => {
 		getUserIfExists()
 	}, [])
 	return (
-		<div className='w-full h-full flex items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 '>
+		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24'>
 			{!mainLoading ? (
 				<>
-					<div className='flex flex-col relative max-w-[450px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-6 md:space-y-8 xl:space-y-10 '>
+					<div className=' flex flex-col relative max-w-[500px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-8 xl:space-y-10  '>
 						<div className='flex w-full flex-col '>
 							<h2 className='text-2xl md:text-3xl lg:text-4xl font-bold text-center'>
 								Log In
@@ -142,7 +143,7 @@ const UserLogin = ({ authWork }) => {
 								loading && 'opacity-60'
 							} `}
 						>
-							<div className=' text-[0.8rem] sm:text-base md:text-lg w-full'>
+							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
 									disabled={loading}
 									type='text'
@@ -162,7 +163,7 @@ const UserLogin = ({ authWork }) => {
 									{errors.prn || '‎'}
 								</p>
 							</div>
-							<div className=' text-[0.8rem] sm:text-base md:text-lg w-full'>
+							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
 									disabled={loading}
 									type='email'
@@ -181,7 +182,7 @@ const UserLogin = ({ authWork }) => {
 									{errors.email || '‎'}
 								</p>
 							</div>
-							<div className=' text-[0.8rem] sm:text-base md:text-lg w-full'>
+							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
 									disabled={loading}
 									type='password'
@@ -202,7 +203,7 @@ const UserLogin = ({ authWork }) => {
 									{errors.password || '‎'}
 								</p>
 							</div>
-							<div className='text-base md:text-lg xl:text-xl md:p-2 font-normal w-full'>
+							<div className=' text-base md:text-lg xl:text-xl md:p-2 font-normal w-full'>
 								<button
 									type='submit'
 									onClick={loginUserHandler}
@@ -226,6 +227,7 @@ const UserLogin = ({ authWork }) => {
 								<span className=' text-green-700  '>‎ Register</span>
 							</a>
 						</form>
+						{/* <div className='absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 '></div> */}
 					</div>
 				</>
 			) : (
@@ -236,7 +238,7 @@ const UserLogin = ({ authWork }) => {
 					</div>
 				</div>
 			)}
-		</div>
+		</MaxWidthWrapper>
 	)
 }
 

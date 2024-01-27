@@ -18,69 +18,41 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from '@/components/ui/dialog.jsx'
-import { Input } from '@/components/ui/input.jsx'
 import { Label } from '@/components/ui/label.jsx'
 import useAutosizeTextArea from '@/context/AutoResizer'
 import { Textarea } from './ui/textarea'
+import MaxWidthWrapper from './MaxWidthWrapper'
+import { cn } from '@/lib/utils'
+import { Input } from './ui/input'
 
 const LaptopIdList = () => {
 	const textAreaRef = useRef(null)
-	const [form, setForm] = useState({ prevStatus: '', currStatus: '' })
-	useAutosizeTextArea(textAreaRef, form?.prevStatus)
-	useAutosizeTextArea(textAreaRef, form?.currStatus)
+	const [form, setForm] = useState({
+		status: '',
+		condition: '',
+		rating: ''
+	})
 	const [modalOpen, setMoadalOpen] = useState(false)
 	const handleChange = (e) => {
 		const val = e.target?.value
 		setForm({ ...form, [e.target.name]: val })
 	}
-
-	const formatTimeDifference = (dateString) => {
-		const currentDate = new Date()
-		const targetDate = new Date(dateString)
-
-		const timeDifference = currentDate - targetDate
-
-		const seconds = Math.floor(timeDifference / 1000)
-		const minutes = Math.floor(seconds / 60)
-		const hours = Math.floor(minutes / 60)
-		const days = Math.floor(hours / 24)
-		const weeks = Math.floor(days / 7)
-		const months = Math.floor(days / 30)
-		const years = Math.floor(days / 365)
-
-		if (years > 0) {
-			return `${years} year${years > 1 ? 's' : ''} ago`
-		} else if (months > 0) {
-			return `${months} month${months > 1 ? 's' : ''} ago`
-		} else if (weeks > 0) {
-			return `${weeks} week${weeks > 1 ? 's' : ''} ago`
-		} else if (days > 0) {
-			return `${days} day${days > 1 ? 's' : ''} ago`
-		} else if (hours > 0) {
-			return `${hours} hour${hours > 1 ? 's' : ''} ago`
-		} else if (minutes > 0) {
-			return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
-		} else {
-			return 'Just now'
-		}
-	}
 	const [loading, setLoading] = useState(null)
-	const formatDuration = (durationString) => {
-		switch (durationString) {
-			case 'Short':
-				return '1-2 Week'
-			case 'Medium':
-				return '1-2 Month'
-			case 'Long':
-				return 'Half Yearly'
-			default:
-				return '1-2 Month'
-		}
-	}
+	const [newList, setNewList] = useState()
+	const [modalLoading, setModalLoading] = useState(false)
 	const { userList, setUserList, token, user } =
 		useContext(AuthContext)
 	const [currentId, setCurrentId] = useState()
+	const status_options = ['Free', 'Check-up']
+	const rating_options = [
+		'Poor',
+		'Fair',
+		'Good',
+		'Very Good',
+		'Excellent'
+	]
 	const updateStatus = async () => {
+		setModalLoading(true)
 		var response
 		console.log(currentId?.laptop_id, form?.currStatus)
 		try {
@@ -95,11 +67,13 @@ const LaptopIdList = () => {
 			const res = response?.data
 			console.log(res)
 			setLoading(false)
+			setModalLoading(false)
 			setMoadalOpen(false)
 			toast.success(` Laptop status changed Successfully `)
 		} catch (e) {
 			setLoading(false)
 			setMoadalOpen(false)
+			setModalLoading(false)
 			console.log(e)
 			if (e?.response?.status === 404) {
 				toast.error(' Technical Error, please contact developer')
@@ -127,9 +101,11 @@ const LaptopIdList = () => {
 				console.log('working')
 				console.log(res)
 				setUserList(res?.data)
+				setNewList(res?.data)
 			} catch (e) {
 				console.log(e)
 				setUserList(null)
+				setNewList(null)
 				toast.error(
 					'Some Error Ocurred While Fetching Users Please Try Register After Some Time'
 				)
@@ -145,211 +121,289 @@ const LaptopIdList = () => {
 			setLoading(false)
 		}
 	}, [])
-	let apiData = []
-	console.log(userList)
+	console.log(form)
 	return (
-		<>
+		<MaxWidthWrapper className='w-full  h-full items-center justify-center mx-auto max-w-5xl text-gray-800/90 py-6 flex grow px-8 md:px-12 lg:px-20 xl:px-24 flex-col'>
 			{!loading ? (
 				userList?.length > 0 ? (
 					<Dialog>
-						<Search laptopList={true} />
-						<div className='flex barlow flex-col rounded-md items-center max-w-7xl  justify-center '>
-							<div className='pt-2  px-0 w-full overflow-x-scroll '>
-								<table className='overflow-scroll mt-4 w-full minw-max table-auto rounded-lg text-start border-2 border-separate  border-stone-300  '>
-									<thead>
-										<tr>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Laptop Id{' '}
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Status{' '}
-												</p>
-											</th>
-											{/* <th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
+						<Search
+							userList={userList}
+							setNewList={setNewList}
+							laptopIdList={true}
+						/>
+						<div className='flex flex-col mx-auto overflow-x-scroll mb-10  max-w-6xl rounded-md items-center justify-center '>
+							<div className='w-full overflow-hidden rounded-lg shadow-lg'>
+								<div className='pt-2  px-0 w-full overflow-x-scroll '>
+									<table className='mt-4 w-full min-w-max rounded-lg text-start border-2 border-separate border-stone-200 '>
+										<thead>
+											<tr className='text-md  text-gray-800 text-left spline rounded-md '>
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm  '>
+													<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+														Laptop Id{' '}
+													</p>
+												</th>
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm   '>
+													<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+														Status{' '}
+													</p>
+												</th>
+												{/* <th className='cursor-pointer p-4 bg-green-200/70 rounded-sm cursor-pointer  '>
 									<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
 										Year - Sem{' '}
 									</p>
 								</th> */}
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Department
-												</p>
-											</th>
-											<th className='cursor-pointer border-2 border-transparent border-b-gray-300 bg-stone-200/70 p-4 '>
-												<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
-													Edit Status
-												</p>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{userList?.map((el, idx) => {
-											console.log(userList?.length === idx + 1)
-											console.log(el?._id, 'req id')
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm  hidden md:table-cell text-center   '>
+													<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+														Department
+													</p>
+												</th>
+												<th className='cursor-pointer p-4 bg-green-200/70 rounded-sm text-center hidden xs:table-cell '>
+													<p className='antialiased text-base lg:text-lg xl:text-xl text-gray-900 flex items-center justify-between  font-semibold '>
+														Edit Status
+													</p>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											{newList?.length > 0 ? (
+												newList?.map((el, idx) => {
+													console.log(userList?.length === idx + 1)
+													console.log(el?._id, 'req id')
 
-											return (
-												<tr
-													key={idx}
-													className='group p-2 rounded-xl hover:bg-[#d8f3dc]'
-												>
-													{/* <td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
-													>
-														<div className='flex flex-col'>
-															<div className='flex items-center space-x-3'>
-																<p className='block antialiased  leading-normal '>
+													return (
+														<tr
+															key={idx}
+															className='group p-2 rounded-xl hover:bg-stone-200/60'
+														>
+															<td
+																className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+															>
+																<p className='block antialiased leading-normal '>
 																	{el?.laptop_id}
 																</p>
+															</td>
+															<td
+																className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800`}
+															>
 																<p className='block antialiased   leading-normal opacity-80'>
 																	{el?.condition}
 																</p>
-															</div>
-															<p className='block antialiased   leading-normal opacity-80'>
-																{el?.department}
-															</p>
-														</div>
-													</td> */}
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-xs sm:text-sm font-medium text-gray-800 text-center `}
-													>
-														<p className='block antialiased leading-normal '>
-															{el?.laptop_id}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<p className='block antialiased   leading-normal opacity-80'>
-															{el?.condition}
-														</p>
-													</td>
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														{/* <button
-												className='relative align-middle select-none   font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-blue-gray-500 hover:bg-blue-gray-500/10 active:bg-blue-gray-500/30'
-												type='button'
-											>
-												<span className='absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2'>
-													<svg
-														xmlns='http://www.w3.org/2000/svg'
-														viewBox='0 0 24 24'
-														fill='currentColor'
-														aria-hidden='true'
-														className='h-4 w-4'
-													>
-														<path d='M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z'></path>
-													</svg>
-												</span>
-											</button> */}
-														<p className='block antialiased  leading-normal '>
-															{el?.department}
-														</p>
-													</td>
-													{/* <td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														<p className='block antialiased  leading-normal '>
-															{el?.laptop_id}
-														</p>
-													</td> */}
-													<td
-														className={`p-4 ${
-															userList?.length !== idx + 1
-																? 'border-b border-stone-400/60'
-																: null
-														}  rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
-													>
-														{/* <Link
-															to={`/maintenance/return/${el?._id}`}
-															className='  '
-															type='button'
-														>
-															<BiEditAlt className='h-4 w-4 sm:h-5 sm:w-5 lg:w-6 lg:h-6 group-hover:text-[#1b4332] group-hover:scale-125 ' />
-														</Link> */}
-														<DialogTrigger asChild>
-															<Button
-																onClick={(e) => {
-																	setCurrentId(el)
-																	setMoadalOpen(true)
-																	setForm({
-																		...form,
-																		status: el?.condition
-																	})
-																}}
-																variant='outline'
+															</td>
+															<td
+																className={`p-4 hidden md:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
 															>
-																Edit Profile
-															</Button>
-														</DialogTrigger>
-													</td>
-												</tr>
-											)
-										})}
-									</tbody>
-								</table>
+																<p className='block antialiased  leading-normal '>
+																	{el?.department}
+																</p>
+															</td>
+															<td
+																className={` p-4 rounded-sm hidden xs:table-cell text-sm sm:text-base font-medium text-gray-800 text-center`}
+															>
+																<DialogTrigger asChild>
+																	<button
+																		onClick={(e) => {
+																			setCurrentId(el)
+																			setForm({
+																				status: el?.status,
+																				condition: el?.condition,
+																				rating: el?.rating || ' '
+																			})
+																			setMoadalOpen(true)
+																		}}
+																		// className='bg-[#40916c] px-8'
+																		// variant='outline'
+																	>
+																		<BiEditAlt className='h-4 w-4 sm:h-5 sm:w-5 group-hover:text-[#2c5846] group-hover:scale-125 ' />
+																	</button>
+																</DialogTrigger>
+															</td>
+														</tr>
+													)
+												})
+											) : (
+												<>
+													<tr
+														key={'escape'}
+														className='group p-2 rounded-xl hover:bg-[#f0fff2]'
+													>
+														<td
+															className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+														>
+															<div className='flex items-center gap-3'>
+																<div className='flex flex-col'>
+																	<p>ㅤㅤㅤ - ㅤㅤㅤ </p>
+																</div>
+															</div>
+														</td>
+														<td
+															className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
+														>
+															<div className='flex items-center gap-3'>
+																<p>ㅤㅤㅤㅤㅤ - ㅤㅤㅤㅤㅤ </p>
+															</div>
+														</td>
+														<td
+															className={`p-4 rounded-sm hidden md:table-cell text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															<p className='block antialiased leading-normal '>
+																ㅤㅤ- ㅤㅤ
+															</p>
+														</td>
+														<td
+															className={`p-4 hidden xs:table-cell rounded-sm text-sm sm:text-base font-medium text-gray-800 text-center `}
+														>
+															<p className='block antialiased  leading-normal '>
+																ㅤㅤ -ㅤㅤ
+															</p>
+														</td>
+													</tr>
+												</>
+											)}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 						{modalOpen && (
-							<DialogContent className='sm:max-w-[500px]'>
+							<DialogContent className=' mx-1 sm:mx-0 max-w-[400px] sm:max-w-[500px]'>
 								<DialogHeader>
 									<DialogTitle>Edit Status</DialogTitle>
 								</DialogHeader>
-								<div className='grid gap-4 py-4'>
-									<div className='grid grid-cols-4 items-center gap-4'>
-										<Label htmlFor='name' className='text-right'>
-											Current
+								<div className='grid gap-4 py-4 '>
+									{/* <div className='flex justify-start space-x-4 items-start '>
+										<Label
+											htmlFor='name'
+											className='text-right min-w-16 font-medium w-max pt-2'
+										>
+											Condition
 										</Label>
 										<Textarea
 											id='name'
 											name='prevStatus'
 											value={currentId?.condition}
 											disabled={true}
-											className='col-span-3 bg-stone-200 '
+											className={cn(
+												'col-span-3 bg-stone-300 w-full outline-[#40916c]'
+											)}
 										/>
-									</div>
-									<div className='grid grid-cols-4 items-center gap-4'>
-										<Label htmlFor='username' className='text-right'>
-											Edit
+									</div> */}
+									{/* <div className='flex justify-start space-x-4 items-start '>
+										<Label
+											htmlFor='name'
+											className='text-right min-w-16 font-medium w-max pt-2'
+										>
+											Status
 										</Label>
-										<Textarea
+										<Input
 											id='name'
-											name='currStatus'
-											value={form?.currStatus}
-											disabled={loading}
+											name='prevStatus'
+											value={currentId?.status}
+											disabled={true}
+											className={cn(
+												'col-span-3 bg-stone-300 w-full outline-[#40916c]'
+											)}
+										/>
+									</div> */}
+									<div className='flex justify-start space-x-4 items-start '>
+										<label
+											htmlFor='status'
+											className='  min-w-16 font-medium w-max pt-2 rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm '
+										>
+											Status
+										</label>
+										<select
+											name='status'
+											placeholder='status'
+											value={form?.status}
+											onChange={(e) => handleChange(e)}
+											className='  font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full bg-stone-200 focus-visible:outline-[#40916c]  '
+										>
+											<option value='' disabled hidden>
+												Select Sem
+											</option>
+											{status_options?.map((el) => (
+												<option value={el} key={el}>
+													{el}
+												</option>
+											))}
+										</select>
+										{/* <Input
+											id='name'
+											name='status'
+											value={form?.status}
+											disabled={loading || modalLoading}
 											onChange={(e) => {
 												handleChange(e)
 											}}
-											className='col-span-3 bg-stone-200 '
+											className={cn(
+												'col-span-3 bg-stone-300 w-full outline-[#40916c]'
+											)}
+										/> */}
+									</div>
+									<div className='flex justify-start space-x-4 items-start '>
+										<label
+											htmlFor='name'
+											className='  min-w-16 font-medium w-max pt-2 rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm '
+										>
+											Rating
+										</label>
+										<select
+											name='rating'
+											placeholder='rating'
+											value={form?.rating}
+											onChange={(e) => handleChange(e)}
+											className='  font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full bg-stone-200 focus-visible:outline-[#40916c]  '
+										>
+											<option value='' disabled hidden>
+												Rating
+											</option>
+											{rating_options?.map((el) => (
+												<option value={el} key={el}>
+													{el}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className='flex justify-start space-x-4 items-start '>
+										<label
+											htmlFor='condition'
+											className='  min-w-16 font-medium w-max pt-2 rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm '
+										>
+											Condition
+										</label>
+										<Textarea
+											id='condition'
+											name='condition'
+											value={form?.condition}
+											disabled={loading || modalLoading}
+											onChange={(e) => {
+												handleChange(e)
+											}}
+											className={cn(
+												' font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full col-span-3 bg-stone-200 ring-[#40916c] outline-[#40916c] '
+											)}
 										/>
 									</div>
 								</div>
 								<DialogFooter>
-									<Button onClick={updateStatus} type='submit'>
-										Save changes
+									<Button
+										onClick={updateStatus}
+										className={cn(
+											'  bg-gradient-to-tr from-[#52b788] to-[#40916c]  focus-visible:ring-[#40916c] outline-[#40916c] '
+										)}
+										type='submit'
+									>
+										{modalLoading ? (
+											<div className='flex items-center space-x-3 justify-center px-3 py-2 rounded-lg'>
+												<p className='text-base md:text-lg '>
+													Loading
+												</p>
+												<div className='animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-[2.2px] border-r-none border-r-white border-transparent'></div>
+											</div>
+										) : (
+											'Save Changes'
+										)}
 									</Button>
 								</DialogFooter>
 							</DialogContent>
@@ -375,7 +429,7 @@ const LaptopIdList = () => {
 					</div>
 				</div>
 			)}
-		</>
+		</MaxWidthWrapper>
 	)
 }
 

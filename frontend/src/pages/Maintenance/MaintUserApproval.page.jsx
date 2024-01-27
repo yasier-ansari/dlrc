@@ -12,9 +12,12 @@ const MaintUserApproval = () => {
 	// useEffect(() => {
 
 	// }, [flag]);
-	return (
-		<>
-			<div
+	return <MaintUserApprovalComp flag={flag} id={id} />
+}
+
+{
+	/*<>
+			 <div
 				className={`flex flex-col w-full ${
 					modalPopped &&
 					' opacity-[0.2] max-w-screen max-h-screen overflow-y-auto '
@@ -23,13 +26,13 @@ const MaintUserApproval = () => {
 				<AuthHeader val={true} />
 				<main
 					className={`flex grow px-6 sm:px-8 md:px-12 lg:px-20   xl:px-24 flex-col justify-center mx-auto items-center max-w-7xl w-full h-full `}
-				>
-					<MaintUserApprovalComp flag={flag} id={id} />
-				</main>
+				> */
+}
+{
+	/* </main>
 			</div>
 			{modalPopped && <Modal />}
-		</>
-	)
+		</> */
 }
 
 export default MaintUserApproval

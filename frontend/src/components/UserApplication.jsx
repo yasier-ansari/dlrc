@@ -11,6 +11,7 @@ import useAutosizeTextArea from '../context/AutoResizer'
 import { IoWarningOutline } from 'react-icons/io5'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+import MaxWidthWrapper from './MaxWidthWrapper'
 
 const API = axios.create({ baseURL: 'http://localhost:5173' })
 
@@ -352,42 +353,40 @@ const UserApplicationComp = () => {
 		setLoading(false)
 	}
 	return (
-		<div className='w-full h-full flex flex-col items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 min-h-screen py-6 '>
-			<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full mx-auto'>
+		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-6xl text-gray-800/90 py-6 flex grow px-8 md:px-12 lg:px-20 xl:px-24 flex-col'>
+			<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full text-gray-800/90 mx-auto'>
 				<div
 					div
-					className='flex items-center space-x-2 text-3xl sm:text-4xl  md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-12 mb-8 text-center mx-auto'
+					className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-12 mb-8 text-center mx-auto'
 				>
 					<HiOutlineDocumentText className=' text-[#40916c] -skew-x-6 ' />
 					<h1 className='font-semibold italic '>Application</h1>
 				</div>
-				<div className='mb-16'>
-					<p className='text-[0.8rem] sm:text-base md:text-lg font-semibold'>
-						To borrow a laptop, you are required to fill the given
-						application. Take heed that we will fetch your details
-						from your profile and the form below to issue your laptop.
-						If you wish, you can update your profile{' '}
-						<a
-							href='/user/profile'
-							className='underline decoration-green-400 underline-offset-4 text-green-500'
-						>
-							here
-						</a>{' '}
-						. You can see the status of your application in your{' '}
-						<a
-							href='/user/profile'
-							className='underline decoration-green-400 underline-offset-4 text-green-500'
-						>
-							profile
-						</a>
-					</p>
-				</div>
 			</div>
-			<form className='flex items-center w-full justify-center mx-auto flex-col space-y-3 sm:space-y-4 md:space-y-6  max-w-6xl  pb-20'>
-				{/* <p>
-                        To borrow a laptop, you're required to agree to the University&apos;s policies relating to Security, Acceptable Use and IT Asset Management.Students who do not agree to these policies will not be issued with a device.
-                        Please note the given rules and regulations
-                    </p> */}
+			<form
+				className={`flex relative w-full items-center mx-auto flex-col space-y-2 sm:space-y-4 max-w-4xl ${
+					loading && 'opacity-50'
+				}  pb-20`}
+			>
+				<p className=' mb-10 text-[0.8rem] sm:text-base md:text-lg text-gray-800/90 font-semibold  '>
+					To borrow a laptop, you are required to fill the given
+					application. Take heed that we will fetch your details from
+					your profile and the form below to issue your laptop. If you
+					wish, you can update your profile{' '}
+					<a
+						href='/user/profile'
+						className='underline decoration-green-400 underline-offset-4 text-green-500'
+					>
+						here
+					</a>{' '}
+					. You can see the status of your application in your{' '}
+					<a
+						href='/user/profile'
+						className='underline decoration-green-400 underline-offset-4 text-green-500'
+					>
+						profile
+					</a>
+				</p>
 				<div className='flex flex-col items-center w-full justify-center mx-auto space-y-4 sm-space-y-6 md-space-y-8 lg-space-y-12 max-w-5xl p-10 border-[3px] border-[#40916c80] rounded-xl relative  '>
 					<div
 						className='absolute inset-0 left-[50%] translate-x-[-50%] -top-4 w-max z-10
@@ -399,15 +398,15 @@ const UserApplicationComp = () => {
 					</div>
 					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem] opacity-70  '>
 						<div className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '>
-							<p className='bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black'>
+							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Name
 							</p>
-							<p className='font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300  '>
+							<p className='font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300 '>
 								{user?.fullname}
 							</p>
 						</div>
 						<div className='flex items-start justify-center space-y-2 flex-col  basis-[40%] w-full '>
-							<p className='bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black'>
+							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Email
 							</p>
 							<p className='font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
@@ -417,7 +416,7 @@ const UserApplicationComp = () => {
 					</div>
 					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem] opacity-70  '>
 						<div className='flex w-full sm:basis-[50%] md:basis-[30%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black'>
+							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Prn
 							</p>
 							<p className='  text-xs md:text-sm font-bold  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
@@ -425,7 +424,7 @@ const UserApplicationComp = () => {
 							</p>
 						</div>
 						<div className='flex w-full sm:basis-[50%] md:basis-[30%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black'>
+							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Dept
 							</p>
 							<p className=' font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
@@ -433,7 +432,7 @@ const UserApplicationComp = () => {
 							</p>
 						</div>
 						<div className='flex w-full sm:basis-[50%] md:basis-[20%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black'>
+							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Year
 							</p>
 							<p className='  text-xs md:text-sm font-bold pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
@@ -441,7 +440,7 @@ const UserApplicationComp = () => {
 							</p>
 						</div>
 						<div className='flex w-full sm:basis-[50%] md:basis-[20%]  items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75] rounded-lg px-2 py-1 md:px-3 md:py-[5px] font-bold text-black'>
+							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 								Sem
 							</p>
 							<p className=' font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
@@ -479,7 +478,7 @@ const UserApplicationComp = () => {
 										htmlFor='image-input1'
 										className=' relative cursor-pointer'
 									>
-										<p className=' text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2 '>
+										<p className=' text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start  '>
 											Parent Decleration
 										</p>
 										<img
@@ -492,10 +491,10 @@ const UserApplicationComp = () => {
 											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
-											loading='laxy'
+											loading='lazy'
 										/>
-										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
+										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
+											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
 										</div>
 									</label>
 									<input
@@ -520,7 +519,7 @@ const UserApplicationComp = () => {
 										htmlFor='image-input2'
 										className=' relative cursor-pointer'
 									>
-										<p className='text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2'>
+										<p className='text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start '>
 											Student Decleration
 										</p>
 										<img
@@ -533,10 +532,10 @@ const UserApplicationComp = () => {
 											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
-											loading='laxy'
+											loading='lazy'
 										/>
-										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
+										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
+											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
 										</div>
 									</label>
 									<input
@@ -563,7 +562,7 @@ const UserApplicationComp = () => {
 										htmlFor='image-input3'
 										className=' relative cursor-pointer'
 									>
-										<p className='text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2'>
+										<p className='text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start '>
 											Faculty Recommendation
 										</p>
 										<img
@@ -576,10 +575,10 @@ const UserApplicationComp = () => {
 											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
-											loading='laxy'
+											loading='lazy'
 										/>
-										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
+										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
+											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
 										</div>
 									</label>
 									<input
@@ -604,7 +603,7 @@ const UserApplicationComp = () => {
 										htmlFor='image-input4'
 										className=' relative cursor-pointer'
 									>
-										<p className='text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2'>
+										<p className='text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start '>
 											Post Dated Cheque
 										</p>
 										<img
@@ -617,10 +616,10 @@ const UserApplicationComp = () => {
 											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
 											width={100}
 											height={100}
-											loading='laxy'
+											loading='lazy'
 										/>
-										<div className='absolute top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-8 md:w-8' />
+										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
+											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
 										</div>
 									</label>
 									<input
@@ -639,9 +638,9 @@ const UserApplicationComp = () => {
 							</div>
 						</div>
 					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 text-[0.6rem]  '>
+					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 						<div className='flex w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs md:text-sm font-medium text-white '>
+							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
 								Purpose
 							</p>
 							<p className='text-gray-500 font-medium text-sm'>
@@ -664,7 +663,7 @@ const UserApplicationComp = () => {
 							</p>
 						</div>
 						<div className='flex w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs md:text-sm font-medium text-white '>
+							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
 								Duration
 							</p>
 							<p className='text-gray-500 font-medium text-sm'>
@@ -694,9 +693,9 @@ const UserApplicationComp = () => {
 							</p>
 						</div>
 					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 text-[0.6rem]  '>
+					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
 						<div className='flex w-full sm:basis-[50%]  items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs md:text-sm font-medium text-white '>
+							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
 								EWS
 							</p>
 							<p className='text-gray-500 font-medium text-sm'>
@@ -735,11 +734,11 @@ const UserApplicationComp = () => {
 							</p>
 						</div>
 						<div className='flex w-full sm:basis-[50%]   items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs md:text-sm font-medium text-white '>
+							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
 								Family Status
 							</p>
 							<p className='text-gray-500 font-medium text-sm'>
-								Any of your guardians terminally Ill or deceased?
+								Any of your guardians terminally ill or deceased?
 							</p>
 							<select
 								disabled={loading}
@@ -787,7 +786,7 @@ const UserApplicationComp = () => {
 				</>
 				{/* )} */}
 			</form>
-		</div>
+		</MaxWidthWrapper>
 	)
 }
 
