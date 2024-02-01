@@ -10,27 +10,14 @@ import Rules from './pages/Rules.page'
 import { AuthContext } from './context/AuthContext'
 import Access from './pages/Access.page'
 import { Toaster as RHTToaster, toast } from 'react-hot-toast'
-import { Toaster } from './components/ui/sonner'
-import Header from './components/Header'
-import { Button } from '@/components/ui/button'
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent } from './components/ui/dialog'
 import {
 	TransformWrapper,
 	TransformComponent
 } from 'react-zoom-pan-pinch'
-import { LuCross } from 'react-icons/lu'
 import {
 	HiMiniMagnifyingGlassPlus,
-	HiMiniMagnifyingGlassMinus,
-	HiOutlinePlus
+	HiMiniMagnifyingGlassMinus
 } from 'react-icons/hi2'
 import { RxCross2 } from 'react-icons/rx'
 function App() {
@@ -228,7 +215,6 @@ function App() {
 					</Routes>
 				)}
 			</BrowserRouter>{' '}
-			<Toaster />
 			<DialogContent className=' xs:max-w-[300px] sm:max-w-xl md:max-w-2xl lg:max-w-3xl  rounded-md mx-auto flex items-center justify-center  p-0'>
 				<div className='p-1 rounded-md cursor-grab  '>
 					<TransformWrapper>
