@@ -3,12 +3,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 const app = express();
 
-app.use(
-    cors({
-        credentials: true,
-        origin: "http://www.localhost:5173",
-    })
-);
+const corsConfig = {
+    credentials: true,
+    origin: "http://localhost:5173",
+};
+app.options("*", cors(corsConfig));
+app.use(cors(corsConfig));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

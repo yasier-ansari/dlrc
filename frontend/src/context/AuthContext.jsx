@@ -46,14 +46,20 @@ function AuthProvider({ children }) {
 	}
 
 	const setLoginData = (data) => {
-		setToken_(data?.accessToken)
-		setRefreshToken_(data?.refreshToken)
-		setUserType_(data?.userType)
+		if (data) {
+			setToken_(data?.accessToken)
+			setRefreshToken_(data?.refreshToken)
+			setUserType_(data?.userType)
+		} else {
+			setToken_(null)
+			setRefreshToken_(null)
+			setUserType_(null)
+		}
 	}
 	const fetchUserProfile = async (accessToken) => {
 		try {
 			const response = await fetch(
-				'http://localhost:8000/api/v1/student/profile',
+				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/profile`,
 				{
 					method: 'GET',
 					credentials: 'include',
@@ -76,7 +82,7 @@ function AuthProvider({ children }) {
 	const fetchAdminProfile = async (accessToken) => {
 		try {
 			const response = await fetch(
-				'http://localhost:8000/api/v1/admin/profile',
+				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/profile`,
 				{
 					method: 'GET',
 					credentials: 'include',
@@ -111,6 +117,37 @@ function AuthProvider({ children }) {
 		}
 		setMainLoading(false)
 	}, [token, setToken])
+
+	useEffect(() => {
+		const refreshAccessToken = async () => {
+			try {
+				const response = await fetch(
+					user?.userType === 'student' || userType === 'student'
+						? `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/refresh-token`
+						: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/refresh-token`,
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ refreshToken })
+					}
+				)
+				if (response.ok) {
+					const newAccessToken = await response.json()
+					setLoginData(newAccessToken)
+				} else {
+					setLoginData(null)
+				}
+			} catch (error) {
+				setLoginData(null)
+			}
+		}
+		const tokenRefreshInterval = setInterval(() => {
+			refreshAccessToken()
+		}, 3600000 * 12)
+		return () => clearInterval(tokenRefreshInterval)
+	}, [refreshToken])
 
 	const value = {
 		token,

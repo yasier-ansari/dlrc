@@ -32,14 +32,12 @@ export const uploadIdCard = async (req, res, next) => {
 
             const command = new PutObjectCommand(params);
             const fileSend = await s3Client.send(new PutObjectCommand(params));
-            res.locals.idCard = id_urn;
+            res.locals.idCard = `/id-card/${id_urn}`;
             return next();
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    message: "Something went wrong! Please try again later",
-                });
+            return res.status(500).json({
+                message: "Something went wrong! Please try again later",
+            });
         }
     } catch (error) {
         console.log("IdCard upload error - " + error);
@@ -74,11 +72,9 @@ export const updateIdCard = async (req, res, next) => {
             res.locals.oldIdCard = oldIdCard;
             return next();
         } catch (error) {
-            return res
-                .status(500)
-                .json({
-                    message: "Something went wrong! Please try again later",
-                });
+            return res.status(500).json({
+                message: "Something went wrong! Please try again later",
+            });
         }
     } catch (error) {
         console.log("resume upload " + error);

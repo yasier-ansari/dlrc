@@ -67,14 +67,14 @@ const List = () => {
 						response = await axios({
 							method: 'get',
 							credentials: 'include',
-							url: 'http://localhost:8000/api/v1/admin/allRequest',
+							url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/allRequest`,
 							headers: { Authorization: `Bearer ${token}` }
 						})
 					} else if (user?.userType === 'maintenance') {
 						response = await axios({
 							method: 'get',
 							credentials: 'include',
-							url: 'http://localhost:8000/api/v1/admin/all-approved',
+							url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/all-approved`,
 							headers: { Authorization: `Bearer ${token}` }
 						})
 					}

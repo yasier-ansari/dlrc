@@ -90,7 +90,7 @@ const MaintRegisterComp = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: 'http://localhost:8000/api/v1/admin/register',
+				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/register`,
 				data: { type: 'maintenance', ...form },
 				header: {
 					'Content-Type': 'application/json'

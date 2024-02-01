@@ -2,7 +2,10 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { Admin } from "../models/admin.models.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-import { generateTokens } from "../utils/generateToken.js";
+import {
+    generateRefreshTokens,
+    generateTokens,
+} from "../utils/generateToken.js";
 import { Request } from "../models/request.models.js";
 import { Issue } from "../models/issue.models.js";
 import s3Client from "../utils/s3.js";
@@ -120,6 +123,82 @@ const loginAdmin = asyncHandler(async (req, res) => {
                 "Admin logged in successfully"
             )
         );
+});
+
+// make a new function for admin refresh token
+const newRefreshToken = asyncHandler(async (req, res) => {
+    const existingRefreshToken =
+        req.cookies?.refreshToken || req.body.refreshToken;
+    if (!existingRefreshToken) {
+        throw new ApiError(401, "No Refresh Token");
+    }
+
+    try {
+        const token = jwt.verify(
+            existingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        );
+
+        console.log(token);
+
+        const admin = await Admin.findOne({ email: token.email });
+        console.log(admin);
+
+        if (!admin) {
+            throw new ApiError(404, "Admin not found");
+        }
+        if (existingRefreshToken !== admin?.refreshToken) {
+            throw new ApiError(401, "Refresh Token Not Matching");
+        }
+
+        // const accessToken = admin.createAccessToken();
+
+        // const options = {
+        //     httpOnly: true,
+        //     secure: true,
+        // };
+
+        // return res
+        //     .status(200)
+        //     .cookie("accessToken", accessToken, options)
+        //     .json(
+        //         new ApiResponse(
+        //             200,
+        //             {
+        //                 accessToken,
+        //                 refreshToken: existingRefreshToken,
+        //                 userType: admin.userType,
+        //             },
+        //             "Access Token Refreshed successfully"
+        //         )
+        //     );
+        const { newRefreshToken } = await generateRefreshTokens(
+            Admin,
+            admin._id
+        );
+        const options = {
+            httpOnly: true,
+            secure: true,
+        };
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        accessToken,
+                        refreshToken: newRefreshToken,
+                        userType: admin.userType,
+                    },
+                    "Access Token Refreshed in successfully"
+                )
+            );
+    } catch (error) {
+        throw new ApiError(401, error.message);
+    }
 });
 
 const logoutAdmin = asyncHandler(async (req, res) => {
@@ -651,4 +730,5 @@ export {
     getOneApprovedRequest,
     getOneIssuedRequest,
     changeLaptopStatus,
+    newRefreshToken,
 };

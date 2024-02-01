@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 // import { AuthContext } from "@/hooks/AuthContext"
 import { toast } from 'react-hot-toast'
-import { LuFolderEdit } from 'react-icons/lu'
+import { LuEye, LuEyeOff, LuFolderEdit } from 'react-icons/lu'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -18,6 +18,7 @@ const UserRegister = () => {
 	const [loading, setLoading] = useState(false)
 	const navigate = useNavigate()
 	const { state } = useLocation()
+	const [passVisible, setPassVisible] = useState(false)
 	const dept_options = [
 		'CSE (AI - ML)',
 		'CSE (IOT - BT)',
@@ -90,7 +91,7 @@ const UserRegister = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: 'http://localhost:8000/api/v1/student/register',
+				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/register`,
 				data: formData,
 				header: {
 					'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
@@ -157,7 +158,10 @@ const UserRegister = () => {
 		const newErrors = { ...errors }
 
 		if (!form.fullname) {
-			newErrors.fullname = 'Name is required'
+			newErrors.fullname = 'Full Name is required'
+			valid = false
+		} else if (!form.fullname.trim().length < 2) {
+			newErrors.fullname = 'Frist + Last Name is required'
 			valid = false
 		} else {
 			newErrors.name = ''
@@ -167,7 +171,9 @@ const UserRegister = () => {
 			newErrors.domain_id = 'Email is required'
 			valid = false
 		} else if (
-			!/^[a-zA-Z0-9._%+-]+@mhssce\.ac\.in$/.test(form.domain_id)
+			!/^[a-zA-Z]+\.\d{6}\.[a-zA-Z]+@mhssce\.ac\.in$/.test(
+				form.domain_id
+			)
 		) {
 			newErrors.domain_id = 'College Domain Email required'
 			valid = false
@@ -470,10 +476,43 @@ const UserRegister = () => {
 									{errors.number || '‎'}
 								</p>
 							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
+							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full relative'>
+								<button
+									onClick={(e) => {
+										e.preventDefault()
+										setPassVisible(!passVisible)
+									}}
+									className='absolute top-[10px] right-3 transition-all duration-300 ease-out'
+								>
+									{/* {!passVisible ? ( */}
+									<LuEyeOff
+										className={`text-[#40916c] transition-all duration-300 ease-out ${
+											!passVisible ? 'opacity-100' : 'opacity-0'
+										} `}
+									/>
+
+									{/* )} */}
+								</button>
+								<button
+									onClick={(e) => {
+										e.preventDefault()
+										setPassVisible(!passVisible)
+									}}
+									className='absolute top-[10px] right-3 transition-all duration-300 ease-out'
+								>
+									{/* {!passVisible ? ( */}
+									<LuEye
+										className={`text-[#40916c] transition-all duration-300 ease-out ${
+											passVisible ? 'opacity-100' : 'opacity-0'
+										} `}
+									/>
+
+									{/* )} */}
+								</button>
+
 								<input
 									disabled={loading}
-									type='password'
+									type={!passVisible ? 'password' : 'text'}
 									name='password'
 									required={true}
 									autoComplete='true'

@@ -82,7 +82,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `http://localhost:8000/api/v1/admin/new-return/${userInfo?._id}`,
+				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/new-return/${userInfo?._id}`,
 				data: {
 					condition: form?.reason,
 					laptop_id: userInfo?.laptop_id
@@ -130,7 +130,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 				try {
 					response = await axios({
 						method: 'get',
-						url: `http://localhost:8000/api/v1/admin/issued-laptop/${id}`,
+						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/issued-laptop/${id}`,
 						headers: {
 							Authorization: `Bearer ${token}`
 						}
@@ -169,7 +169,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 								<h1 className='font-bold  italic'>Retrieve</h1>
 							</div>
 						</div>
-						<div className='flex items-center w-full justify-center mx-auto flex-col space-y-4 sm:space-y-6 md:space-y-12 max-w-5xl  mb-20'>
+						<div className='flex items-center w-full justify-center mx-auto flex-col space-y-4  max-w-5xl  mb-20'>
 							<div className='flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl space-y-6 md:space-y-8 border-2 border-[#40916c40] relative opacity-80 '>
 								<div
 									className='absolute inset-0 left-[50%] translate-x-[-50%] -top-5 

@@ -57,7 +57,7 @@ const Header = () => {
 		console.log('working')
 		if (userType === 'student') {
 			const response = await fetch(
-				'http://localhost:8000/api/v1/student/logout',
+				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/logout`,
 				{
 					method: 'POST',
 					credentials: 'include',
@@ -66,7 +66,7 @@ const Header = () => {
 			)
 		} else if (userType === 'admin') {
 			const response = await fetch(
-				'http://localhost:8000/api/v1/admin/logout',
+				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/logout`,
 				{
 					method: 'POST',
 					credentials: 'include',

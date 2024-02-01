@@ -11,6 +11,7 @@ import {
     getOneApprovedRequest,
     getOneIssuedRequest,
     changeLaptopStatus,
+    newRefreshToken,
 } from "../controllers/admin.controllers.js";
 import {
     getApproved,
@@ -26,7 +27,8 @@ const adminRouter = Router();
 
 adminRouter.route("/register").post(registerAdmin);
 adminRouter.route("/login").post(loginAdmin);
-
+// new route for refresh token revalidation
+adminRouter.route("/refresh-token").post(newRefreshToken);
 // R O U T E S
 adminRouter.route("/logout").post(adminJWT, logoutAdmin);
 adminRouter.route("/allRequest").get(adminJWT, getRequests);

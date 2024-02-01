@@ -65,7 +65,7 @@ const UserLogin = ({ authWork }) => {
 
 	const loginHelper = async (email, prn, password) => {
 		const response = await fetch(
-			'http://localhost:8000/api/v1/student/login',
+			`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/login`,
 			{
 				method: 'POST',
 				credentials: 'include',

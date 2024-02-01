@@ -104,7 +104,7 @@ const AdminRegisterComp = () => {
 	) => {
 		// try {
 		// 	const response = await fetch(
-		// 		'http://localhost:8000/api/v1/admin/register',
+		// 		`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/register',
 		// 		{
 		// 			method: 'POST',
 		// 			credentials: 'include',
@@ -138,7 +138,7 @@ const AdminRegisterComp = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: 'http://localhost:8000/api/v1/admin/register',
+				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/register`,
 				data: form,
 				header: {
 					'Content-Type': 'application/json'

@@ -75,19 +75,6 @@ const Maint = () => {
 							)
 						}
 					/>
-					{/* <Route
-				path='/issued'
-				element={
-					user ? (
-						<MaintLaptopList />
-					) : (
-						<Navigate
-							to='/maintenance/login'
-							state={{ path: location.pathname }}
-						/>
-					)
-				}
-			/> */}
 					<Route
 						path='/laptop'
 						element={

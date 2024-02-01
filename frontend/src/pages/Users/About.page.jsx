@@ -35,7 +35,7 @@ const About = () => {
 			<Header />
 			<main className='flex min-h-screen relative w-full h-full '>
 				<MaxWidthWrapper className=' flex flex-col px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24  justify-center mx-auto items-center max-w-7xl w-full h-full '>
-					<div className='flex  items-center space-y-6 sm:space-y-6 justify-center md:justify-between md:flex-row w-full h-full min-h-[85vh]'>
+					<div className='flex flex-col items-center space-y-6 sm:space-y-6 justify-center md:justify-between md:flex-row w-full h-full min-h-[85vh]'>
 						<div className='w-full h-full md:basis-1/2 select-none '>
 							<img
 								src={Hero}
@@ -48,7 +48,7 @@ const About = () => {
 								<div className='font-bold italic text-sm md:text-base xl:text-lg text-gray-600 ml-2 sm:ml-0'>
 									M.H. Saboo Siddik's
 								</div>
-								<div className='font-black text-3xl spline sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl  text-[#40916c]'>
+								<div className='font-black text-3xl  sm:text-4xl md:text-5xl lg:text-6xl prompt  text-[#40916c]'>
 									Digital Learning Resource Center
 								</div>
 							</div>
@@ -59,13 +59,13 @@ const About = () => {
 							<div className='flex items-center justify-start space-x-12 w-full '>
 								<a
 									href='/user/apply'
-									className='text-base sm:text-lg md:text-xl p-2 md:px-8 md:py-3 lg:px-10 border-2 border-white hover:border-green-500 hover:border-2  duration-500 ease-linear  inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-green-400 bg-gradient-to-tr from-[#52b788] to-[#40916c] hover:bg-gradient-to-br hover:from-[#74c69d] hover:to-[#40916c] px-5 py-4 rounded-lg md:rounded-xl text-white '
+									className='text-base sm:text-lg md:text-xl p-2 md:px-8 md:py-3 lg:px-10 border-2 border-white hover:border-green-500 hover:border-2  duration-500 ease-linear  inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-green-400 bg-gradient-to-tr from-[#52b788] to-[#40916c] hover:bg-gradient-to-br hover:from-[#74c69d] hover:to-[#40916c] px-5 py-2 rounded-lg md:rounded-xl text-white '
 								>
 									Apply
 								</a>
 								<a
 									href='/'
-									className='text-base sm:text-lg md:text-xl p-2 md:px-8 md:py-3 lg:px-10 border-2 border-white hover:border-stone-400 hover:border-2  duration-500 ease-linear  inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50  hover:bg-gradient-to-br  focus-visible:ring-stone-400 bg-gradient-to-tr from-gray-200 to-slate-100 hover:from-zinc-300 hover:to-slate-200 px-5 py-4 rounded-lg md:rounded-xl text-gray-800   '
+									className='text-base sm:text-lg md:text-xl p-2 md:px-8 md:py-3 lg:px-10 border-2 border-white hover:border-stone-400 hover:border-2  duration-500 ease-linear  inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50  hover:bg-gradient-to-br  focus-visible:ring-stone-400 bg-gradient-to-tr from-gray-200 to-slate-100 hover:from-zinc-300 hover:to-slate-200 px-5 py-2 rounded-lg md:rounded-xl text-gray-800   '
 								>
 									Rules
 								</a>

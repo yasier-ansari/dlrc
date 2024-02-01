@@ -139,7 +139,7 @@ const UserProfile = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: 'http://localhost:8000/api/v1/student/update-profile',
+				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/update-profile`,
 				data: form,
 				headers: { Authorization: `Bearer ${accessToken}` }
 			})
@@ -213,7 +213,7 @@ const UserProfile = () => {
 			const fetchUserProfile = async (accessToken) => {
 				try {
 					const response = await fetch(
-						'http://localhost:8000/api/v1/student/profile',
+						`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/profile`,
 						{
 							method: 'GET',
 							credentials: 'include',
@@ -238,7 +238,7 @@ const UserProfile = () => {
 				try {
 					const response = await axios({
 						method: 'get',
-						url: `http://localhost:8000/api/v1/student/recent-request`,
+						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/recent-request`,
 						headers: { Authorization: `Bearer ${accessToken}` }
 					})
 					// console.log(response?.data?.data)

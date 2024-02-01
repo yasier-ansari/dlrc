@@ -71,7 +71,7 @@ const LaptopList = () => {
 					response = await axios({
 						method: 'get',
 						credentials: 'include',
-						url: 'http://localhost:8000/api/v1/admin/issued-laptop',
+						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/issued-laptop`,
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				}

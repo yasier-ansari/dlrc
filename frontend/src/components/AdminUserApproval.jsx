@@ -9,6 +9,7 @@ import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MaxWidthWrapper from './MaxWidthWrapper'
+import { DialogTrigger } from './ui/dialog'
 const AdminUserApprovalComp = ({ flag, id }) => {
 	const {
 		setModalPopped,
@@ -17,7 +18,8 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 		setUserInfo,
 		user,
 		userInfo,
-		mainLoading
+		mainLoading,
+		setDialogImage
 	} = useContext(AuthContext)
 	const [form, setForm] = useState({ reason: '' })
 	const [errors, setErrors] = useState({ reason: '' })
@@ -63,7 +65,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `http://localhost:8000/api/v1/admin/update-request/${userInfo?._id}`,
+				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/update-request/${userInfo?._id}`,
 				data: { update: approve, message: form?.reason },
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -101,7 +103,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 				try {
 					response = await axios({
 						method: 'get',
-						url: `http://localhost:8000/api/v1/admin/request/${id}`,
+						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/request/${id}`,
 						headers: {
 							Authorization: `Bearer ${token}`
 						}
@@ -121,7 +123,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 					setLoading(true)
 					response = await axios({
 						method: 'get',
-						url: `http://localhost:8000/api/v1/maintenance/request/${id}`,
+						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/maintenance/request/${id}`,
 						headers: {
 							Authorization: `Bearer ${token}`
 						}
@@ -229,8 +231,11 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-6  '>
-									<button
+									<DialogTrigger
 										onClick={(e) => {
+											setDialogImage(
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.student_id?.idCard}`
+											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
@@ -248,7 +253,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.student_id?.idCard}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg aspect-video'
@@ -256,9 +261,12 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 												alt='Refresh if no image is visible'
 											/>
 										</div>
-									</button>
-									<button
+									</DialogTrigger>
+									<DialogTrigger
 										onClick={(e) => {
+											setDialogImage(
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}`
+											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
@@ -284,11 +292,14 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 												alt='Refresh if no image is visible'
 											/>
 										</div>
-									</button>
+									</DialogTrigger>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-6  '>
-									<button
+									<DialogTrigger
 										onClick={(e) => {
+											setDialogImage(
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}`
+											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
@@ -314,11 +325,14 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 												alt='Refresh if no image is visible'
 											/>
 										</div>
-									</button>
-									<button
+									</DialogTrigger>
+									<DialogTrigger
 										onClick={(e) => {
+											setDialogImage(
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}`
+											)
 											setModalPopped(
-												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/.sd/${userInfo?.students_Dec}` ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -334,7 +348,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//sd/${userInfo?.parents_Dec}` ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg aspect-video'
@@ -342,11 +356,14 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 												alt='Refresh if no image is visible'
 											/>
 										</div>
-									</button>
-									<button
+									</DialogTrigger>
+									<DialogTrigger
 										onClick={(e) => {
+											setDialogImage(
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}`
+											)
 											setModalPopped(
-												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//fr/${userInfo?.faculty_Rec}` ||
+												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
@@ -362,7 +379,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 											</button>
 											<img
 												src={
-													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//fr/${userInfo?.faculty_Rec}` ||
+													`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
 													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 												}
 												className='w-full h-full transition-all duration-300 ease-linear group-hover:scale-110 object-cover rounded-lg aspect-video'
@@ -370,7 +387,7 @@ const AdminUserApprovalComp = ({ flag, id }) => {
 												alt='Refresh if no image is visible'
 											/>
 										</div>
-									</button>
+									</DialogTrigger>
 								</div>
 							</div>
 							<div className='w-full flex items-center justify-between space-x-6  '>

@@ -19,7 +19,7 @@ const AuthHeader = (props) => {
 	const logoutHandler = async () => {
 		if (userType === 'maintenance') {
 			const response = await fetch(
-				'http://localhost:8000/api/v1/maintenance/logout',
+				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/maintenance/logout`,
 				{
 					method: 'POST',
 					credentials: 'include',
@@ -28,7 +28,7 @@ const AuthHeader = (props) => {
 			)
 		} else if (userType === 'admin') {
 			const response = await fetch(
-				'http://localhost:8000/api/v1/admin/logout',
+				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/logout`,
 				{
 					method: 'POST',
 					credentials: 'include',

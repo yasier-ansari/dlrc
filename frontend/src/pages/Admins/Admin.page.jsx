@@ -10,7 +10,6 @@ import AdminUser from './AdminUser.page'
 import AdminUserApproval from './AdminUserApproval.page'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
-import Header from '@/components/Header'
 import AuthHeader from '@/components/AuthHeader'
 import Error from '../Error.page'
 
