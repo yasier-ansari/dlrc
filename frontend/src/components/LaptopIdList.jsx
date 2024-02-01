@@ -1,29 +1,23 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-// import { ListContext } from "../context/ListContext"
-// import Paginator from "./Paginator";
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { BiEditAlt } from 'react-icons/bi'
-import { LuLaptop, LuUserCircle2 } from 'react-icons/lu'
+import { LuLaptop } from 'react-icons/lu'
 import Search from './UserSearch'
 import { Button } from '@/components/ui/button.jsx'
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger
 } from '@/components/ui/dialog.jsx'
-import { Label } from '@/components/ui/label.jsx'
-import useAutosizeTextArea from '@/context/AutoResizer'
 import { Textarea } from './ui/textarea'
 import MaxWidthWrapper from './MaxWidthWrapper'
 import { cn } from '@/lib/utils'
-import { Input } from './ui/input'
 
 const LaptopIdList = () => {
 	const textAreaRef = useRef(null)
