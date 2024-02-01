@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast'
 import { BiEditAlt } from 'react-icons/bi'
 import { LuLaptop } from 'react-icons/lu'
 import Search from './UserSearch'
-import { Button } from '@/components/ui/button.jsx'
+import { Button } from '@/components/ui/Button.jsx'
 import {
 	Dialog,
 	DialogContent,
