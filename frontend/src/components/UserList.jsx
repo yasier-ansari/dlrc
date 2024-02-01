@@ -66,15 +66,21 @@ const List = () => {
 					if (user?.userType === 'admin') {
 						response = await axios({
 							method: 'get',
-							credentials: 'include',
-							url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/allRequest`,
+							withCredentials: true,
+
+							url: `${
+								import.meta.env.VITE_REACT_BACKEND_PORT_URL
+							}/api/v1/admin/allRequest`,
 							headers: { Authorization: `Bearer ${token}` }
 						})
 					} else if (user?.userType === 'maintenance') {
 						response = await axios({
 							method: 'get',
-							credentials: 'include',
-							url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/all-approved`,
+							withCredentials: true,
+
+							url: `${
+								import.meta.env.VITE_REACT_BACKEND_PORT_URL
+							}/api/v1/admin/all-approved`,
 							headers: { Authorization: `Bearer ${token}` }
 						})
 					}

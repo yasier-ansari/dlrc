@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import MaxWidthWrapper from './MaxWidthWrapper'
+import axios from 'axios'
 
 const UserLogin = ({ authWork }) => {
 	const [authType, setAuthType] = useState('login')
@@ -64,45 +65,48 @@ const UserLogin = ({ authWork }) => {
 	}
 
 	const loginHelper = async (email, prn, password) => {
-		const response = await fetch(
-			`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/login`,
-			{
-				method: 'POST',
-				credentials: 'include',
+		let response
+		try {
+			response = await axios({
+				url: `${
+					import.meta.env.REACT_BACKEND_PORT_URL
+				}/api/v1/student/login`,
+				method: 'post',
+				withCredentials: true,
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({ domain_id: email, prn, password })
-			}
-		)
-		if (response.status === 200) {
-			const res = await response.json()
+			})
+			const res = await response.data()
 			console.log(res)
 			setLoginData(res?.data)
 			toast.success('Welcom Back Student')
 			navigate(state?.path || '/user/profile')
-		} else if (response?.status === 401) {
-			setErrors({
-				prn: '',
-				email: '',
-				password: 'Input the correct password'
-			})
-		} else if (response?.status === 404) {
-			setErrors({
-				prn: '',
-				password: '',
-				email: 'Email not registered yet'
-			})
-		} else if (response?.status === 403) {
-			setErrors({
-				email: '',
-				password: '',
-				prn: 'PRN not registered yet'
-			})
-		} else {
-			toast.error(`Login fail - "Some Error Ocurred"`, {
-				position: 'top-center'
-			})
+		} catch (e) {
+			if (e?.response?.status === 401) {
+				setErrors({
+					prn: '',
+					email: '',
+					password: 'Input the correct password'
+				})
+			} else if (e?.response?.status === 404) {
+				setErrors({
+					prn: '',
+					password: '',
+					email: 'Email not registered yet'
+				})
+			} else if (e?.response?.status === 403) {
+				setErrors({
+					email: '',
+					password: '',
+					prn: 'PRN not registered yet'
+				})
+			} else {
+				toast.error(`Login fail - "Some Error Ocurred"`, {
+					position: 'top-center'
+				})
+			}
 		}
 	}
 

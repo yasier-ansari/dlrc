@@ -91,7 +91,9 @@ const UserRegister = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/register`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/student/register`,
 				data: formData,
 				header: {
 					'Content-Type': `multipart/form-data; boundary=${formData._boundary}`

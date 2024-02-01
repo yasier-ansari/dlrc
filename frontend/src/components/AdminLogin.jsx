@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import MaxWidthWrapper from './MaxWidthWrapper'
+import axios from 'axios'
 
 const AdminLoginComp = () => {
 	const {
@@ -42,30 +43,37 @@ const AdminLoginComp = () => {
 		return valid
 	}
 	const loginHelper = async (email, password) => {
-		const response = await fetch(
-			`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/login`,
-			{
-				method: 'POST',
-				credentials: 'include',
+		let response
+		try {
+			response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/login`,
+				method: 'post',
+				withCredentials: true,
+
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ email, password, type: 'admin' })
-			}
-		)
-		if (response.status === 200) {
-			const res = await response.json()
+				data: { email, password, type: 'admin' }
+			})
+			const res = response.data
 			setLoginData(res?.data)
 			toast.success('Login Successfull')
 			navigate(state?.path || '/admin/user')
-		} else if (response?.status === 401) {
-			setErrors({ email: '', password: 'Input the correct password' })
-		} else if (response?.status === 404) {
-			setErrors({ password: '', email: 'Email not registered yet' })
-		} else {
-			toast.error(`Login fail - "Some Error Ocurred"`, {
-				position: 'top-center'
-			})
+		} catch (e) {
+			if (e?.response?.status === 401) {
+				setErrors({
+					email: '',
+					password: 'Input the correct password'
+				})
+			} else if (e?.response?.status === 404) {
+				setErrors({ password: '', email: 'Email not registered yet' })
+			} else {
+				toast.error(`Login fail - "Some Error Ocurred"`, {
+					position: 'top-center'
+				})
+			}
 		}
 	}
 	const submitHandler = async (e) => {

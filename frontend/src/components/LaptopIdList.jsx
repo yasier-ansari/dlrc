@@ -52,7 +52,9 @@ const LaptopIdList = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/change-laptop`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/change-laptop`,
 				data: { status: form?.currStatus, id: currentId?.laptop_id },
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -86,8 +88,11 @@ const LaptopIdList = () => {
 					console.log('issu here')
 					response = await axios({
 						method: 'get',
-						credentials: 'include',
-						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/free-laptop`,
+						withCredentials: true,
+
+						url: `${
+							import.meta.env.VITE_REACT_BACKEND_PORT_URL
+						}/api/v1/admin/free-laptop`,
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				}

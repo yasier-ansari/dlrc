@@ -19,6 +19,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import useOnClickOutside from '../helpers/use-touch'
 import MaxWidthWrapper from './MaxWidthWrapper'
+import axios from 'axios'
 const Header = () => {
 	const [dropdownOpen, setDropdownOpen] = useState(false)
 	const [menuBar, setMenuBar] = useState(false)
@@ -56,23 +57,23 @@ const Header = () => {
 	const logoutHandler = async () => {
 		console.log('working')
 		if (userType === 'student') {
-			const response = await fetch(
-				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/logout`,
-				{
-					method: 'POST',
-					credentials: 'include',
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			const response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/student/logout`,
+				method: 'post',
+				withCredentials: true,
+				headers: { Authorization: `Bearer ${token}` }
+			})
 		} else if (userType === 'admin') {
-			const response = await fetch(
-				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/logout`,
-				{
-					method: 'POST',
-					credentials: 'include',
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			const response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/logout`,
+				method: 'POST',
+				withCredentials: true,
+				headers: { Authorization: `Bearer ${token}` }
+			})
 		}
 		logout()
 		navigate('/')

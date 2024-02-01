@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { LuAtom, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
+import axios from 'axios'
 const AuthHeader = (props) => {
 	const { mainLoading, user, userType, logout, token } =
 		useContext(AuthContext)
@@ -18,23 +19,25 @@ const AuthHeader = (props) => {
 	}
 	const logoutHandler = async () => {
 		if (userType === 'maintenance') {
-			const response = await fetch(
-				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/maintenance/logout`,
-				{
-					method: 'POST',
-					credentials: 'include',
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			const response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/maintenance/logout`,
+				method: 'post',
+				withCredentials: true,
+
+				headers: { Authorization: `Bearer ${token}` }
+			})
 		} else if (userType === 'admin') {
-			const response = await fetch(
-				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/logout`,
-				{
-					method: 'POST',
-					credentials: 'include',
-					headers: { Authorization: `Bearer ${token}` }
-				}
-			)
+			const response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/logout`,
+				method: 'post',
+				withCredentials: true,
+
+				headers: { Authorization: `Bearer ${token}` }
+			})
 		}
 		logout()
 		navigate('/')

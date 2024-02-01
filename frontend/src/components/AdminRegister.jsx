@@ -104,10 +104,11 @@ const AdminRegisterComp = () => {
 	) => {
 		// try {
 		// 	const response = await fetch(
-		// 		`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/register',
+		// 		`${import.meta.env.VITE_REACT_BACKEND_PORT_URL}/api/v1/admin/register',
 		// 		{
 		// 			method: 'POST',
-		// 			credentials: 'include',
+		// 			withCredentials:true,
+
 		// 			headers: {
 		// 				'Content-Type': 'application/json'
 		// 			},
@@ -138,7 +139,9 @@ const AdminRegisterComp = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/register`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/register`,
 				data: form,
 				header: {
 					'Content-Type': 'application/json'

@@ -82,7 +82,9 @@ const MaintUserReturnComp = ({ flag, id }) => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/new-return/${userInfo?._id}`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/new-return/${userInfo?._id}`,
 				data: {
 					condition: form?.reason,
 					laptop_id: userInfo?.laptop_id
@@ -130,7 +132,9 @@ const MaintUserReturnComp = ({ flag, id }) => {
 				try {
 					response = await axios({
 						method: 'get',
-						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/issued-laptop/${id}`,
+						url: `${
+							import.meta.env.VITE_REACT_BACKEND_PORT_URL
+						}/api/v1/admin/issued-laptop/${id}`,
 						headers: {
 							Authorization: `Bearer ${token}`
 						}

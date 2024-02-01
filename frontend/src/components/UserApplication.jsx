@@ -239,7 +239,9 @@ const UserApplicationComp = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/new-request`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/student/new-request`,
 				data: formData,
 				withCredentials: true,
 				header: {

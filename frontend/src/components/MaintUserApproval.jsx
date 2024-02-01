@@ -107,7 +107,9 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/new-issue`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/new-issue`,
 				data: {
 					duration: form?.duration,
 					req_id: userInfo?._id,
@@ -192,7 +194,9 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 			setLoading(true)
 			response = await axios({
 				method: 'get',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/free-laptop`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/free-laptop`,
 				headers: {
 					Authorization: `Bearer ${token}`
 				}
@@ -215,7 +219,9 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 				setLoading(true)
 				response = await axios({
 					method: 'get',
-					url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/approved-request/${id}`,
+					url: `${
+						import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/admin/approved-request/${id}`,
 					headers: {
 						Authorization: `Bearer ${token}`
 					}

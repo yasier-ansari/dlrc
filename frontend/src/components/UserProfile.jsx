@@ -139,7 +139,9 @@ const UserProfile = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/update-profile`,
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/student/update-profile`,
 				data: form,
 				headers: { Authorization: `Bearer ${accessToken}` }
 			})
@@ -212,23 +214,18 @@ const UserProfile = () => {
 		const getData = async () => {
 			const fetchUserProfile = async (accessToken) => {
 				try {
-					const response = await fetch(
-						`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/profile`,
-						{
-							method: 'GET',
-							credentials: 'include',
-							headers: { Authorization: `Bearer ${accessToken}` }
-						}
-					)
-
-					if (response.ok) {
-						const userProfile = await response.json()
-						// console.log(userProfile)
-						setUser(userProfile?.data)
-						setForm({ ...form, ...userProfile?.data })
-					} else {
-						setUser(null)
-					}
+					const response = await axios({
+						url: `${
+							import.meta.env.VITE_REACT_BACKEND_PORT_URL
+						}/api/v1/student/profile`,
+						method: 'get',
+						withCredentials: true,
+						headers: { Authorization: `Bearer ${accessToken}` }
+					})
+					const userProfile = response.data
+					// console.log(userProfile)
+					setUser(userProfile?.data)
+					setForm({ ...form, ...userProfile?.data })
 				} catch (error) {
 					console.error('Error fetching user profile:', error)
 					setUser(null)
@@ -238,7 +235,9 @@ const UserProfile = () => {
 				try {
 					const response = await axios({
 						method: 'get',
-						url: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/recent-request`,
+						url: `${
+							import.meta.env.VITE_REACT_BACKEND_PORT_URL
+						}/api/v1/student/recent-request`,
 						headers: { Authorization: `Bearer ${accessToken}` }
 					})
 					// console.log(response?.data?.data)

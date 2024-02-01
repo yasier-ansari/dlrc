@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { createContext, useEffect, useState } from 'react'
 
 const AuthContext = createContext()
@@ -58,45 +59,36 @@ function AuthProvider({ children }) {
 	}
 	const fetchUserProfile = async (accessToken) => {
 		try {
-			const response = await fetch(
-				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/profile`,
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: { Authorization: `Bearer ${accessToken}` }
-				}
-			)
+			const response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/student/profile`,
+				method: 'get',
+				withCredentials: true,
 
-			if (response.ok) {
-				const userProfile = await response.json()
-				setUser(userProfile?.data)
-			} else {
-				setUser(null)
-			}
+				headers: { Authorization: `Bearer ${accessToken}` }
+			})
+			const userProfile = response.data
+			setUser(userProfile?.data)
 		} catch (error) {
-			console.error('Error fetching user profile:', error)
 			setUser(null)
+			console.error('Error fetching user profile:', error)
 		}
 	}
 
 	const fetchAdminProfile = async (accessToken) => {
 		try {
-			const response = await fetch(
-				`${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/profile`,
-				{
-					method: 'GET',
-					credentials: 'include',
-					headers: { Authorization: `Bearer ${accessToken}` }
-				}
-			)
+			const response = await axios({
+				url: `${
+					import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				}/api/v1/admin/profile`,
+				method: 'get',
+				withCredentials: true,
 
-			if (response.ok) {
-				const userProfile = await response.json()
-				setUser(userProfile?.data)
-			} else {
-				setUser(null)
-				console.log(response)
-			}
+				headers: { Authorization: `Bearer ${accessToken}` }
+			})
+			const userProfile = response.data
+			setUser(userProfile?.data)
 		} catch (error) {
 			console.error('Error fetching user profile:', error)
 			setUser(null)
@@ -121,24 +113,23 @@ function AuthProvider({ children }) {
 	useEffect(() => {
 		const refreshAccessToken = async () => {
 			try {
-				const response = await fetch(
-					user?.userType === 'student' || userType === 'student'
-						? `${process.env.REACT_BACKEND_PORT_URL}/api/v1/student/refresh-token`
-						: `${process.env.REACT_BACKEND_PORT_URL}/api/v1/admin/refresh-token`,
-					{
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({ refreshToken })
-					}
-				)
-				if (response.ok) {
-					const newAccessToken = await response.json()
-					setLoginData(newAccessToken)
-				} else {
-					setLoginData(null)
-				}
+				const response = await axios({
+					url:
+						user?.userType === 'student' || userType === 'student'
+							? `${
+									import.meta.env.VITE_REACT_BACKEND_PORT_URL
+							  }/api/v1/student/refresh-token`
+							: `${
+									import.meta.env.VITE_REACT_BACKEND_PORT_URL
+							  }/api/v1/admin/refresh-token`,
+					method: 'post',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					data: { refreshToken }
+				})
+				const newAccessToken = response.data
+				setLoginData(newAccessToken)
 			} catch (error) {
 				setLoginData(null)
 			}
