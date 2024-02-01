@@ -8,6 +8,7 @@ import MaxWidthWrapper from './MaxWidthWrapper'
 import axios from 'axios'
 
 const UserLogin = ({ authWork }) => {
+	console.log(`${import.meta.env.VITE_REACT_BACKEND_PORT_URL}/api/v1/student/login`)
 	const [authType, setAuthType] = useState('login')
 	const { token, user, setUser, setLoginData, mainLoading } =
 		useContext(AuthContext)
@@ -68,22 +69,21 @@ const UserLogin = ({ authWork }) => {
 		let response
 		try {
 			response = await axios({
-				url: `${
-					import.meta.env.REACT_BACKEND_PORT_URL
-				}/api/v1/student/login`,
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL}/api/v1/student/login`,
 				method: 'post',
 				withCredentials: true,
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ domain_id: email, prn, password })
+				data: { domain_id: email, prn, password }
 			})
-			const res = await response.data()
+			const res = response.data
 			console.log(res)
 			setLoginData(res?.data)
 			toast.success('Welcom Back Student')
 			navigate(state?.path || '/user/profile')
 		} catch (e) {
+			console.log(e)
 			if (e?.response?.status === 401) {
 				setErrors({
 					prn: '',
@@ -143,9 +143,8 @@ const UserLogin = ({ authWork }) => {
 						</div>
 						<div className='bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl  '></div>
 						<form
-							className={`flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center ${
-								loading && 'opacity-60'
-							} `}
+							className={`flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center ${loading && 'opacity-60'
+								} `}
 						>
 							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<input
@@ -159,9 +158,8 @@ const UserLogin = ({ authWork }) => {
 									onChange={(e) =>
 										setForm({ ...form, prn: e.target.value })
 									}
-									className={`  ${
-										errors.prn && 'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
+									className={`  ${errors.prn && 'border-[1.5px] border-red-400 '
+										} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
 								/>
 								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
 									{errors.prn || '‎'}
@@ -178,9 +176,8 @@ const UserLogin = ({ authWork }) => {
 									onChange={(e) =>
 										setForm({ ...form, email: e.target.value })
 									}
-									className={`  ${
-										errors.email && 'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
+									className={`  ${errors.email && 'border-[1.5px] border-red-400 '
+										} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
 								/>
 								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
 									{errors.email || '‎'}
@@ -198,10 +195,9 @@ const UserLogin = ({ authWork }) => {
 									onChange={(e) =>
 										setForm({ ...form, password: e.target.value })
 									}
-									className={`  ${
-										errors.password &&
+									className={`  ${errors.password &&
 										'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
+										} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
 								/>
 								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
 									{errors.password || '‎'}

@@ -239,9 +239,8 @@ const UserApplicationComp = () => {
 		try {
 			response = await axios({
 				method: 'post',
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/student/new-request`,
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/student/new-request`,
 				data: formData,
 				withCredentials: true,
 				header: {
@@ -366,9 +365,8 @@ const UserApplicationComp = () => {
 				</div>
 			</div>
 			<form
-				className={`flex relative w-full items-center mx-auto flex-col space-y-2 sm:space-y-4 max-w-4xl ${
-					loading && 'opacity-50'
-				}  pb-20`}
+				className={`flex relative w-full items-center mx-auto flex-col space-y-2 sm:space-y-4 max-w-4xl ${loading && 'opacity-50'
+					}  pb-20`}
 			>
 				<p className=' mb-10 text-[0.8rem] sm:text-base md:text-lg text-gray-800/90 font-semibold  '>
 					To borrow a laptop, you are required to fill the given

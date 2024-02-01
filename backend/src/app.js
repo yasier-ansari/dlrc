@@ -3,17 +3,33 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 const app = express();
 
-const corsConfig = {
+// const corsConfig = {
+//     credentials: true,
+//     origin: process.env.CORS_ORIGIN,
+// };
+var allowlist = [process.env.CORS_ORIGIN_DEV, process.env.CORS_ORIGIN_PROD];
+const corsOptions = {
     credentials: true,
-    origin: "http://localhost:5173",
+    optionsSuccessStatus: 200,
+    origin: function (origin, callback) {
+        // Check if the origin is allowed
+        if (allowlist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
 };
-app.options("*", cors(corsConfig));
-app.use(cors(corsConfig));
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+// T E S T I N G    R O U T E
+app.get("/", (_, res) => res.send(`Hello World ! by dlrc : 1st Feb 2024  `));
 
 // U S E R    R O U T E S
 import { router } from "./routes/student.routes.js";
