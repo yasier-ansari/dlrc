@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NormalText from "./ui/normalText";
 
 const Accordion = ({ title, answer }) => {
     const [accordionOpen, setAccordionOpen] = useState(false);
@@ -32,15 +33,17 @@ const Accordion = ({ title, answer }) => {
                             }`}
                     />
                 </svg>
-                <span className="font-bold text-start text-sm sm:text-base" >{title}</span>
+                <span className="font-bold text-start text-base sm:text-lg md:text-xl lg:text-[1.3rem] " >{title}</span>
             </button>
             <div
-                className={`grid overflow-hidden transition-all duration-300 ease-in-out mt-3 md:mt-2 text-slate-600 text-sm ${accordionOpen
+                className={`grid overflow-hidden transition-all duration-300 ease-in-out mt-3 md:mt-2 text-slate-600 text-sm  ${accordionOpen
                     ? "grid-rows-[1fr] opacity-100"
                     : "grid-rows-[0fr] opacity-0"
                     }`}
             >
-                <div className="overflow-hidden font-[600] pl-12 md:pl-[70px] text-[0.8rem] sm:text-sm md:text-base ">{answer}</div>
+                <NormalText className={'overflow-hidden font-[600] pl-12 md:pl-[70px]'} >
+                    {answer}
+                </NormalText>
             </div>
         </div>
     );
