@@ -10,6 +10,11 @@ import { AuthContext } from '../context/AuthContext'
 import axios from 'axios'
 import { IoWarningOutline } from 'react-icons/io5'
 import MaxWidthWrapper from './MaxWidthWrapper'
+import AuthContainer from "./AuthContainer"
+import FormContainer from "./FormContainer"
+import InputItem from "./InputItem"
+import SelectItem from "./SelectItem"
+import PageLoading from "./PageLoading"
 const API = axios.create({ baseURL: 'http://localhost:5173' })
 
 const UserRegister = () => {
@@ -89,11 +94,12 @@ const UserRegister = () => {
 		console.log(form)
 		var response
 		try {
+
 			response = await axios({
 				method: 'post',
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/student/register`,
+				url: `${import.meta.env.MODE === 'development'
+					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/register`,
 				data: formData,
 				header: {
 					'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
@@ -162,11 +168,11 @@ const UserRegister = () => {
 		if (!form.fullname) {
 			newErrors.fullname = 'Full Name is required'
 			valid = false
-		} else if (!form.fullname.trim().length < 2) {
+		} else if (form.fullname.trim().length < 2) {
 			newErrors.fullname = 'Frist + Last Name is required'
 			valid = false
 		} else {
-			newErrors.name = ''
+			newErrors.fullname = ''
 		}
 
 		if (!form.domain_id) {
@@ -276,262 +282,92 @@ const UserRegister = () => {
 		e.preventDefault()
 		if (validateForm()) {
 			await registerHelper()
-		} else {
-			toast(
-				'Please carefully fill each prop with correct Information',
-				{
-					id: `${e}`,
-					icon: (
-						<IoWarningOutline className='h-6 w-6 md:w-8 md:h-8 text-orange-500 ' />
-					),
-					style: {
-						border: '2px solid #fb923c',
-						padding: '12px 20px 12px 20px',
-						color: '#333'
-					},
-					iconTheme: {
-						primary: '#fb923c',
-						secondary: '#FFFAEE'
-					}
-				}
-			)
 		}
 	}
 	return (
 		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-4xl max-h-4xl text-gray-800/90 py-6 flex grow px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24 min-h-screen '>
 			{!mainLoading ? (
 				<>
-					<div className='flex flex-col relative max-w-[500px] items-center py-12 px-4 sm:px-6 md:px-12 flex-grow bg-white border-2 border-[#40916c] shadow-green-900/50  rounded-lg space-y-8 xl:space-y-10 '>
-						<div className='flex w-full flex-col '>
-							<h2 className='text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center'>
-								Register
-							</h2>
-							<h6 className='text-sm md:text-base lg:text-lg mt-4 text-center'>
-								Populate your user profile and start your application
-								here
-							</h6>
-						</div>
-						<div className='bg-green-800/20 w-[90%] sm:w-[85%] md:w-[80%] h-[2px] rounded-xl'></div>
-						<form
-							className={`flex flex-col w-full mx-auto max-w-[400px] space-y-3 items-center ${
-								loading && 'opacity-60'
-							} `}
-						>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
-								<input
-									disabled={loading}
-									type='text'
-									name='fullname'
-									required={true}
-									placeholder='Full Name'
-									value={form.fullname}
-									onChange={(e) =>
-										setForm({ ...form, fullname: e.target.value })
-									}
-									className={` ${
-										errors.fullname &&
-										'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								/>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.fullname || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
-								<input
-									disabled={loading}
-									type='text'
-									name='prn'
-									required={true}
-									placeholder='PRN'
-									value={form.prn}
-									pattern='[0-9]{20}'
-									maxLength={6}
-									onChange={(e) =>
-										setForm({ ...form, prn: e.target.value })
-									}
-									className={` ${
-										errors.prn && 'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								/>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.prn || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
-								<input
-									disabled={loading}
-									type='email'
-									name='domain_id'
-									required
-									placeholder='Email'
-									value={form.domain_id}
-									onChange={(e) =>
-										setForm({ ...form, domain_id: e.target.value })
-									}
-									className={`  ${
-										errors.domain_id &&
-										'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								/>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.domain_id || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
-								<select
-									name='department'
-									required={true}
-									placeholder='department'
-									value={form.department}
-									onChange={(e) =>
-										setForm({ ...form, department: e.target.value })
-									}
-									className={` ${
-										errors.department &&
-										'border-[1.5px] border-red-500 '
-									} w-full caret-green-600 lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200  focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								>
-									<option value='' disabled hidden>
-										Select Department
-									</option>
-									{dept_options?.map((el) => (
-										<option value={el} key={el}>
-											{el}
-										</option>
-									))}
-								</select>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.department || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
-								<select
-									name='sem'
-									required={true}
-									placeholder='sem'
-									value={form.sem}
-									onChange={(e) =>
-										setForm({ ...form, sem: e.target.value })
-									}
-									className={` ${
-										errors.sem && 'border-[1.5px] border-red-500 '
-									} w-full caret-green-600 lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200  focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								>
-									<option value='' disabled hidden>
-										Select Sem
-									</option>
-									{sem_options?.map((el) => (
-										<option value={el} key={el}>
-											{el}
-										</option>
-									))}
-								</select>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.sem || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full '>
-								<select
-									name='year'
-									required={true}
-									placeholder='(FE, SE, ...)'
-									value={form.year}
-									onChange={(e) =>
-										setForm({ ...form, year: e.target.value })
-									}
-									className={` ${
-										errors.year && 'border-[1.5px] border-red-500 '
-									} w-full caret-green-600 lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200  focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								>
-									<option value='' disabled hidden>
-										Select Year
-									</option>
-									{year_options?.map((el) => (
-										<option value={el} key={el}>
-											{el}
-										</option>
-									))}
-								</select>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.year || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
-								<input
-									disabled={loading}
-									type='text'
-									name='Phone Number'
-									required={true}
-									placeholder='Phone Number'
-									value={form.number}
-									pattern='[0-9]'
-									maxLength={10}
-									onChange={(e) =>
-										setForm({ ...form, number: e.target.value })
-									}
-									className={` ${
-										errors.number && 'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								/>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.number || '‎'}
-								</p>
-							</div>
-							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full relative'>
-								<button
-									onClick={(e) => {
-										e.preventDefault()
-										setPassVisible(!passVisible)
-									}}
-									className='absolute top-[10px] right-3 transition-all duration-300 ease-out'
-								>
-									{/* {!passVisible ? ( */}
-									<LuEyeOff
-										className={`text-[#40916c] transition-all duration-300 ease-out ${
-											!passVisible ? 'opacity-100' : 'opacity-0'
-										} `}
-									/>
-
-									{/* )} */}
-								</button>
-								<button
-									onClick={(e) => {
-										e.preventDefault()
-										setPassVisible(!passVisible)
-									}}
-									className='absolute top-[10px] right-3 transition-all duration-300 ease-out'
-								>
-									{/* {!passVisible ? ( */}
-									<LuEye
-										className={`text-[#40916c] transition-all duration-300 ease-out ${
-											passVisible ? 'opacity-100' : 'opacity-0'
-										} `}
-									/>
-
-									{/* )} */}
-								</button>
-
-								<input
-									disabled={loading}
-									type={!passVisible ? 'password' : 'text'}
-									name='password'
-									required={true}
-									autoComplete='true'
-									placeholder='Password'
-									value={form.password}
-									onChange={(e) =>
-										setForm({ ...form, password: e.target.value })
-									}
-									className={`  ${
-										errors.password &&
-										'border-[1.5px] border-red-400 '
-									} w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
-								/>
-								<p className='text-red-400 text-start text-sm ml-2 font-normal '>
-									{errors.password || '‎'}
-								</p>
-							</div>
+					<AuthContainer action='Register' actionText='Populate your user profile and start your application
+								here' >
+						<FormContainer loading={loading} inverseAction='Login' inverseActionText='Already have Account?' inverseUrl='/user/login' buttonText='Register' onClick={SubmitHandler} >
+							<InputItem
+								disabled={loading}
+								type={'text'}
+								name={'fullname'}
+								required={true}
+								placeholder={'Full Name'}
+								value={form?.fullname}
+								errors={errors?.fullname}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								className={'w-full'} />
+							<InputItem
+								disabled={loading}
+								type={'text'}
+								name={'prn'}
+								required={true}
+								placeholder={'PRN'}
+								value={form?.prn}
+								errors={errors?.prn}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								className={'w-full'} />
+							<InputItem
+								disabled={loading}
+								type={'email'}
+								name={'domain_id'}
+								required={true}
+								placeholder={'Email'}
+								value={form?.domain_id}
+								errors={errors?.domain_id}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								className={'w-full'} />
+							<SelectItem
+								name='department'
+								required={true}
+								placeholder='department'
+								value={form.department}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								errors={errors?.department}
+								options={dept_options}
+							/>
+							<SelectItem
+								name='sem'
+								required={true}
+								placeholder='sem'
+								value={form.sem}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								errors={errors?.sem}
+								options={sem_options}
+							/>
+							<SelectItem
+								name='year'
+								required={true}
+								placeholder='year'
+								value={form.year}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								errors={errors?.year}
+								options={year_options}
+							/>
+							<InputItem
+								disabled={loading}
+								type={'text'}
+								name={'number'}
+								required={true}
+								placeholder={'Mobile Number'}
+								value={form?.number}
+								errors={errors?.number}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								className={'w-full'} />
+							<InputItem
+								disabled={loading}
+								type={'password'}
+								name={'password'}
+								required={true}
+								placeholder={'Password'}
+								value={form?.password}
+								errors={errors?.password}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+								className={'w-full'} />
 							<div className=' text-[0.8rem] sm:text-sm md:text-base lg:text-lg w-full'>
 								<label
 									htmlFor='image-input'
@@ -547,13 +383,12 @@ const UserRegister = () => {
 												: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 										}
 										alt='Selected Image'
-										className={` ${
-											errors.idCard && 'border-2 border-[#db3100] '
-										} w-full h-full aspect-video rounded-lg md:rounded-xl lg:rounded-2xl object-cover`}
+										className={` ${errors.idCard && 'border-2 border-[#db3100] '
+											} w-full h-full aspect-video rounded-lg md:rounded-xl object-cover`}
 										width={100}
 										height={100}
 									/>
-									<div className='absolute top-8 sm:top-9 right-0 md:top-10 bg-[#74c69d] rounded-md sm:rounded-lg md:rounded-xl lg:rounded-2xl p-1 sm:p-2 md:p-3 '>
+									<div className='absolute top-8 sm:top-9 right-0 md:top-10 bg-[#74c69d] rounded-md sm:rounded-lg md:rounded-xl  p-1 sm:p-2  '>
 										<LuFolderEdit className=' w-4 h-4 sm:w-5 sm:h-5 md:h-6 md:w-6' />
 									</div>
 								</label>
@@ -571,40 +406,11 @@ const UserRegister = () => {
 									{errors.idCard || '‎'}
 								</p>
 							</div>
-							<div className='text-base md:text-lg xl:text-xl md:p-2 font-normal w-full'>
-								<button
-									type='submit'
-									onClick={SubmitHandler}
-									className='bg-gradient-to-tr from-[#40916c] to-[#74c69d] hover:scale-105 transition-all duration-200  px-3 py-2 md:px-6 lg:px-8 rounded-lg text-white shadow-lg font-semibold  w-full'
-								>
-									{loading ? (
-										<div className='flex items-center space-x-3 justify-center rounded-lg'>
-											<p>Loading</p>
-											<div className='animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-[2.2px] border-r-none border-r-white border-transparent'></div>
-										</div>
-									) : (
-										'Register'
-									)}
-								</button>
-							</div>
-							<a
-								href='/user/login'
-								className='group hover:underline-offset-[5px] text-sm decoration hover:decoration-green-500 hover:underline hover:decora hover:decoration-2 font-normal hover:font-semibold cursor-pointer w-max sm:text-base md:text-lg -mt-2 flex justify-center items-center'
-							>
-								<span>Already have an Account? </span>
-								<span className=' text-green-700  '>‎ Login </span>
-							</a>
-						</form>
-						{/* <div className='absolute w-full h-full -bottom-2 left-2 rounded-2xl bg-[#74c69d] -z-30 '></div> */}
-					</div>
+						</FormContainer>
+					</AuthContainer>
 				</>
 			) : (
-				<div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50'>
-					<div className='flex items-center space-x-3 bg-white px-3 py-2 rounded-lg'>
-						<h2 className='text-lg font-semibold'>Loading</h2>
-						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c]'></div>
-					</div>
-				</div>
+				<PageLoading />
 			)}
 		</MaxWidthWrapper>
 	)

@@ -9,7 +9,6 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
         const token =
             req.cookies?.accessToken ||
             req.header("Authorization")?.replace("Bearer ", "");
-
         if (!token) {
             throw new ApiError(401, "unauthorized request");
         }
@@ -25,7 +24,12 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
         req.student = student;
         next();
     } catch (error) {
-        throw new ApiError(401, "Invalid Access Token --catch");
+        console.log(error.name);
+        if (error.name === "TokenExpiredError") {
+            console.log("working");
+            throw new ApiError(402, "jwt expired ");
+        }
+        throw new ApiError(401, error);
     }
 });
 
@@ -48,6 +52,9 @@ const adminJWT = asyncHandler(async (req, _, next) => {
         req.admin = admin;
         next();
     } catch (error) {
+        if (error.name === "TokenExpiredError") {
+            throw new ApiError(402, "jwt expired ");
+        }
         throw new ApiError(401, "Invalid Access Token --catch");
     }
 });

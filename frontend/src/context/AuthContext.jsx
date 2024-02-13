@@ -60,17 +60,22 @@ function AuthProvider({ children }) {
 	const fetchUserProfile = async (accessToken) => {
 		try {
 			const response = await axios({
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/student/profile`,
+				url: `${import.meta.env.MODE === 'development'
+					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/profile`,
 				method: 'get',
 				withCredentials: true,
 
 				headers: { Authorization: `Bearer ${accessToken}` }
 			})
 			const userProfile = response.data
+			console.log(userProfile)
 			setUser(userProfile?.data)
 		} catch (error) {
+			if (error.response.status === 402) {
+				console.log("working")
+				refreshAccessToken()
+			}
 			setUser(null)
 			console.error('Error fetching user profile:', error)
 		}
@@ -79,9 +84,9 @@ function AuthProvider({ children }) {
 	const fetchAdminProfile = async (accessToken) => {
 		try {
 			const response = await axios({
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/profile`,
+				url: `${import.meta.env.MODE === 'development'
+					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/profile`,
 				method: 'get',
 				withCredentials: true,
 
@@ -90,8 +95,36 @@ function AuthProvider({ children }) {
 			const userProfile = response.data
 			setUser(userProfile?.data)
 		} catch (error) {
-			console.error('Error fetching user profile:', error)
+			if (error.response.status === 402) {
+				console.log("working")
+				refreshAccessToken()
+			}
+			console.error('Error fetching admin profile:', error)
 			setUser(null)
+		}
+	}
+	const refreshAccessToken = async () => {
+		try {
+			const response = await axios({
+				url:
+					user?.userType === 'student' || userType === 'student'
+						? `${import.meta.env.MODE === 'development'
+							? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+							: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/refresh-token`
+						: `${import.meta.env.MODE === 'development'
+							? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+							: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/refresh-token`,
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				data: { refreshToken }
+			})
+			console.log(response, "response here")
+			// const newAccessToken = response.data
+			// setLoginData(newAccessToken)
+		} catch (error) {
+			setLoginData(null)
 		}
 	}
 	useEffect(() => {
@@ -99,6 +132,7 @@ function AuthProvider({ children }) {
 		const token = localStorage.getItem('token')
 		if (token) {
 			if (userType === 'student') {
+				console.log("working")
 				fetchUserProfile(token)
 			} else if (userType === 'admin' || userType === 'maintenance') {
 				fetchAdminProfile(token)
@@ -111,35 +145,12 @@ function AuthProvider({ children }) {
 	}, [token, setToken])
 
 	useEffect(() => {
-		const refreshAccessToken = async () => {
-			try {
-				const response = await axios({
-					url:
-						user?.userType === 'student' || userType === 'student'
-							? `${
-									import.meta.env.VITE_REACT_BACKEND_PORT_URL
-							  }/api/v1/student/refresh-token`
-							: `${
-									import.meta.env.VITE_REACT_BACKEND_PORT_URL
-							  }/api/v1/admin/refresh-token`,
-					method: 'post',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					data: { refreshToken }
-				})
-				const newAccessToken = response.data
-				setLoginData(newAccessToken)
-			} catch (error) {
-				setLoginData(null)
-			}
-		}
 		const tokenRefreshInterval = setInterval(() => {
 			refreshAccessToken()
 		}, 3600000 * 12)
 		return () => clearInterval(tokenRefreshInterval)
 	}, [refreshToken])
-
+	console.log(import.meta.env.MODE, "env")
 	const value = {
 		token,
 		user,
