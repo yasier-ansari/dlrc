@@ -96,7 +96,7 @@ const UserRegister = () => {
 		try {
 
 			response = await axios({
-				method: 'post',
+				method: 'POST',
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/register`,
@@ -373,7 +373,7 @@ const UserRegister = () => {
 									htmlFor='image-input'
 									className=' relative cursor-pointer'
 								>
-									<p className=' text-xs sm:text-sm md:text-base font-medium rounded-lg bg-[#40916c] p-1 w-max m-1 px-2 text-white mb-2 '>
+									<p className=' text-xs sm:text-sm md:text-base font-medium rounded-lg bg-green-prim-1 p-1 w-max m-1 px-2 text-white mb-2 '>
 										Id Card
 									</p>
 									<img

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 
 const InfoContainer = ({ title, children, className }) => {
     return (
-        <div className={cn(`flex flex-col  w-full h-full  max-w-4xl mt-8 ${className} `)}>
+        <div className={cn(`flex flex-col  w-full h-full py-8 ${className} `)}>
             <div className='flex w-full h-full items-center mb-6 '>
                 <h3 className=' infoContainerHeading livvic '>
                     {title}

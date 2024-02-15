@@ -1,4 +1,3 @@
-import Accordion from '@/components/Accordion'
 import AccordionContainer from "@/components/AccordionContainer"
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
@@ -15,6 +14,7 @@ const About = () => {
 					<HeroContainer />
 					<InfoContainer
 						title="Interested?"
+						className={'max-w-5xl'}
 					>
 						<NormalText>
 							Lorem ipsum, dolor sit amet consectetur adipisicing

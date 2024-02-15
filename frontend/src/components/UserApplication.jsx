@@ -1,9 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import {
-	LuFolderEdit,
-	LuFileBarChart,
-	LuPackage
-} from 'react-icons/lu'
 import { AuthContext } from '../context/AuthContext'
 import { HiOutlineDocumentText } from 'react-icons/hi2'
 import axios from 'axios'
@@ -12,6 +7,16 @@ import { IoWarningOutline } from 'react-icons/io5'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import MaxWidthWrapper from './MaxWidthWrapper'
+import InfoPageContainer from './InfoPageContainer'
+import InfoPageFormContainer from './InfoPageFormContainer'
+import NormalText from './ui/normalText'
+import ImageInput from './ImageInput'
+import InfoPageFormInput from './InfoPageFormInput'
+import InfoPageFormSelect from './InfoPageFormSelect'
+import InfoOpacityContainer from './InfoOpacityContainer'
+import InfoPageButtonContainer from './InfoPageButtonContainer'
+import LoadingButton from './LoadingButton'
+import PageLoading from "./PageLoading"
 
 const API = axios.create({ baseURL: 'http://localhost:5173' })
 
@@ -23,6 +28,14 @@ const UserApplicationComp = () => {
 		{ value: 'Short', text: '2-4 Weeks', id: 1 },
 		{ value: 'Medium', text: '1-2 Months', id: 2 },
 		{ value: 'Long', text: ' Whole Semester', id: 3 }
+	]
+	const ews_options = [
+		{ value: 'No', text: 'No', id: 1 },
+		{ value: 'Yes', text: 'Yes', id: 2 }
+	]
+	const fs_options = [
+		{ value: 'No', text: 'No', id: 1 },
+		{ value: 'Yes', text: 'Yes', id: 2 }
 	]
 	const [form, setForm] = useState({
 		parents_Dec: '',
@@ -238,8 +251,10 @@ const UserApplicationComp = () => {
 		var response
 		try {
 			response = await axios({
-				method: 'post',
-				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+				method: 'POST',
+				url: `${import.meta.env.MODE === 'development'
+					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD
 					}/api/v1/student/new-request`,
 				data: formData,
 				withCredentials: true,
@@ -248,7 +263,6 @@ const UserApplicationComp = () => {
 					'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
 				}
 			})
-			console.log(response?.status, 'here')
 			const res = response.data
 			toast.success('Application Sent to DLRC Successfully')
 			navigate('/user/profile#request-history')
@@ -355,437 +369,235 @@ const UserApplicationComp = () => {
 	}
 	return (
 		<MaxWidthWrapper className='w-full h-full items-center justify-center mx-auto max-w-6xl text-gray-800/90 py-6 flex grow px-8 md:px-12 lg:px-20 xl:px-24 flex-col'>
-			<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full text-gray-800/90 mx-auto'>
-				<div
-					div
-					className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-12 mb-8 text-center mx-auto'
-				>
-					<HiOutlineDocumentText className=' text-[#40916c] -skew-x-6 ' />
-					<h1 className='font-semibold italic '>Application</h1>
-				</div>
-			</div>
-			<form
-				className={`flex relative w-full items-center mx-auto flex-col space-y-2 sm:space-y-4 max-w-4xl ${loading && 'opacity-50'
-					}  pb-20`}
-			>
-				<p className=' mb-10 text-[0.8rem] sm:text-base md:text-lg text-gray-800/90 font-semibold  '>
-					To borrow a laptop, you are required to fill the given
-					application. Take heed that we will fetch your details from
-					your profile and the form below to issue your laptop. If you
-					wish, you can update your profile{' '}
-					<a
-						href='/user/profile'
-						className='underline decoration-green-400 underline-offset-4 text-green-500'
+			{
+				!mainLoading ?
+					<InfoPageContainer
+						heading={'Application'}
+						Icon={HiOutlineDocumentText}
+						loading={loading}
+						className={' max-w-6xl '}
+						innerClassName={'max-w-3xl'}
 					>
-						here
-					</a>{' '}
-					. You can see the status of your application in your{' '}
-					<a
-						href='/user/profile'
-						className='underline decoration-green-400 underline-offset-4 text-green-500'
-					>
-						profile
-					</a>
-				</p>
-				<div className='flex flex-col items-center w-full justify-center mx-auto space-y-4 sm-space-y-6 md-space-y-8 lg-space-y-12 max-w-5xl p-10 border-[3px] border-[#40916c80] rounded-xl relative  '>
-					<div
-						className='absolute inset-0 left-[50%] translate-x-[-50%] -top-4 w-max z-10
-'
-					>
-						<div className='flex items-center justify-center mx-auto px-3 py-1 md-py-2 rounded-lg bg-[#40916c] text-white font-semibold '>
-							Your Info
-						</div>
-					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem] opacity-70  '>
-						<div className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '>
-							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-								Name
-							</p>
-							<p className='font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300 '>
-								{user?.fullname}
-							</p>
-						</div>
-						<div className='flex items-start justify-center space-y-2 flex-col  basis-[40%] w-full '>
-							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-								Email
-							</p>
-							<p className='font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
-								{user?.domain_id}
-							</p>
-						</div>
-					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem] opacity-70  '>
-						<div className='flex w-full sm:basis-[50%] md:basis-[30%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-								Prn
-							</p>
-							<p className='  text-xs md:text-sm font-bold  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
-								{user?.prn}
-							</p>
-						</div>
-						<div className='flex w-full sm:basis-[50%] md:basis-[30%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-								Dept
-							</p>
-							<p className=' font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
-								{user?.department || '-'}{' '}
-							</p>
-						</div>
-						<div className='flex w-full sm:basis-[50%] md:basis-[20%] items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-								Year
-							</p>
-							<p className='  text-xs md:text-sm font-bold pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
-								{user?.year || '-'}{' '}
-							</p>
-						</div>
-						<div className='flex w-full sm:basis-[50%] md:basis-[20%]  items-start justify-center space-y-2 flex-col '>
-							<p className='bg-[#40916c75]  rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
-								Sem
-							</p>
-							<p className=' font-medium text-sm md:text-base  pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-green-100/20 border-zinc-300   '>
-								{user?.sem || '-'}{' '}
-							</p>
-						</div>
-					</div>
-				</div>
-				{/* {user?.applicationStatus ? (
-					<div className='flex flex-col items-center w-full justify-center mx-auto space-y-4 sm-space-y-6 md-space-y-8 lg-space-y-12 max-w-5xl p-10 border-[3px] border-[#40916c80] rounded-xl relative  '>
-						<div
-							className='absolute inset-0 left-[50%] translate-x-[-50%] -top-4 w-max z-10
-'
+						<NormalText className={'  pb-8 md:pb-12 '}>
+							To borrow a laptop, you are required to fill the given
+							application. Take heed that we will fetch your details from
+							your profile and the form below to issue your laptop. If you
+							wish, you can update your profile{' '}
+							<a
+								href='/user/profile'
+								className='underline decoration-green-400 underline-offset-4 text-green-500'
+							>
+								here
+							</a>{' '}
+							. You can see the status of your application in your{' '}
+							<a
+								href='/user/profile'
+								className='underline decoration-green-400 underline-offset-4 text-green-500'
+							>
+								profile
+							</a>
+						</NormalText>
+						<InfoOpacityContainer
+							title={'Your Info'}
+							innerClassName={' to-green-prim-1 from-[#52b788] '}
+							className={' opacity-75 border-green-400 '}
 						>
-							<div className='flex items-center justify-center mx-auto px-3 py-1 md-py-2 rounded-lg bg-[#40916c] text-white font-semibold '>
-								Your Application
-							</div>
-						</div>
-						<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 cursor-not-allowed select-none text-[0.6rem] opacity-70  '>
-							<p className='text-[0.8rem] sm:text-base md:text-lg font-semibold'>
-								Your previous Application is currently under scrutiny,
-								please wait until the Admins approve or reject your
-								propsal. Until then you can check the status and
-								history of your application in your profile pages
-							</p>
-						</div>
-					</div>
-				) : ( */}
-				<>
-					<div className='w-full pt-4 sm:pt-6 md:pt-8 flex flex-col md:flex-row items-center justify-between space-y-4 sm:space-y-6 md:space-y-0 md:space-x-6 mt-4 md:mt-0 '>
-						<div className='flex flex-col items-start justify-center space-y-2 w-full '>
-							<div className='flex items-start justify-start w-full h-full flex-col space-y-3 '>
-								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full rounded-lg'>
-									<label
-										htmlFor='image-input1'
-										className=' relative cursor-pointer'
-									>
-										<p className=' text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start  '>
-											Parent Decleration
-										</p>
-										<img
-											src={
-												selectedImage1
-													? selectedImage1
-													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-											}
-											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
-											width={100}
-											height={100}
-											loading='lazy'
-										/>
-										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
-										</div>
-									</label>
-									<input
-										disabled={loading}
-										id='image-input1'
-										type='file'
-										accept='image/*'
-										className='hidden'
-										name='Parents_Dec'
-										onChange={handleImageChange1}
-									/>
-								</div>
-								<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-									{errors.parents_Dec || '‎'}
-								</p>
-							</div>
-						</div>
-						<div className='flex flex-col items-start justify-center space-y-2 w-full '>
-							<div className='flex items-start justify-start w-full h-full flex-col space-y-3 '>
-								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full rounded-lg'>
-									<label
-										htmlFor='image-input2'
-										className=' relative cursor-pointer'
-									>
-										<p className='text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start '>
-											Student Decleration
-										</p>
-										<img
-											src={
-												selectedImage2
-													? selectedImage2
-													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-											}
-											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
-											width={100}
-											height={100}
-											loading='lazy'
-										/>
-										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
-										</div>
-									</label>
-									<input
-										disabled={loading}
-										id='image-input2'
-										type='file'
-										accept='image/*'
-										className='hidden'
-										name='students_Dec'
-										onChange={handleImageChange2}
-									/>
-								</div>
-								<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-									{errors.students_Dec || '‎'}
-								</p>
-							</div>
-						</div>
-					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 sm:space-y-6 md:space-y-0 md:space-x-6  '>
-						<div className='flex flex-col items-start justify-center space-y-2 w-full '>
-							<div className='flex items-start justify-start w-full h-full flex-col space-y-3 '>
-								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full rounded-lg'>
-									<label
-										htmlFor='image-input3'
-										className=' relative cursor-pointer'
-									>
-										<p className='text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start '>
-											Faculty Recommendation
-										</p>
-										<img
-											src={
-												selectedImage3
-													? selectedImage3
-													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-											}
-											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
-											width={100}
-											height={100}
-											loading='lazy'
-										/>
-										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
-										</div>
-									</label>
-									<input
-										disabled={loading}
-										id='image-input3'
-										type='file'
-										accept='image/*'
-										className='hidden'
-										name='faculty_Rec'
-										onChange={handleImageChange3}
-									/>
-								</div>
-								<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-									{errors.faculty_Rec || '‎'}
-								</p>
-							</div>
-						</div>
-						<div className='flex flex-col items-start justify-center space-y-2 w-full '>
-							<div className='flex items-start justify-start w-full h-full flex-col space-y-3 '>
-								<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full rounded-lg'>
-									<label
-										htmlFor='image-input4'
-										className=' relative cursor-pointer'
-									>
-										<p className='text-xs md:text-sm font-medium rounded-md sm:rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white mb-2  md:rounded-lg  py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start '>
-											Post Dated Cheque
-										</p>
-										<img
-											src={
-												selectedImage4
-													? selectedImage4
-													: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
-											}
-											alt='Selected Image'
-											className='w-full h-full rounded-lg sm:rounded-xl md:rounded-2xl object-contain aspect-video '
-											width={100}
-											height={100}
-											loading='lazy'
-										/>
-										<div className='absolute top-7 md:top-10 right-0 bg-[#74c69d] rounded-lg sm:rounded-xl md:rounded-2xl p-2 md:p-3 '>
-											<LuFolderEdit className='w-5 h-5 sm:h-6 sm:w-6 md:h-7 md:w-7' />
-										</div>
-									</label>
-									<input
-										disabled={loading}
-										id='image-input4'
-										type='file'
-										accept='image/*'
-										className='hidden'
-										name='fourth'
-										onChange={handleImageChange4}
-									/>
-								</div>
-								<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-									{errors.pdc || '‎'}
-								</p>
-							</div>
-						</div>
-					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
-						<div className='flex w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
-								Purpose
-							</p>
-							<p className='text-gray-500 font-medium text-sm'>
-								purpose of application - {100 - form?.purpose?.length}{' '}
-								characters remaining
-							</p>
-							<input
+							<InfoPageFormContainer>
+								<InfoPageFormInput
+									label={'Name'}
+									name={'name'}
+									disabled={loading}
+									value={user?.fullname}
+									type={'text'}
+									noError={true}
+								/>
+								<InfoPageFormInput
+									label={'Email'}
+									name={'email'}
+									disabled={loading}
+									value={user?.domain_id}
+									type={'text'}
+									noError={true}
+								/>
+							</InfoPageFormContainer>
+							<InfoPageFormContainer>
+								<InfoPageFormInput
+									label={'PRN'}
+									name={'prn'}
+									disabled={loading}
+									value={user?.prn}
+									type={'text'}
+									noError={true}
+								/>
+								<InfoPageFormInput
+									label={'Dept'}
+									name={'dept'}
+									disabled={loading}
+									value={user?.department}
+									type={'text'}
+									noError={true}
+								/>
+							</InfoPageFormContainer>
+							<InfoPageFormContainer>
+								<InfoPageFormInput
+									label={'Year'}
+									name={'year'}
+									disabled={loading}
+									value={user?.year}
+									type={'text'}
+									noError={true}
+								/>
+								<InfoPageFormInput
+									label={'Sem'}
+									name={'sem'}
+									disabled={loading}
+									value={user?.sem}
+									type={'text'}
+									noError={true}
+								/>
+							</InfoPageFormContainer>
+						</InfoOpacityContainer>
+						<InfoPageFormContainer className={'pt-4 md:pt-8'}>
+							<ImageInput
+								name={'parents_Dec'}
+								label={'Parent Decleration'}
+								value={selectedImage1}
 								disabled={loading}
-								type='text'
-								name='purpose'
-								value={form?.purpose}
-								onChange={(e) =>
-									e.target.value?.length < 101 &&
-									setForm({ ...form, purpose: e.target.value })
-								}
-								className='  text-sm md:text-base font-medium  pl-4 rounded-lg py-2 px-3  border-2 w-full bg-green-100/20 border-zinc-300 lg:px-4 h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800  p-2 md:px-3 '
+								id={'select-img1'}
+								onChange={handleImageChange1}
+								errors={errors?.parents_Dec}
 							/>
-							<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-								{errors.purpose || '‎'}
-							</p>
-						</div>
-						<div className='flex w-full sm:basis-[50%] items-start justify-center space-y-2 flex-col '>
-							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
-								Duration
-							</p>
-							<p className='text-gray-500 font-medium text-sm'>
-								Select the duration of lending
-							</p>
-							<select
+							<ImageInput
+								name={'students_Dec'}
+								label={'Student Decleration'}
+								value={selectedImage2}
 								disabled={loading}
-								name='duration'
-								required={true}
+								id={'select-img2'}
+								onChange={handleImageChange2}
+								errors={errors?.students_Dec}
+							/>
+						</InfoPageFormContainer>
+						<InfoPageFormContainer>
+							<ImageInput
+								name={'faculty_Rec'}
+								label={'Faculty Recommendation'}
+								value={selectedImage3}
+								disabled={loading}
+								id={'select-img3'}
+								onChange={handleImageChange3}
+								errors={errors?.faculty_Rec}
+							/>
+							<ImageInput
+								name={'pdc'}
+								label={'Post Dated Cheque'}
+								value={selectedImage4}
+								disabled={loading}
+								id={'select-img4'}
+								onChange={handleImageChange4}
+								errors={errors?.pdc}
+							/>
+						</InfoPageFormContainer>
+						<InfoPageFormContainer>
+							<InfoPageFormInput
+								name={'purpose'}
+								disabled={loading}
+								value={form?.purpose}
+								type={'text'}
+								errors={errors?.purpose}
+								// onChange={(e) => {
+								// 	const inputValue = e.target.value;
+								// 	if (inputValue.length < 101) {
+								// 		setForm((prevForm) => ({ ...prevForm, purpose: inputValue }));
+								// 	}
+								// }}
+								onChange={(fieldName, fieldValue) => {
+									const inputValue = fieldValue;
+									if (inputValue.length < 101) {
+										setForm((prevForm) => ({ ...prevForm, [fieldName]: inputValue }));
+									}
+								}}
+								label={'Purpose'}
+								noError={false}
+							>
+								<p className='text-gray-500 font-medium text-sm'>
+									purpose of application - {100 - form?.purpose?.length}{' '}
+									characters remaining
+								</p>
+							</InfoPageFormInput>
+							<InfoPageFormSelect
+								name={'duration'}
+								disabled={loading}
 								value={form?.duration}
+								options={dur_options}
+								errors={errors?.duration}
 								onChange={(e) =>
 									setForm({ ...form, duration: e.target.value })
 								}
-								className='text-sm md:text-base font-medium  pl-4 rounded-lg py-2 px-3  border-2 w-full bg-green-100/20 border-zinc-300 lg:px-4 h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800  p-2 md:px-3  '
+								label={'Duration'}
+								noError={false}
 							>
-								<option value='' disabled hidden>
-									Select Duration
-								</option>
-								{dur_options?.map((el) => (
-									<option value={el?.value} key={el?.idx}>
-										{el?.text}
-									</option>
-								))}
-							</select>
-							<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-								{errors.duration || '‎'}
-							</p>
-						</div>
-					</div>
-					<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-2 sm:space-y-4 md:space-y-0 md:space-x-6  '>
-						<div className='flex w-full sm:basis-[50%]  items-start justify-center space-y-2 flex-col '>
-							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
-								EWS
-							</p>
-							<p className='text-gray-500 font-medium text-sm'>
-								{' '}
-								Do you have an authentic{' '}
-								<a
-									href='https://yojanasarkari.in/ews-certificate-maharashtra/'
-									target='blank'
-									rel='noreferrer'
-									className='text-sky-700'
-								>
-									EWS
-								</a>{' '}
-								certificate ?
-							</p>
-							<select
+								<p className='text-gray-500 font-medium text-sm'>
+									purpose of application - {100 - form?.purpose?.length}{' '}
+									characters remaining
+								</p>
+							</InfoPageFormSelect>
+						</InfoPageFormContainer>
+						<InfoPageFormContainer>
+							<InfoPageFormSelect
+								name={'ews'}
 								disabled={loading}
-								name='duration'
-								required={true}
 								value={form?.ews}
-								onChange={(e) => {
+								options={ews_options}
+								errors={errors?.ews}
+								onChange={(e) =>
 									setForm({ ...form, ews: e.target.value })
-									console.log(form?.ews)
-								}}
-								className='text-sm md:text-base font-medium  pl-4 rounded-lg py-2 px-3  border-2 w-full bg-green-100/20 border-zinc-300 lg:px-4 h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800  p-2 md:px-3  '
+								}
+								label={'EWS'}
+								noError={false}
 							>
-								<option key={1} value='no'>
-									No
-								</option>
-								<option value='yes' key={2}>
-									Yes
-								</option>
-							</select>
-							<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-								{errors.ews || '‎'}
-							</p>
-						</div>
-						<div className='flex w-full sm:basis-[50%]   items-start justify-center space-y-2 flex-col '>
-							<p className='text-xs md:text-sm font-medium rounded-lg bg-[#40916c] p-1 w-max  px-2 text-white -mb-1  sm:rounded-lg  py-0.5 sm:py-1 md:px-3  text-start '>
-								Family Status
-							</p>
-							<p className='text-gray-500 font-medium text-sm'>
-								Any of your guardians terminally ill or deceased?
-							</p>
-							<select
+								<p className='text-gray-500 font-medium text-sm'>
+									{' '}
+									Do you have an authentic{' '}
+									<a
+										href='https://yojanasarkari.in/ews-certificate-maharashtra/'
+										target='blank'
+										rel='noreferrer'
+										className='text-sky-700'
+									>
+										EWS
+									</a>{' '}
+									certificate ?
+								</p>
+							</InfoPageFormSelect>
+							<InfoPageFormSelect
+								name={'family_status'}
 								disabled={loading}
-								name='duration'
-								required={true}
 								value={form?.family_status}
-								onChange={(e) => {
-									setForm({
-										...form,
-										family_status: e.target.value
-									})
-									console.log(form?.family_status)
-								}}
-								className='text-sm md:text-base font-medium  pl-4 rounded-lg py-2 px-3  border-2 w-full bg-green-100/20 border-zinc-300 lg:px-4 h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800  p-2 md:px-3  '
+								options={fs_options}
+								errors={errors?.family_status}
+								onChange={(e) =>
+									setForm({ ...form, family_status: e.target.value })
+								}
+								label={'Family Status'}
+								noError={false}
 							>
-								<option key={1} value='no'>
-									No
-								</option>
-								<option value='yes' key={2}>
-									Yes
-								</option>
-							</select>
-							<p className='text-red-400 text-start text-sm md:text-base ml-2 font-normal '>
-								{errors.family_status || '‎'}
-							</p>
-						</div>
-					</div>
-					<div className='w-full flex items-center text-white justify-between space-x-12 mx-auto max-w-lg  '>
-						<button
-							onClick={handleSubmit}
-							className='flex flex-col items-start justify-center space-y-2  w-full '
-						>
-							<div className='font-semibold text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-105 md:hover:scale-110 transition-all duration-300 ease-linear to-[#40916c]  '>
-								{loading ? (
-									<div className='flex items-center space-x-3 justify-center rounded-lg'>
-										<p>Loading</p>
-										<div className='animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-[2.2px] border-r-none border-r-white border-transparent'></div>
-									</div>
-								) : (
-									'Apply'
-								)}
-							</div>
-						</button>
-					</div>
-				</>
-				{/* )} */}
-			</form>
+								<p className='text-gray-500 font-medium text-sm'>
+									Any of your guardians terminally ill or deceased?
+								</p>
+							</InfoPageFormSelect>
+						</InfoPageFormContainer>
+						<InfoPageButtonContainer>
+							<LoadingButton
+								className={'max-w-xl'}
+								onClick={handleSubmit}
+								disabled={loading}
+								loading={loading}
+								buttonText={'Apply'}
+							/>
+						</InfoPageButtonContainer>
+					</InfoPageContainer>
+					: <PageLoading />
+			}
 		</MaxWidthWrapper>
 	)
 }

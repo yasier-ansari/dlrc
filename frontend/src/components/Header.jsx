@@ -58,18 +58,18 @@ const Header = () => {
 		console.log('working')
 		if (userType === 'student') {
 			const response = await axios({
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/student/logout`,
-				method: 'post',
+				url: `${import.meta.env.MODE === 'development'
+					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/logout`,
+				method: 'POST',
 				withCredentials: true,
 				headers: { Authorization: `Bearer ${token}` }
 			})
 		} else if (userType === 'admin') {
 			const response = await axios({
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/logout`,
+				url: `${import.meta.env.MODE === 'development'
+					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/logout`,
 				method: 'POST',
 				withCredentials: true,
 				headers: { Authorization: `Bearer ${token}` }
@@ -136,11 +136,10 @@ const Header = () => {
 	}, [])
 	return (
 		<div
-			className={` sticky top-0 z-40 font-medium  min-h-16 h-full text-gray-800 w-full ${
-				isScrolled
-					? ' bg-[#081c15] text-white shadow-lg -top-2 '
-					: ' '
-			} `}
+			className={` sticky top-0 z-40 font-medium  min-h-16 h-full text-gray-800 w-full ${isScrolled
+				? ' bg-[#081c15] text-white shadow-lg -top-2 '
+				: ' '
+				} `}
 		>
 			<div className='relative'>
 				<MaxWidthWrapper className='flex justify-between items-center py-4 mx-auto px-4 sm:px-6 md:px-8 lg:px-16 max-w-7xl md:py-6  w-full '>
@@ -148,7 +147,7 @@ const Header = () => {
 						href='/'
 						className='font-barlow text-2xl sm:text-3xl font-bold '
 					>
-						<span className='text-[#52b788]'>DLRC</span>
+						<span className='text-green-prim-2 livvic '>DLRC</span>
 					</a>
 
 					<div className='flex flex-col font-sat h-full -space-y-8 md:hidden'>
@@ -164,7 +163,7 @@ const Header = () => {
 									className=' absolute top-12 right-4 transition-all  duration-150 ease-in'
 									onClick={() => setMenuBar(!menuBar)}
 								>
-									<LuX className='h-7 w-7 stro stroke-[#40916c] stroke-[3] fill-gray-700 text-gray-800  rounded-lg  ' />
+									<LuX className='h-7 w-7 stro stroke-green-prim-1 stroke-[3] fill-gray-700 text-gray-800  rounded-lg  ' />
 								</button>
 								<div className=' flex md:hidden flex-col mx-auto items-center space-y-12 justify-start pt-40 text-gray-700 px-6 -py-6 w-full h-screen  bg-gradient-radial  from-purple-100/60 via-purple-100 to-purple-200  '>
 									<div className=' flex flex-col space-y-12 items-center justify-center text-base '>
@@ -219,15 +218,13 @@ const Header = () => {
 															{reduceName(user?.fullname)}
 														</p>
 														<LuChevronDown
-															className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${
-																dropdownOpen ? 'rotate-180' : ''
-															} `}
+															className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? 'rotate-180' : ''
+																} `}
 														/>
 													</button>
 													<div
-														className={`  ${
-															dropdownOpen ? 'block' : 'hidden'
-														} absolute top-12 mt-2 w-48 bg-white rounded-md  border-2 shadow-lg`}
+														className={`  ${dropdownOpen ? 'block' : 'hidden'
+															} absolute top-12 mt-2 w-48 bg-white rounded-md  border-2 shadow-lg`}
 													>
 														<ul className='p-2 text-start'>
 															{userType === 'student' ? (
@@ -273,7 +270,7 @@ const Header = () => {
 												<div className='flex flex-col space-y-8 text-base font-semibold px-3 py-[4px] lg:px-4 '>
 													<a
 														href='/user/login'
-														className=' bg-[#95d5b2] w-max h-10 px-4 md:px-6 flex justify-center items-center text-gray-800 shadow-lg border-2 border-[#40916c] shadow-stone-300 text-base rounded-xl py-1 md:py-2 lg:px-4 '
+														className=' bg-[#95d5b2] w-max h-10 px-4 md:px-6 flex justify-center items-center text-gray-800 shadow-lg border-2 border-green-prim-1 shadow-stone-300 text-base rounded-xl py-1 md:py-2 lg:px-4 '
 													>
 														Log In
 													</a>
@@ -343,15 +340,13 @@ const Header = () => {
 											{reduceName(user?.fullname)}
 										</p>
 										<LuChevronDown
-											className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${
-												dropdownOpen ? 'rotate-180' : ''
-											} `}
+											className={` text-black w-4 h-4 transition-all ease-in duration-300 md:h-5 md:w-5 stroke-[1.5px] md:stroke-2 ${dropdownOpen ? 'rotate-180' : ''
+												} `}
 										/>
 									</button>
 									<div
-										className={` ${
-											dropdownOpen ? 'block' : 'hidden'
-										} absolute  right-0 mt-2 w-48 bg-white rounded-md shadow-lg`}
+										className={` ${dropdownOpen ? 'block' : 'hidden'
+											} absolute  right-0 mt-2 w-48 bg-white rounded-md shadow-lg`}
 									>
 										<ul className='p-2 text-start border border-gray-300 rounded-xl '>
 											{userType === 'student' ? (
@@ -400,7 +395,7 @@ const Header = () => {
 								<div className='flex  space-x-5 md:space-x-6 text-base font-semibold  '>
 									<a
 										href='/user/login'
-										className=' bg-[#95d5b2] flex justify-center items-center text-gray-800 border-2 border-[#40916c] text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 '
+										className=' bg-[#95d5b2] flex justify-center items-center text-gray-800 border-2 border-green-prim-1 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 '
 									>
 										Log In
 									</a>

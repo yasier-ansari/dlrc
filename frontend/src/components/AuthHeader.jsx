@@ -20,20 +20,18 @@ const AuthHeader = (props) => {
 	const logoutHandler = async () => {
 		if (userType === 'maintenance') {
 			const response = await axios({
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/maintenance/logout`,
-				method: 'post',
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/maintenance/logout`,
+				method: 'POST',
 				withCredentials: true,
 
 				headers: { Authorization: `Bearer ${token}` }
 			})
 		} else if (userType === 'admin') {
 			const response = await axios({
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/logout`,
-				method: 'post',
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/admin/logout`,
+				method: 'POST',
 				withCredentials: true,
 
 				headers: { Authorization: `Bearer ${token}` }
@@ -71,9 +69,8 @@ const AuthHeader = (props) => {
 			className={` z-40 font-medium  min-h-20 h-full text-gray-800 w-full  `}
 		>
 			<div
-				className={`flex items-center py-4 mx-auto px-4 sm:px-6 md:px-8 lg:px-16 max-w-7xl md:py-6  w-full ${
-					props.val ? 'justify-between' : 'justify-start'
-				} `}
+				className={`flex items-center py-4 mx-auto px-4 sm:px-6 md:px-8 lg:px-16 max-w-7xl md:py-6  w-full ${props.val ? 'justify-between' : 'justify-start'
+					} `}
 			>
 				<a
 					href='/'
@@ -112,12 +109,11 @@ const AuthHeader = (props) => {
 							) : (
 								<div className='flex  space-x-5 md:space-x-6 text-base font-semibold  '>
 									<Link
-										to={`${
-											userType === 'admin'
-												? '/admin/login'
-												: 'maintenance/login'
-										}`}
-										className=' bg-[#95d5b2] flex justify-center items-center text-gray-800 shadow-lg border-2 border-[#40916c] shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 '
+										to={`${userType === 'admin'
+											? '/admin/login'
+											: 'maintenance/login'
+											}`}
+										className=' bg-[#95d5b2] flex justify-center items-center text-gray-800 shadow-lg border-2 border-green-prim-1 shadow-stone-300 text-base rounded-xl px-3 py-1 md:py-2 lg:px-4 '
 									>
 										Log In
 									</Link>

@@ -106,10 +106,9 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 		var response
 		try {
 			response = await axios({
-				method: 'post',
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/new-issue`,
+				method: 'POST',
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/admin/new-issue`,
 				data: {
 					duration: form?.duration,
 					req_id: userInfo?._id,
@@ -193,10 +192,9 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 		try {
 			setLoading(true)
 			response = await axios({
-				method: 'get',
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/free-laptop`,
+				method: 'GET',
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/admin/free-laptop`,
 				headers: {
 					Authorization: `Bearer ${token}`
 				}
@@ -218,10 +216,9 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 			try {
 				setLoading(true)
 				response = await axios({
-					method: 'get',
-					url: `${
-						import.meta.env.VITE_REACT_BACKEND_PORT_URL
-					}/api/v1/admin/approved-request/${id}`,
+					method: 'GET',
+					url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+						}/api/v1/admin/approved-request/${id}`,
 					headers: {
 						Authorization: `Bearer ${token}`
 					}
@@ -247,7 +244,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 					<>
 						<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full text-gray-800/90 mx-auto'>
 							<div className='flex items-center space-x-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl justify-center w-full h-full m-6 sm:m-8 md:m-12 sm:mt-3 md:mt-0  text-center mx-auto'>
-								<LuUserCircle2 className='text-[#40916c] -skew-x-6' />
+								<LuUserCircle2 className='text-green-prim-1 -skew-x-6' />
 								<h1 className='font-bold  italic'>Issuance</h1>
 							</div>
 						</div>
@@ -262,61 +259,61 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 '
 								>
 									<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-										<p className='p-2 text-xs sm:text-base sm:px-4 md:px-6  bg-gradient-to-tr from-[#52b788] font-semibold  to-[#40916c] text-white rounded-xl mx-auto'>
+										<p className='p-2 text-xs sm:text-base sm:px-4 md:px-6  bg-gradient-to-tr from-[#52b788] font-semibold  to-green-prim-1 text-white rounded-xl mx-auto'>
 											Request
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6'>
 									<div className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full'>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Name
 										</p>
-										<p className='truncate  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200'>
+										<p className='truncate  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200'>
 											{userInfo?.student_id?.fullname}
 										</p>
 									</div>
 									<div className='flex items-start justify-center space-y-2 flex-col basis-[40%] w-full'>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Email
 										</p>
-										<p className=' truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200'>
+										<p className=' truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200'>
 											{userInfo?.student_id?.domain_id}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-3 '>
 									<div className='flex w-full  md:basis-[50%] items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Prn
 										</p>
-										<p className='  truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className='  truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.student_id?.prn}
 										</p>
 									</div>
 									<div className='flex w-full  md:basis-[50%] items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Dept
 										</p>
-										<p className=' truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className=' truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.student_id?.department}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-3 '>
 									<div className='flex w-full md:basis-[50%] items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Year
 										</p>
-										<p className='  truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className='  truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.student_id?.year}
 										</p>
 									</div>
 									<div className='flex w-full md:basis-[50%]  items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Sem
 										</p>
-										<p className=' truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className=' truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.student_id?.sem}
 										</p>
 									</div>
@@ -329,12 +326,12 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com//id-card/${userInfo?.student_id?.idCard}` ||
-													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
 										className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
 									>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Id Card
 										</p>
 										<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
@@ -357,12 +354,12 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.pdc}` ||
-													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
 										className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
 									>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Pdc
 										</p>
 										<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
@@ -387,12 +384,12 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.parents_Dec}` ||
-													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
 										className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
 									>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Parent Dec
 										</p>
 										<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
@@ -415,12 +412,12 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.students_Dec}` ||
-													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
 										className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
 									>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Student Dec
 										</p>
 										<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
@@ -443,12 +440,12 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 											)
 											setModalPopped(
 												`https://dlrc-public-demo.s3.ap-south-1.amazonaws.com/${userInfo?.faculty_Rec}` ||
-													'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
+												'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fgraphicsfamily.com%2Fwp-content%2Fuploads%2F2020%2F07%2FFree-online-ID-card-Template--2048x1152.jpg&f=1&nofb=1&ipt=f3f4332deb3ace7f8c6fb38df44ff2ff561dfeb90bcfd202d9c1e0434908c6bf&ipo=images'
 											)
 										}}
 										className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full '
 									>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Faculty Rec
 										</p>
 										<div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg '>
@@ -467,46 +464,46 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 								</div>
 								<div className='w-full flex items-center justify-between space-x-6  '>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Approved Reason
 										</p>
-										<p className=' font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d]  h-auto '>
+										<p className=' font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d]  h-auto '>
 											{userInfo?.purpose}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 '>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Requested On
 										</p>
-										<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
+										<p className='truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
 											{formatTimeDifference(userInfo?.createdAt)}
 										</p>
 									</div>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Approved On
 										</p>
-										<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
+										<p className='truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
 											{formatTimeDifference(userInfo?.updatedAt)}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6 '>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											EWS
 										</p>
-										<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
+										<p className='truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
 											{userInfo?.ews ? 'Yes' : 'No'}
 										</p>
 									</div>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Family Problem
 										</p>
-										<p className='truncate font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
+										<p className='truncate font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-auto bg-green-100/20  resize-none focus:outline-[#74c69d] '>
 											{userInfo?.family_status ? 'Yes' : 'No'}
 										</p>
 									</div>
@@ -515,7 +512,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 
 							{/* <div className='w-full flex items-center justify-between space-x-6  '>
 								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+									<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 										Reason
 									</p>
 									<textarea
@@ -525,7 +522,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 										onChange={handleChange}
 										value={form?.reason}
 										disabled={loading}
-										className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 w-full bg-stone-200 h-auto  resize-none focus:outline-[#74c69d] '
+										className='font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 w-full bg-neutral-200 h-auto  resize-none focus:outline-[#74c69d] '
 									>
 										Yasier Zahir Ansari
 									</textarea>
@@ -538,7 +535,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 							</div> */}
 							{/* <div className="w-full flex items-center justify-between space-x-6  " >
                             <div className="flex flex-col items-start justify-center space-y-2 w-full">
-                                <p className="bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white">
+                                <p className="bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white">
                                     Issued On
                                 </p>
                                 <div className="relative w-full">
@@ -550,7 +547,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
                                 </div>
                             </div>
                             <div className="flex flex-col items-start justify-center space-y-2  w-full " >
-                                <p className="bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white" >Expected Return Date</p>
+                                <p className="bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white" >Expected Return Date</p>
                                 <input type="date"
                                     // max={maxDate}
                                     className=" font-bold text-lg pl-4 rounded-lg py-2 px-3 border-2 w-full h-auto bg-green-100/20 border-zinc-300 resize-none focus:outline-[#74c69d] " />
@@ -558,7 +555,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
                         </div> */}
 							<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-6  '>
 								<div className='flex flex-col items-start justify-center space-y-2 w-full'>
-									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+									<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 										Duration
 									</p>
 									<select
@@ -569,7 +566,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 										onChange={(e) =>
 											setForm({ ...form, duration: e.target.value })
 										}
-										className='  w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3 text-[0.8rem] sm:text-base md:text-lg pl-4  py-2 px-3 sm:px-4 md bg-green-100/20 border-zinc-300 resize-none   '
+										className='  w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-neutral-200 focus:outline-green-prim-1 placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3 text-[0.8rem] sm:text-base md:text-lg pl-4  py-2 px-3 sm:px-4 md bg-green-100/20 border-zinc-300 resize-none   '
 									>
 										<option value='' disabled hidden>
 											Select Duration
@@ -585,7 +582,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 									</p>
 								</div>
 								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+									<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 										Issued Laptop
 									</p>
 									<select
@@ -596,18 +593,18 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 										onChange={(e) =>
 											setForm({ ...form, laptop_id: e.target.value })
 										}
-										className=' w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3 text-[0.8rem] sm:text-base md:text-lg pl-4  py-2 px-3 sm:px-4 md bg-green-100/20 border-zinc-300 resize-none   '
+										className=' w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-neutral-200 focus:outline-green-prim-1 placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3 text-[0.8rem] sm:text-base md:text-lg pl-4  py-2 px-3 sm:px-4 md bg-green-100/20 border-zinc-300 resize-none   '
 									>
 										<option value='' disabled hidden>
 											Select Laptop
 										</option>
 										{laptopOpt?.map((el) => (
 											<option
-												className='flex items-center justify-center py-4 my-4 px-2 bg-stone-200 hover:bg-green-100'
+												className='flex items-center justify-center py-4 my-4 px-2 bg-neutral-200 hover:bg-green-100'
 												value={el?.laptop_id}
 												key={el?._id}
 											>
-												<div className='flex items-center justify-center py-4 my-4 px-2 bg-stone-200 hover:bg-green-100'>
+												<div className='flex items-center justify-center py-4 my-4 px-2 bg-neutral-200 hover:bg-green-100'>
 													<span>{el?.laptop_id}</span>
 													{/* <span
 													className={`${
@@ -636,7 +633,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 									}}
 									className='flex flex-col items-start justify-center space-y-2  w-full '
 								>
-									<div className='font-bold text-sm sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-110 transition-all duration-300 ease-linear to-[#40916c]  '>
+									<div className='font-bold text-sm sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-110 transition-all duration-300 ease-linear to-green-prim-1  '>
 										{loading ? (
 											<div className='flex items-center space-x-3 justify-center rounded-lg'>
 												<p>Loading</p>
@@ -684,7 +681,7 @@ const MaintUserApprovalComp = ({ flag, id }) => {
 				<div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50'>
 					<div className='flex items-center space-x-3 bg-white px-3 py-2 rounded-lg'>
 						<h2 className='text-lg font-semibold'>Loading</h2>
-						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c]'></div>
+						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-green-prim-1'></div>
 					</div>
 				</div>
 			)}

@@ -51,10 +51,9 @@ const LaptopIdList = () => {
 		console.log(currentId?.laptop_id, form?.currStatus)
 		try {
 			response = await axios({
-				method: 'post',
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/change-laptop`,
+				method: 'POST',
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/admin/change-laptop`,
 				data: { status: form?.currStatus, id: currentId?.laptop_id },
 				headers: {
 					Authorization: `Bearer ${token}`
@@ -87,12 +86,11 @@ const LaptopIdList = () => {
 				if (user?.userType === 'maintenance') {
 					console.log('issu here')
 					response = await axios({
-						method: 'get',
+						method: 'GET',
 						withCredentials: true,
 
-						url: `${
-							import.meta.env.VITE_REACT_BACKEND_PORT_URL
-						}/api/v1/admin/free-laptop`,
+						url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+							}/api/v1/admin/free-laptop`,
 						headers: { Authorization: `Bearer ${token}` }
 					})
 				}
@@ -173,7 +171,7 @@ const LaptopIdList = () => {
 													return (
 														<tr
 															key={idx}
-															className='group p-2 rounded-xl hover:bg-stone-200/60'
+															className='group p-2 rounded-xl hover:bg-neutral-200/60'
 														>
 															<td
 																className={`p-4 rounded-sm text-sm sm:text-base font-medium text-gray-800 `}
@@ -210,8 +208,8 @@ const LaptopIdList = () => {
 																			})
 																			setMoadalOpen(true)
 																		}}
-																		// className='bg-[#40916c] px-8'
-																		// variant='outline'
+																	// className='bg-green-prim-1 px-8'
+																	// variant='outline'
 																	>
 																		<BiEditAlt className='h-4 w-4 sm:h-5 sm:w-5 group-hover:text-[#2c5846] group-hover:scale-125 ' />
 																	</button>
@@ -283,7 +281,7 @@ const LaptopIdList = () => {
 											value={currentId?.condition}
 											disabled={true}
 											className={cn(
-												'col-span-3 bg-stone-300 w-full outline-[#40916c]'
+												'col-span-3 bg-stone-300 w-full outline-green-prim-1'
 											)}
 										/>
 									</div> */}
@@ -300,7 +298,7 @@ const LaptopIdList = () => {
 											value={currentId?.status}
 											disabled={true}
 											className={cn(
-												'col-span-3 bg-stone-300 w-full outline-[#40916c]'
+												'col-span-3 bg-stone-300 w-full outline-green-prim-1'
 											)}
 										/>
 									</div> */}
@@ -316,7 +314,7 @@ const LaptopIdList = () => {
 											placeholder='status'
 											value={form?.status}
 											onChange={(e) => handleChange(e)}
-											className='  font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full bg-stone-200 focus-visible:outline-[#40916c]  '
+											className='  font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full bg-neutral-200 focus-visible:outline-green-prim-1  '
 										>
 											<option value='' disabled hidden>
 												Select Sem
@@ -336,7 +334,7 @@ const LaptopIdList = () => {
 												handleChange(e)
 											}}
 											className={cn(
-												'col-span-3 bg-stone-300 w-full outline-[#40916c]'
+												'col-span-3 bg-stone-300 w-full outline-green-prim-1'
 											)}
 										/> */}
 									</div>
@@ -352,7 +350,7 @@ const LaptopIdList = () => {
 											placeholder='rating'
 											value={form?.rating}
 											onChange={(e) => handleChange(e)}
-											className='  font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full bg-stone-200 focus-visible:outline-[#40916c]  '
+											className='  font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full bg-neutral-200 focus-visible:outline-green-prim-1  '
 										>
 											<option value='' disabled hidden>
 												Rating
@@ -380,7 +378,7 @@ const LaptopIdList = () => {
 												handleChange(e)
 											}}
 											className={cn(
-												' font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full col-span-3 bg-stone-200 ring-[#40916c] outline-[#40916c] '
+												' font-medium text-[0.8rem] sm:text-base rounded-lg py-2 px-3 w-full col-span-3 bg-neutral-200 ring-green-prim-1 outline-green-prim-1 '
 											)}
 										/>
 									</div>
@@ -389,7 +387,7 @@ const LaptopIdList = () => {
 									<Button
 										onClick={updateStatus}
 										className={cn(
-											'  bg-gradient-to-tr from-[#52b788] to-[#40916c]  focus-visible:ring-[#40916c] outline-[#40916c] '
+											'  bg-gradient-to-tr from-[#52b788] to-green-prim-1  focus-visible:ring-green-prim-1 outline-green-prim-1 '
 										)}
 										type='submit'
 									>
@@ -424,7 +422,7 @@ const LaptopIdList = () => {
 				<div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50'>
 					<div className='flex items-center space-x-3 bg-white px-3 py-2 rounded-lg'>
 						<h2 className='text-lg font-semibold'>Loading</h2>
-						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c]'></div>
+						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-green-prim-1'></div>
 					</div>
 				</div>
 			)}

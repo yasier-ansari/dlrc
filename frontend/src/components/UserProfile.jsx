@@ -16,6 +16,7 @@ import InfoPageButtonContainer from "./InfoPageButtonContainer"
 import LoadingButton from "./LoadingButton"
 import InfoContainer from "./InfoContainer"
 import RequestContainer from "./RequestContainer"
+import NormalText from "./ui/normalText"
 const UserProfile = () => {
 	const [loading, setLoading] = useState(false)
 	const [flag, setFlag] = useState(true)
@@ -25,34 +26,39 @@ const UserProfile = () => {
 	const [selectedImage, setSelectedImage] = useState()
 	const navigate = useNavigate()
 	const dept_options = [
-		'CSE (AI - ML)',
-		'CSE (IOT - BT)',
-		'COMPS',
-		'IT',
-		'Electrical',
-		'Mechanical',
-		'Civil',
-		'AutoMobile'
+		{ value: 'CSE (AI - ML)', text: 'CSE (AI - ML)', id: 1 },
+		{ value: 'CSE (IOT - BT)', text: 'CSE (IOT - BT)', id: 2 },
+		{ value: 'COMPS', text: 'COMPS', id: 3 },
+		{ value: 'IT', text: 'IT', id: 4 },
+		{ value: 'Electrical', text: 'Electrical', id: 5 },
+		{ value: 'Mechanical', text: 'Mechanical', id: 6 },
+		{ value: 'Civil', text: 'Civil', id: 7 },
+		{ value: 'AutoMobile', text: 'AutoMobile', id: 8 }
 	]
 	const sem_options = [
-		'I',
-		'II',
-		'III',
-		'IV',
-		'V',
-		'VI',
-		'VII',
-		'VIII'
+		{ value: 'I', text: 'I', id: 1 },
+		{ value: 'II', text: 'II', id: 2 },
+		{ value: 'III', text: 'III', id: 3 },
+		{ value: 'IV', text: 'IV', id: 4 },
+		{ value: 'V', text: 'V', id: 5 },
+		{ value: 'VI', text: 'VI', id: 6 },
+		{ value: 'VII', text: 'VII', id: 7 },
+		{ value: 'VIII', text: 'VIII', id: 8 },
 	]
-	const year_options = ['FE', 'SE', 'TE', 'BE']
+	const year_options = [
+		{ value: 'FE', text: 'FE', id: 1 },
+		{ value: 'SE', text: 'SE', id: 2 },
+		{ value: 'TE', text: 'TE', id: 3 },
+		{ value: 'BE', text: 'BE', id: 4 }
+	]
 	const [form, setForm] = useState({
 		fullname: user?.fullname || '',
 		domain_id: user?.domain_id || '',
 		prn: user?.prn || '',
 		department: user?.department || '',
 		year: user?.year || '',
-		sem: user?.sem || ''
-		// number: user?.number || ''
+		sem: user?.sem || '',
+		number: user?.number || ''
 		// idCard: user?.idCard || ''
 	})
 	const [errors, setErrors] = useState({
@@ -62,8 +68,8 @@ const UserProfile = () => {
 		// password: '',
 		department: '',
 		year: '',
-		sem: ''
-		// number: ''
+		sem: '',
+		number: ''
 		// idCard: ''
 	})
 	const validateForm = () => {
@@ -73,6 +79,22 @@ const UserProfile = () => {
 		if (!form.fullname) {
 			newErrors.fullname = 'Name is required'
 			valid = false
+		} else if (form.fullname.trim().length < 2) {
+			newErrors.fullname = 'First and Last Name is required'
+			valid = false
+		} else {
+			newErrors.fullname = ''
+		}
+
+		if (!form.number) {
+			newErrors.number = 'Phone Number is required'
+			valid = false
+		} else if (!/^[0-9]{10}$/.test(form.number)) {
+			newErrors.number =
+				'Phone Number should contain exactly 10 numeric digits'
+			valid = false
+		} else {
+			newErrors.number = ''
 		}
 
 		if (!form.domain_id) {
@@ -121,7 +143,7 @@ const UserProfile = () => {
 		setLoading(true)
 		try {
 			response = await axios({
-				method: 'post',
+				method: 'POST',
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/update-profile`,
@@ -190,6 +212,8 @@ const UserProfile = () => {
 			} else {
 				await updateHelper(token)
 			}
+		} else {
+
 		}
 	}
 	useEffect(() => {
@@ -201,7 +225,7 @@ const UserProfile = () => {
 						url: `${import.meta.env.MODE === 'development'
 							? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 							: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/profile`,
-						method: 'get',
+						method: 'GET',
 						withCredentials: true,
 						headers: { Authorization: `Bearer ${accessToken}` }
 					})
@@ -217,7 +241,7 @@ const UserProfile = () => {
 			const fetchRequests = async (id, accessToken) => {
 				try {
 					const response = await axios({
-						method: 'get',
+						method: 'GET',
 						url: `${import.meta.env.MODE === 'development'
 							? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 							: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/recent-request`,
@@ -260,12 +284,16 @@ const UserProfile = () => {
 						loading={loading}
 						heading={'Profile'}
 						Icon={LuUserCircle2}
-						infoText="These profile information would be attached to your laptop
+						className={' max-w-6xl '}
+						innerClassName={'max-w-3xl'}
+					>
+						<NormalText className={'pb-8 md:pb-12'} >
+							These profile information would be attached to your laptop
 							application, so please update them if needed. Once applied
 							these updated change wont be included in the previous
 							applications. College Id card are not updatable, If you need
-							to update those, contact your Department Head."
-					>
+							to update those, contact your Department Head.
+						</NormalText>
 						<InfoPageFormContainer>
 							<InfoPageFormInput
 								label={'Full Name'}
@@ -290,12 +318,28 @@ const UserProfile = () => {
 						</InfoPageFormContainer>
 						<InfoPageFormContainer>
 							<InfoPageFormInput
-								label={'Email'}
-								name={'domain_id'}
+								label={'Mobile Number'}
+								name={'number'}
 								disabled={loading}
-								value={form?.domain_id}
-								error={errors?.domain_id}
-								type={'email'}
+								value={form?.number}
+								pattern="[0-9]{10}"
+								maxLength={10}
+								minLength={10}
+								error={errors?.number}
+								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
+							/>
+						</InfoPageFormContainer>
+						<InfoPageFormContainer>
+							<InfoPageFormInput
+								label={'PRN'}
+								name={'prn'}
+								disabled={loading}
+								value={form?.prn}
+								error={errors?.prn}
+								type={'text'}
+								pattern="[0-9]{6}"
+								maxLength={6}
+								minLength={6}
 								onChange={(fieldName, fieldValue) => setForm({ ...form, [fieldName]: fieldValue })}
 							/>
 							<InfoPageFormSelect
@@ -336,7 +380,12 @@ const UserProfile = () => {
 							/>
 						</InfoPageFormContainer>
 						<InfoPageButtonContainer>
-							<LoadingButton onClick={SubmitHandler} disabled={loading} loading={loading} buttonText={'Update'} />
+							<LoadingButton
+								className={'max-w-xl'}
+								onClick={SubmitHandler}
+								disabled={loading}
+								loading={loading}
+								buttonText={'Update'} />
 						</InfoPageButtonContainer>
 					</InfoPageContainer>
 					<div

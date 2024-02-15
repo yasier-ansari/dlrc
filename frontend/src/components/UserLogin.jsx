@@ -1,5 +1,3 @@
-import { FcGoogle } from 'react-icons/fc'
-import { FaGithub } from 'react-icons/fa'
 import { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
@@ -11,13 +9,10 @@ import FormContainer from "./FormContainer"
 import PageLoading from "./PageLoading"
 import AuthContainer from "./AuthContainer"
 
-const UserLogin = ({ authWork }) => {
-	const [authType, setAuthType] = useState('login')
-	const { token, user, setUser, setLoginData, mainLoading } =
-		useContext(AuthContext)
+const UserLogin = () => {
+	const { token, user, setUser, setLoginData, mainLoading } = useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
 	const { state } = useLocation()
-	console.log(state, 'this is state')
 	const [form, setForm] = useState({
 		email: '',
 		password: '',
@@ -29,7 +24,6 @@ const UserLogin = ({ authWork }) => {
 		prn: ''
 	})
 	const navigate = useNavigate()
-
 	const validateForm = () => {
 		let valid = true
 		const newErrors = { ...errors }
@@ -45,7 +39,6 @@ const UserLogin = ({ authWork }) => {
 			newErrors.email = ''
 			valid = true
 		}
-
 		if (!form.prn) {
 			newErrors.prn = 'PRN is required'
 			valid = false
@@ -56,7 +49,6 @@ const UserLogin = ({ authWork }) => {
 			newErrors.email = ''
 			valid = true
 		}
-
 		if (!form.password) {
 			newErrors.password = 'password is required'
 			valid = false
@@ -71,11 +63,16 @@ const UserLogin = ({ authWork }) => {
 	const loginHelper = async (email, prn, password) => {
 		let response
 		try {
+			const apiUrl = `${import.meta.env.MODE === 'development'
+				? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
+				: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD
+				}/api/v1/student/login`
+			console.log(apiUrl)
 			response = await axios({
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/login`,
-				method: 'post',
+				method: 'POST',
 				withCredentials: true,
 				headers: {
 					'Content-Type': 'application/json'
@@ -117,12 +114,11 @@ const UserLogin = ({ authWork }) => {
 
 	const loginUserHandler = async (e) => {
 		e.preventDefault()
-		setLoading(true)
 		if (validateForm()) {
-			console.log('doing')
+			setLoading(true)
 			await loginHelper(form?.email, form?.prn, form?.password)
+			setLoading(false)
 		}
-		setLoading(false)
 	}
 	useEffect(() => {
 		const getUserIfExists = () => {

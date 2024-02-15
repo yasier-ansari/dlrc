@@ -106,7 +106,7 @@ const AdminRegisterComp = () => {
 		var response
 		try {
 			response = await axios({
-				method: 'post',
+				method: 'POST',
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/register`,

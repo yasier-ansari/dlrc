@@ -2,6 +2,7 @@ import React from 'react'
 import InfoPageFormInput from "./InfoPageFormInput"
 import InfoPageFormInputPlaceholder from "./InfoPageFormInputPlaceholder"
 import { cn, formatDate } from "@/lib/utils"
+import InfoOpacityContainer from "./InfoOpacityContainer"
 
 const RequestContainer = ({ className, data, approved, loading, title, issued, rejected }) => {
     return (
@@ -12,12 +13,12 @@ const RequestContainer = ({ className, data, approved, loading, title, issued, r
                         <div div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  ' >
                             {/* <div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
                                 <p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-24 '></p>
-                                <p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-12 '></p>
+                                <p className='font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-12 '></p>
                             </div> */}
                             <InfoPageFormInputPlaceholder className={'basis-[50%]'} />
                             {/* <div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
                                 <p className='bg-[#40916c80] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-xs font-bold text-white h-6 w-24 '></p>
-                                <p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  h-12 '></p>
+                                <p className='font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  h-12 '></p>
                             </div> */}
                             <InfoPageFormInputPlaceholder className={'basis-[50%]'} />
                         </div>
@@ -32,22 +33,17 @@ const RequestContainer = ({ className, data, approved, loading, title, issued, r
                         </div>
                     </div >
                     :
-                    <div className={cn(`flex items-center justify-center flex-col w-full h-full p-4 sm:p-8 md:p-12 rounded-xl border-2 mt-8  ${rejected && 'border-red-200/80 '} ${approved ? (issued ? 'border-green-300/80 ' : 'border-sky-300/80') : 'border-orange-200/80'} relative  ${className} `)}>
-                        <div
-                            className='absolute inset-0 left-[50%] translate-x-[-50%] w-full -top-5  z-10'
-                        >
-                            <div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-max mx-auto '>
-                                <p className={cn(` w-full py-1 px-3 sm:py-2 sm:px-4 md:px-6 bg-gradient-to-tr text-xs sm:text-sm md:text-base font-semibold   text-white rounded-xl mx-auto ${rejected && 'from-red-400 to-red-500 '} ${approved ? issued ? 'from-[#52b788] to-[#40916c] ' : 'from-sky-400 to-blue-500' : 'from-orange-400 to-orange-500'} `)}>
-                                    {title}
-                                </p>
-                            </div>
-                        </div>
+                    <InfoOpacityContainer
+                        className={`${rejected && 'border-red-200/80 '} ${approved ? (issued ? 'border-green-300/80 ' : 'border-sky-300/80') : 'border-orange-200/80'} `}
+                        innerClassName={`${rejected && 'from-red-400 to-red-500 '} ${approved ? issued ? 'from-[#52b788] to-green-prim-1 ' : 'from-sky-400 to-blue-500' : 'from-orange-400 to-orange-500'}`}
+                        title={title}
+                    >
                         <div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6  '>
                             {/* <div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full '>
-                                <p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+                                <p className='bg-green-prim-1 rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
                                     Applied On
                                 </p>
-                                <p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
+                                <p className='font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  '>
                                     {formatDate(request?.request[0]?.createdAt)}
                                 </p>
                             </div> */}
@@ -60,10 +56,10 @@ const RequestContainer = ({ className, data, approved, loading, title, issued, r
                                 noError={true}
                             />
                             {/* <div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-                                <p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+                                <p className='bg-green-prim-1 rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
                                     Duration
                                 </p>
-                                <p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
+                                <p className='font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  '>
                                     {request?.request[0]?.duration === 'Long'
                                         ? 'Half Yearly'
                                         : request?.request[0]?.duration ===
@@ -105,10 +101,10 @@ const RequestContainer = ({ className, data, approved, loading, title, issued, r
                                     :
                                     issued ?
                                         // <div className='flex items-start justify-center space-y-2 flex-col  basis-[50%] w-full '>
-                                        //     <p className='bg-[#40916c] rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+                                        //     <p className='bg-green-prim-1 rounded-md sm:rounded-lg px-2 py-0.5 sm:py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
                                         //         Issued On
                                         //     </p>
-                                        //     <p className='font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200  '>
+                                        //     <p className='font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200  '>
                                         //         {request?.issue?.createdAt
                                         //             ? formatDate(request?.issue?.createdAt)
                                         //             : "Couldn't Fetch Date"}
@@ -149,7 +145,7 @@ const RequestContainer = ({ className, data, approved, loading, title, issued, r
                                     : null
                             }
                         </div>
-                    </div>
+                    </InfoOpacityContainer>
             }
 
         </>

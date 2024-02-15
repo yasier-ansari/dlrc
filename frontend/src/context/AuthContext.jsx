@@ -63,7 +63,7 @@ function AuthProvider({ children }) {
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/student/profile`,
-				method: 'get',
+				method: 'GET',
 				withCredentials: true,
 
 				headers: { Authorization: `Bearer ${accessToken}` }
@@ -87,7 +87,7 @@ function AuthProvider({ children }) {
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/profile`,
-				method: 'get',
+				method: 'GET',
 				withCredentials: true,
 
 				headers: { Authorization: `Bearer ${accessToken}` }
@@ -114,7 +114,7 @@ function AuthProvider({ children }) {
 						: `${import.meta.env.MODE === 'development'
 							? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 							: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/refresh-token`,
-				method: 'post',
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},

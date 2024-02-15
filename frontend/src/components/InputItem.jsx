@@ -18,7 +18,7 @@ const InputItem = ({ className, errors, name, disabled, type, required, pattern,
                         >
                             {/* {!passVisible ? ( */}
                             <LuEyeOff
-                                className={`text-[#40916c] transition-all duration-300 ease-out ${!passVisible ? 'opacity-100' : 'opacity-0'
+                                className={`text-green-prim-1 transition-all duration-300 ease-out ${!passVisible ? 'opacity-100' : 'opacity-0'
                                     } `}
                             />
 
@@ -33,7 +33,7 @@ const InputItem = ({ className, errors, name, disabled, type, required, pattern,
                         >
                             {/* {!passVisible ? ( */}
                             <LuEye
-                                className={`text-[#40916c] transition-all duration-300 ease-out ${passVisible ? 'opacity-100' : 'opacity-0'
+                                className={`text-green-prim-1 transition-all duration-300 ease-out ${passVisible ? 'opacity-100' : 'opacity-0'
                                     } `}
                             />
 
@@ -51,12 +51,13 @@ const InputItem = ({ className, errors, name, disabled, type, required, pattern,
                 pattern={pattern || undefined}
                 // onChange={onChange}
                 onChange={(e) => onChange(name, e.target.value)}
+                autoComplete="true"
                 max={max || undefined}
                 min={min || undefined}
                 className={`  ${errors && 'border-[2px] border-red-400 '
-                    } w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200 focus:outline-[#40916c] focus:outline-2 placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
+                    } w-full lg:px-4 placeholder:font-medium font-normal h-10 bg-neutral-200 focus:outline-green-prim-1 focus:outline-2 placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
             />
-            <p className='text-red-400 text-start text-sm ml-2 font-normal '>
+            <p className='text-red-400 text-start ml-2 font-normal text-xs sm:text-sm md:text-base  '>
                 {errors || '‎'}
             </p>
         </div>

@@ -12,10 +12,10 @@ const HeroContainer = () => {
             </div>
             <div className='w-full h-full md:basis-[55%] lg:basis-[60%] flex flex-col gap-3 items-start justify-center'>
                 <div className='flex flex-col items-start justfy-center'>
-                    <div className='heroSubText'>
+                    <div className='heroSubText  '>
                         M.H. Saboo Siddik's
                     </div>
-                    <div className='heroHeading livvic '>
+                    <div className=' heroHeading livvic '>
                         Digital Learning Resource Center
                     </div>
                 </div>
@@ -26,7 +26,7 @@ const HeroContainer = () => {
                 <div className='flex items-center justify-start space-x-12 w-full '>
                     <a
                         href='/user/apply'
-                        className='text-base sm:text-lg md:text-xl p-2 md:px-8 md:py-3 lg:px-10 border-2 border-white hover:border-green-500 hover:border-2  duration-500 ease-linear  inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-green-400 bg-gradient-to-tr from-[#52b788] to-[#40916c] hover:bg-gradient-to-br hover:from-[#74c69d] hover:to-[#40916c] px-5 py-2 rounded-lg md:rounded-xl text-white '
+                        className='text-base sm:text-lg md:text-xl p-2 md:px-8 md:py-3 lg:px-10 border-2 border-white hover:border-green-500 hover:border-2  duration-500 ease-linear  inline-flex items-center justify-center whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-green-400 bg-gradient-to-tr from-[#52b788] to-green-prim-1 hover:bg-gradient-to-br hover:from-[#74c69d] hover:to-green-prim-1 px-5 py-2 rounded-lg md:rounded-xl text-white '
                     >
                         Apply
                     </a>

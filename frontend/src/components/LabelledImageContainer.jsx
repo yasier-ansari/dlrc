@@ -18,7 +18,7 @@ const LabelledImageContainer = ({ imageUrl, label }) => {
             }}
             className='flex flex-col items-start justify-center space-y-2 aspect-video w-full '
         >
-            <p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+            <p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
                 {label.charAt(0) + label.slice(1)}
             </p>
             <div className='flex items-center justify-center group transition-all duration-300 ease-in-out  w-full h-full relative overflow-hidden rounded-lg border shadow-lg border-gray-300 shadow-gray-200 '>

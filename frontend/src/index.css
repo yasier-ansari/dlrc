@@ -68,7 +68,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-[#40916c];
+    @apply border-border outline-green-prim-1;
   }
 
   body {

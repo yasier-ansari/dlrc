@@ -14,7 +14,6 @@ import {
     getIssue,
 } from "../controllers/student.controller.js";
 import { newRequest } from "../controllers/request.controllers.js";
-// import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
     upload,

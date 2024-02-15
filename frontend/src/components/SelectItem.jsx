@@ -12,7 +12,7 @@ const SelectItem = ({ name, placeholder, value, onChange, errors, required, clas
                 onChange={(e) => onChange(name, e.target.value)}
                 className={` ${errors &&
                     'border-[1.5px] border-red-500 '
-                    } w-full caret-green-600 lg:px-4 placeholder:font-medium font-normal h-10 bg-stone-200  focus:outline-[#40916c] placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
+                    } w-full caret-green-600 lg:px-4 placeholder:font-medium font-normal h-10 bg-neutral-200  focus:outline-green-prim-1 placeholder:text-gray-500 text-gray-800 rounded-lg p-2 md:px-3`}
             >
                 <option value='' disabled hidden>
                     Select {name.charAt(0).toUpperCase() + name.slice(1)}

@@ -64,7 +64,7 @@ const SearchInput = (props) => {
 	// }
 	return (
 		<>
-			<form className='relative w-full py-2  lg:py-1 justify-center flex items-center rounded-md bg-stone-200 text-sm '>
+			<form className='relative w-full py-2  lg:py-1 justify-center flex items-center rounded-md bg-neutral-200 text-sm '>
 				<button
 				// onClick={submitHandler}
 				>
@@ -75,7 +75,7 @@ const SearchInput = (props) => {
 					value={searchText}
 					type='text'
 					placeholder='Search...'
-					className='  block w-full pl-10  outline-none md:pl-12  lg:pl-12 sm:py-1 md:py-2 h-full rounded-md bg-stone-200  '
+					className='  block w-full pl-10  outline-none md:pl-12  lg:pl-12 sm:py-1 md:py-2 h-full rounded-md bg-neutral-200  '
 				/>
 			</form>
 		</>
@@ -105,18 +105,18 @@ const Search = ({
 		keys: laptopIdList
 			? ['condition', 'department', 'laptop_id']
 			: laptopList
-			? [
+				? [
 					'studentInfo.fullname',
 					'studentInfo.prn',
 					'studentInfo.domain_id',
 					'studentInfo.year'
-			  ]
-			: [
+				]
+				: [
 					'student_id.fullname',
 					'student_id.prn',
 					'student_id.domain_id',
 					'student_id.year'
-			  ]
+				]
 	}
 	const [searchText, setSearchText] = useState('')
 	const [semFilter, setSemFilter] = useState('')
@@ -196,18 +196,16 @@ const Search = ({
 
 	return (
 		<div
-			className={`flex flex-col w-[95%] md:w-[90%] mx-auto lg:flex-row p-1 sm:p-2 md:p-3 lg:p-4  items-center ${
-				laptopIdList
-					? 'max-w-5xl justify-between'
-					: 'max-w-3xl justify-center'
-			}  space-y-4 md:space-y-6 lg:space-x-6 w-full lg:space-y-0 relative`}
+			className={`flex flex-col w-[95%] md:w-[90%] mx-auto lg:flex-row p-1 sm:p-2 md:p-3 lg:p-4  items-center ${laptopIdList
+				? 'max-w-5xl justify-between'
+				: 'max-w-3xl justify-center'
+				}  space-y-4 md:space-y-6 lg:space-x-6 w-full lg:space-y-0 relative`}
 		>
 			<form
-				className={` ${
-					!laptopIdList
-						? 'md:basis-[55%]'
-						: ' sm:w-[70%] md:w-[60%] max-w-xl mx-auto'
-				} relative w-full py-2 lg:py-1 justify-center flex items-center rounded-md bg-stone-200 text-sm `}
+				className={` ${!laptopIdList
+					? 'md:basis-[55%]'
+					: ' sm:w-[70%] md:w-[60%] max-w-xl mx-auto'
+					} relative w-full py-2 lg:py-1 justify-center flex items-center rounded-md bg-neutral-200 text-sm `}
 			>
 				<button
 				// onClick={submitHandler}
@@ -227,7 +225,7 @@ const Search = ({
 					value={searchText}
 					type='text'
 					placeholder='Search...'
-					className='  block w-full pl-10 outline-none md:pl-12  lg:pl-12 sm:py-1 md:py-2 h-full rounded-md bg-stone-200  '
+					className='  block w-full pl-10 outline-none md:pl-12  lg:pl-12 sm:py-1 md:py-2 h-full rounded-md bg-neutral-200  '
 				/>
 			</form>
 			{!laptopIdList && (
@@ -244,7 +242,7 @@ const Search = ({
 								)
 							}}
 							value={deptFilter}
-							className=' text-black bg-stone-200 rounded-md h-full w-full px-1 md:px-2 lg:px-3 py-2 md:py-3 lg:py-[10px] outline-none '
+							className=' text-black bg-neutral-200 rounded-md h-full w-full px-1 md:px-2 lg:px-3 py-2 md:py-3 lg:py-[10px] outline-none '
 						>
 							<option value='' disabled hidden>
 								Select Department
@@ -270,7 +268,7 @@ const Search = ({
 								)
 							}}
 							value={semFilter}
-							className=' bg-stone-200  text-black rounded-md h-full w-full px-1 md:px-2 lg:px-3 py-2 md:py-3 lg:py-[10px] outline-none '
+							className=' bg-neutral-200  text-black rounded-md h-full w-full px-1 md:px-2 lg:px-3 py-2 md:py-3 lg:py-[10px] outline-none '
 						>
 							<option value='' disabled hidden>
 								Select Sem

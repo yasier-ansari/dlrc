@@ -59,7 +59,7 @@ const MaintLoginComp = () => {
 				url: `${import.meta.env.MODE === 'development'
 					? import.meta.env.VITE_REACT_BACKEND_PORT_URL_DEV
 					: import.meta.env.VITE_REACT_BACKEND_PORT_URL_PROD}/api/v1/admin/login`,
-				method: 'post',
+				method: 'POST',
 				withCredentials: true,
 
 				headers: {

@@ -41,7 +41,7 @@ const Accordion = ({ title, answer }) => {
                     : "grid-rows-[0fr] opacity-0"
                     }`}
             >
-                <NormalText className={'overflow-hidden font-[600] pl-12 md:pl-[70px]'} >
+                <NormalText className={`overflow-hidden ${accordionOpen ? "mb-6 " : ' '} font-[600] pl-12 md:pl-[70px] `} >
                     {answer}
                 </NormalText>
             </div>

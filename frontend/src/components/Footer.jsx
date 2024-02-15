@@ -19,7 +19,7 @@ const Footer = () => {
 							rel='noreferrer'
 							className='p-1'
 						>
-							<LuTwitter className=' w-5 h-5 text-[#40916c] hover:text-[#1b4332] hover:scale-110 transition-all ease-linear sm:w-6 sm:h-6 md:w-7 md:h-7 lg:h-8 lg:w-8 ' />
+							<LuTwitter className=' w-5 h-5 text-green-prim-1 hover:text-[#1b4332] hover:scale-110 transition-all ease-linear sm:w-6 sm:h-6 md:w-7 md:h-7 lg:h-8 lg:w-8 ' />
 						</a>
 						<a
 							href='https://www.linkedin.com/school/mhsscepage/'
@@ -35,7 +35,7 @@ const Footer = () => {
 							rel='noreferrer'
 							className='p-1'
 						>
-							<LuInstagram className=' w-5 h-5 text-[#40916c] hover:text-[#1b4332] hover:scale-110 transition-all ease-linear sm:w-6 sm:h-6 md:w-7 md:h-7 lg:h-8 lg:w-8 ' />
+							<LuInstagram className=' w-5 h-5 text-green-prim-1 hover:text-[#1b4332] hover:scale-110 transition-all ease-linear sm:w-6 sm:h-6 md:w-7 md:h-7 lg:h-8 lg:w-8 ' />
 						</a>
 					</div>
 				</div>
@@ -57,11 +57,11 @@ const Footer = () => {
 							Made with{' '}
 							<TbDeviceDesktopHeart className='mx-2 w-5 h-5 md:w-6 md:h-6' />{' '}
 							by{' '}
-							<span className='mx-2 font-[700]  text-[#40916c] italic  '>
+							<span className='mx-2 font-[700]  text-green-prim-1 italic  '>
 								mubasshir
 							</span>{' '}
 							&{' '}
-							<span className='mx-2 font-[700]  text-[#40916c] italic  '>
+							<span className='mx-2 font-[700]  text-green-prim-1 italic  '>
 								yasier
 							</span>{' '}
 						</p>

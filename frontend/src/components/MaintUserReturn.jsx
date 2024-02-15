@@ -81,10 +81,9 @@ const MaintUserReturnComp = ({ flag, id }) => {
 		var response
 		try {
 			response = await axios({
-				method: 'post',
-				url: `${
-					import.meta.env.VITE_REACT_BACKEND_PORT_URL
-				}/api/v1/admin/new-return/${userInfo?._id}`,
+				method: 'POST',
+				url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+					}/api/v1/admin/new-return/${userInfo?._id}`,
 				data: {
 					condition: form?.reason,
 					laptop_id: userInfo?.laptop_id
@@ -131,10 +130,9 @@ const MaintUserReturnComp = ({ flag, id }) => {
 				var response
 				try {
 					response = await axios({
-						method: 'get',
-						url: `${
-							import.meta.env.VITE_REACT_BACKEND_PORT_URL
-						}/api/v1/admin/issued-laptop/${id}`,
+						method: 'GET',
+						url: `${import.meta.env.VITE_REACT_BACKEND_PORT_URL
+							}/api/v1/admin/issued-laptop/${id}`,
 						headers: {
 							Authorization: `Bearer ${token}`
 						}
@@ -169,7 +167,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 					<>
 						<div className='flex flex-col items-center justfiy-center max-w-4xl w-full h-full text-gray-800/90 mx-auto'>
 							<div className='flex items-center space-x-2 text-3xl sm:text-4xl  md:text-5xl lg:text-6xl justify-center w-full h-full mt-6 sm:mt-10 md:mt-0 mb-12 text-center mx-auto'>
-								<HiOutlineComputerDesktop className=' text-[#40916c] -skew-x-6 ' />
+								<HiOutlineComputerDesktop className=' text-green-prim-1 -skew-x-6 ' />
 								<h1 className='font-bold  italic'>Retrieve</h1>
 							</div>
 						</div>
@@ -180,79 +178,79 @@ const MaintUserReturnComp = ({ flag, id }) => {
 '
 								>
 									<div className='flex flex-col items-start justify-center space-y-2 basis-[50%] w-full mx-auto '>
-										<p className='p-2 text-xs sm:text-base sm:px-4 md:px-6  bg-gradient-to-tr from-[#52b788] font-semibold  to-[#40916c] text-white rounded-xl mx-auto'>
+										<p className='p-2 text-xs sm:text-base sm:px-4 md:px-6  bg-gradient-to-tr from-[#52b788] font-semibold  to-green-prim-1 text-white rounded-xl mx-auto'>
 											Issuance
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-6'>
 									<div className='flex flex-col items-start justify-center space-y-2 basis-[60%] w-full'>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Name
 										</p>
-										<p className='truncate  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200'>
+										<p className='truncate  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200'>
 											{userInfo?.req_id?.student_id?.fullname}
 										</p>
 									</div>
 									<div className='flex items-start justify-center space-y-2 flex-col basis-[40%] w-full'>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Email
 										</p>
-										<p className='truncate  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200'>
+										<p className='truncate  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200'>
 											{userInfo?.req_id?.student_id?.domain_id}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-3 '>
 									<div className='flex w-full md:basis-[50%] items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Prn
 										</p>
-										<p className='   font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className='   font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.req_id?.student_id?.prn}
 										</p>
 									</div>
 									<div className='flex w-full md:basis-[50%] items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Dept
 										</p>
-										<p className='  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className='  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.req_id?.student_id?.department}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-3 '>
 									<div className='flex w-full md:basis-[50%] items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Year
 										</p>
-										<p className='   font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className='   font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.req_id?.student_id?.year}
 										</p>
 									</div>
 									<div className='flex w-full md:basis-[50%]  items-start justify-center space-y-2 flex-col '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Sem
 										</p>
-										<p className='  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 '>
+										<p className='  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 '>
 											{userInfo?.req_id?.student_id?.sem}
 										</p>
 									</div>
 								</div>
 								<div className='w-full flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-3 '>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Approved On
 										</p>
-										<p className='  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 h-auto  focus:outline-[#74c69d] '>
+										<p className='  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 h-auto  focus:outline-[#74c69d] '>
 											{formatDate(userInfo?.req_id?.updatedAt)}
 										</p>
 									</div>
 									<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-										<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+										<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 											Issued On
 										</p>
-										<p className='  font-medium outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-stone-200 h-auto  focus:outline-[#74c69d] '>
+										<p className='  font-medium outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6  w-full bg-neutral-200 h-auto  focus:outline-[#74c69d] '>
 											{formatDate(userInfo?.createdAt)}
 										</p>
 									</div>
@@ -260,7 +258,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 							</div>
 							<div className='w-full flex items-center  justify-between space-x-6 '>
 								<div className='flex flex-col items-start justify-center space-y-2  w-full '>
-									<p className='bg-[#40916c] rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
+									<p className='bg-green-prim-1 rounded-lg px-2 py-1 md:px-3 md:py-[5px] text-start text-xs sm:text-sm font-medium text-white'>
 										Laptop Condition
 									</p>
 									<textarea
@@ -270,7 +268,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 										onChange={handleChange}
 										value={form?.condition}
 										disabled={loading}
-										className='  outline-[#40916c] text-[0.8rem] sm:text-base md:text-lg rounded-lg p-2 sm:px-3 w-full bg-stone-200 h-auto font-medium resize-none focus:outline-[#74c69d] '
+										className='  outline-green-prim-1 text-[0.8rem] sm:text-base md:text-lg rounded-lg p-2 sm:px-3 w-full bg-neutral-200 h-auto font-medium resize-none focus:outline-[#74c69d] '
 									>
 										still in nice condition
 									</textarea>
@@ -287,7 +285,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 									disabled={loading}
 									className='flex flex-col items-start justify-center space-y-2  w-full text-white'
 								>
-									<p className='font-medium text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-105 md:hover:scale-110 transition-all duration-300 ease-linear to-[#40916c]  '>
+									<p className='font-medium text-base md:text-lg pl-4 rounded-lg py-2 px-3 sm:px-4 md:px-6 border-2 w-full bg-gradient-to-tr from-[#52b788] hover:scale-105 md:hover:scale-110 transition-all duration-300 ease-linear to-green-prim-1  '>
 										{loading ? (
 											<div className='flex items-center space-x-3 justify-center px-3 rounded-lg'>
 												<p className='text-base md:text-lg '>
@@ -320,7 +318,7 @@ const MaintUserReturnComp = ({ flag, id }) => {
 				<div className='fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-75 bg-gray-500 z-50'>
 					<div className='flex items-center space-x-3 bg-white px-3 py-2 rounded-lg'>
 						<h2 className='text-lg font-semibold'>Loading</h2>
-						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-[#40916c]'></div>
+						<div className='animate-spin rounded-full h-4 w-4 border-[2.2px] border-r-none border-r-white border-green-prim-1'></div>
 					</div>
 				</div>
 			)}
